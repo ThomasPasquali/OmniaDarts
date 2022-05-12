@@ -12,7 +12,9 @@ async function bootstrap() {
     .setTitle('OmniaDarts')
     .setDescription('The OmniaDarts API description')
     .addTag('users')
+    .addTag('auth')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

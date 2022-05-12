@@ -5,7 +5,9 @@ import { Match } from './match.schema';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({
+  autoIndex: true
+})
 export class User {
   
   @Prop()
@@ -31,3 +33,4 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.index({ nickname: 1}, { unique: true });

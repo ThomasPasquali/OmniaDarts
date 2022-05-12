@@ -6,6 +6,7 @@ import { MatchThrows, MatchThrowsSchema } from './schemas/matchThrows.schema';
 import { Throw, ThrowSchema } from './schemas/throw.schema';
 import { Dart, DartSchema } from './schemas/dart.schema';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 
 @Module({
@@ -17,7 +18,8 @@ import { UsersModule } from './modules/users/users.module';
     { name: Throw.name, schema: ThrowSchema },
     { name: Dart.name, schema: DartSchema },
   ]),
-  UsersModule],
+  UsersModule,
+  AuthModule],
   controllers: [],
   providers: [],
 })
