@@ -18,10 +18,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) : Promise<Partial<User>>{
-    const { pwd, ...result } = 
-          await this.userService.findByNickName(payload.sub);
-    return result; 
-  }
+/**
+ * Provide a user from decrypted bearer token. If this
+ * function is called the token is valid and it is not already
+ * expired.
+ * @param payload 
+ * @returns 
+ */
+async validate(payload: any) : Promise<Partial<User>>{
+  const { pwd, ...result } = 
+        await this.userService.findById(payload.sub);
+  return result; 
+}
 
 }

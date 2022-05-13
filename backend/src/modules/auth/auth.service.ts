@@ -11,7 +11,13 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService
   ) {}
-
+  
+  /**
+   * Check if a user belongs to this domain
+   * @param username 
+   * @param pass 
+   * @returns a user obj without pwd if exists
+   */
   async validateUser(username: string, pass: string): Promise<any> {
     const saltOrRounds = 10;
   
@@ -25,8 +31,13 @@ export class AuthService {
     return null;
   }
 
+  /**
+   * Provide the bearer token starting from user infos
+   * @param user user infos
+   * @returns access_token
+   */
   async login(user: User) {
-    const payload = { username: user.nickname, sub: user.nickname };
+    const payload = { username: user.nickname, sub: user._id };
     return {
       access_token: this.jwtService.sign(payload),
     };

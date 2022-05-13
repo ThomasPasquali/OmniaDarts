@@ -50,4 +50,5 @@ export class AuthController {
   async logout(@Req() req) {
     return req.user;
   }
+  
 }

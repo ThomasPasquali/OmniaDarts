@@ -8,7 +8,7 @@ export type UserDocument = User & Document;
 @Schema({
   autoIndex: true
 })
-export class User {
+export class User extends mongoose.Document{
   
   @Prop()
   @ApiProperty()

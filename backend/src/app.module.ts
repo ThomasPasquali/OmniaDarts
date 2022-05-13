@@ -7,20 +7,41 @@ import { Throw, ThrowSchema } from './schemas/throw.schema';
 import { Dart, DartSchema } from './schemas/dart.schema';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { config } from 'rxjs';
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://jennifer69:petme@localhost:27017',
-  {dbName: 'test'}),
-  MongooseModule.forFeature([
-    { name: Match.name, schema: MatchSchema },
-    { name: MatchThrows.name, schema: MatchThrowsSchema },
-    { name: Throw.name, schema: ThrowSchema },
-    { name: Dart.name, schema: DartSchema },
-  ]),
+  imports: [
+
+    ConfigModule.forRoot({
+      isGlobal: true,
+      ignoreEnvFile: false,
+      envFilePath: 'dev.env',
+    }),
+
+    MongooseModule
+        .forRootAsync({
+          imports: [ConfigModule],
+          useFactory: async (configService :ConfigService) => ({
+            uri: `mongodb://${configService.get<string>('DATABASE_USER')}`
+                            + `:${configService.get<string>('DATABASE_PWD')}`
+                            + `@${configService.get<string>('DATABASE_HOST')}`,
+            dbName: `${configService.get<string>('DATABASE_NAME')}`
+          }),
+          inject: [ConfigService]
+        }),
+    
+    MongooseModule.forFeature([
+      { name: Match.name, schema: MatchSchema },
+      { name: MatchThrows.name, schema: MatchThrowsSchema },
+      { name: Throw.name, schema: ThrowSchema },
+      { name: Dart.name, schema: DartSchema },
+    ]),
   UsersModule,
-  AuthModule],
+  AuthModule,
+  ],
   controllers: [],
-  providers: [],
+  providers: [ConfigService],
 })
 export class AppModule {}

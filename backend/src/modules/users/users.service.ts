@@ -15,10 +15,7 @@ export class UsersService {
     }
 
     async findByNickName(nickname : string): Promise<User> {
-        const u = new User();
-        u.nickname = nickname;
-        Logger.debug(u);
-        return await this.userModel.findOne(u)
+        return await this.userModel.findOne({nickname: nickname});
     }
 
     async findAll(): Promise<User[]> {
