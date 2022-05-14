@@ -6,8 +6,7 @@ import { Match } from './match.schema';
 export type UserDocument = User & Document;
 
 @Schema()
-export class User {
-  
+export class User extends mongoose.Document {
   @Prop()
   @ApiProperty()
   nickname: string;
@@ -20,14 +19,15 @@ export class User {
   @ApiProperty()
   imageUrl: string;
 
-  @Prop()
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
+  })
   @ApiProperty()
   matches: Match[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   @ApiProperty()
   friends: User[];
-
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
