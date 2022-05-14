@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UnauthorizedException, UseGuards, InternalServerErrorException, Req, Logger, NotFoundException } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { User } from 'src/schemas/user.schema';
+import { User } from '../../schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -18,7 +18,7 @@ export class AuthController {
   @ApiOkResponse({
       description: "A user logged in successful",
   })
-  async login(@Body() user : User){
+  async login(@Body() user : Partial<User>){
     if(await this.authService.validateUser(user.nickname, user.pwd))
       return await this.authService.login(user);
     else
