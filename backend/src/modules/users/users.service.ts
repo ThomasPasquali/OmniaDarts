@@ -26,6 +26,10 @@ export class UsersService {
         return await this.userModel.findById(id).exec();
     }
 
+    async findByGoogleToken(token : string): Promise<User> {
+        return await this.userModel.findOne({googleToken : token}).exec();
+    }
+
     async update(id, user : User): Promise<User> {
         return await this.userModel.findByIdAndUpdate(id, user, {new: true})
     }

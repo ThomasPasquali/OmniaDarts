@@ -16,6 +16,10 @@ export class User extends mongoose.Document{
 
   @Prop()
   @ApiProperty()
+  googleToken: string;
+
+  @Prop()
+  @ApiProperty()
   pwd: string;
 
   @Prop()
