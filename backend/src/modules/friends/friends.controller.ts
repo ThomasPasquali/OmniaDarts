@@ -13,7 +13,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { User } from 'src/schemas/user.schema';
+import { User } from '../../schemas/user.schema';
 import { FriendsService } from './friends.service';
 
 @Controller('friends')

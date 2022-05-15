@@ -1,6 +1,6 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Club } from 'src/schemas/club.schema';
+import { Club } from '../../schemas/club.schema';
 import { ClubsService } from './clubs.service';
 
 @Controller('clubs')

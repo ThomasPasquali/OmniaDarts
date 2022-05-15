@@ -9,7 +9,9 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { config } from 'rxjs';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { AuthService } from './modules/auth/auth.service';
+import { UsersService } from './modules/users/users.service';
 
 
 @Module({
@@ -44,5 +46,6 @@ import { JwtModule } from '@nestjs/jwt';
   ],
   controllers: [],
   providers: [ConfigService],
+  exports: [ConfigService]
 })
 export class AppModule {}

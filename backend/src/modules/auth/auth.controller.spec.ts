@@ -1,13 +1,14 @@
 import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { getModelToken} from '@nestjs/mongoose';
 import { Test} from '@nestjs/testing';
-import { User, UserSchema } from '../../schemas/user.schema';
-import { UsersController } from '../users/users.controller';
+import { AppModule } from '../../app.module';
+import { User } from '../../schemas/user.schema';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { AuthController } from './auth.controller';
+import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 
@@ -29,10 +30,9 @@ describe('AuthController', () => {
     }
 
     const moduleRef = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({ envFilePath: 'dev.env'})
-        , JwtModule.register({secret: 'secret'})],
+      imports: [AppModule, AuthModule, UsersModule],
       controllers: [AuthController],
-      providers: [UsersService, AuthService, JwtStrategy, ConfigService,{
+      providers: [UsersService, AuthService, ConfigService,{
         provide: getModelToken(User.name),
         useValue: mockUserModel,
       }],
@@ -54,22 +54,29 @@ describe('AuthController', () => {
     it('should return an access token if user\'s logged', async () => {
 
       // Case "all it's gonna be alright"
-      const u = { nickname : 'test', _id : 'test', pwd : 'test' }
+      const u = { nickname : 'test', 
+                  _id : 'test', 
+                  pwd : 'test',
+                  googleToken: '',
+                  imageUrl: '',
+                  matches: [],
+                  friends: []}
       const result = new Promise<any>(
       (resolve, reject) => {
         resolve(u);
       })
       jest.spyOn(authService, 'validateUser').mockImplementation((u) => result);
 
-      expect(await controller.login(u)).toHaveProperty('access_token');
-      const decoded = jwtService.verify((await controller.login(u)).access_token);
+      expect(await controller.login(u as User)).toHaveProperty('access_token');
+      const decoded = jwtService.verify((await controller.login(u as User)).access_token);
+      console.log(decoded)
       expect(decoded.username).toBe('test');
       expect(decoded.sub).toBe('test');
 
       // Case "all it's wrong in this world" (unregistered user)
       jest.spyOn(authService, 'validateUser').mockImplementation((u,p) => null);
       
-      await expect(controller.login(u)).rejects.toThrow(new UnauthorizedException());
+      await expect(controller.login(u as User)).rejects.toThrow(new UnauthorizedException());
 
     });
   });

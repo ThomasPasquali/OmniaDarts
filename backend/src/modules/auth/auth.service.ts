@@ -39,7 +39,7 @@ export class AuthService {
    */
   async login(user: User) {
     console.log(user)
-    const payload = { username: user.nickname, sub: user._id.toHexString() };
+    const payload = { username: user.nickname, sub: user._id.toString() };
     console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
