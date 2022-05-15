@@ -1,32 +1,44 @@
-import { createApp } from 'vue'; import { Form, Field, CellGroup } from 'vant';
-
 <template>
   <div class="container">
+
+    <van-nav-bar
+      title="Omnia Darts"
+      left-arrow
+      @click-left="back">
+      <template #right>
+        <van-icon name="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" />
+        <span>Username</span>
+      </template>
+    </van-nav-bar>
+
     <h1>Edit profile</h1>
+
     <form @submit.prevent="submit">
-      <input
-        id="photo"
-        type="file"
-      />
+      <input id="photo" type="file" />
       <br> <br>
       <ProfileField
         v-for="field in fields"
+        :key="field.label"
         :label="field.label"
         :type="field.type"
         :required="field.required"
       />
       <input type="submit" value="Save" />
     </form>
+
   </div>
 </template>
 
 <script>
-import ProfileField from '~/components/ProfileField.vue';
+import ProfileField from '~/components/ProfileField';
 
 export default {
   name: "profile",
   components: {ProfileField},
   methods: {
+    back() {
+      window.history.back()
+    },
     submit() {
       // this.$axios
       //   .$post("/auth", {nickname: this.usr, pwd: this.pwd})
@@ -40,7 +52,7 @@ export default {
       //     this.$router.push("/");
       //   })
       //   .catch((_) => (this.failedLogin = true));
-    },
+    }
   },
   data() {
     return {
@@ -53,7 +65,7 @@ export default {
         {label: "Team", type: "text", required: false}
       ]
     };
-  },
+  }
 }
 </script>
 
