@@ -14,17 +14,24 @@
     <h1>Edit profile</h1>
 
     <form @submit.prevent="submit">
+
+      <!-- TODO -->
       <input id="photo" type="file" />
+
       <br> <br>
       <ProfileField
         v-for="field in fields"
+        v-if="edit"
         :key="field.label"
         :label="field.label"
         :type="field.type"
         :required="field.required"
       />
+      <p v-else>{{ field.label }}</p>  <!-- fixme -->
       <input type="submit" value="Save" />
     </form>
+
+    <button @click="edit=!edit">Edit</button>
 
   </div>
 </template>
@@ -56,8 +63,9 @@ export default {
   },
   data() {
     return {
+      edit: false,
       fields: [
-        {label: "Nickname", type: "text", required: true},
+        {label: "Nickname", type: "text", required: true, editable: true},  // TODO add editable
         {label: "First name", type: "text", required: false},
         {label: "Last name", type: "text", required: false},
         {label: "Country", type: "country"},
