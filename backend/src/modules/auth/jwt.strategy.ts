@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config.get<string>('JWT_SECRET') || 'secret',
+      secretOrKey: config.get<string>('JWT_SECRET'),
     });
   }
 
@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
  * Provide a user from decrypted bearer token. If this
  * function is called the token is valid and it is not already
  * expired.
- * @param payload 
+ * @param payload
  * @returns 
  */
 async validate(payload: any) : Promise<Partial<User>>{

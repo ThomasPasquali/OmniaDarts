@@ -27,8 +27,7 @@ export class AuthService {
     const hash = await bcrypt.hash(pass, saltOrRounds);
     
     if (user && bcrypt.compare(user.pwd, hash)) {
-      const { pwd, ...result } = user;
-      return result;
+      return user;
     }
     return null;
   }
@@ -38,8 +37,10 @@ export class AuthService {
    * @param user user infos
    * @returns access_token
    */
-  async login(user: Partial<User>) {
-    const payload = { username: user.nickname, sub: user._id };
+  async login(user: User) {
+    console.log(user)
+    const payload = { username: user.nickname, sub: user._id.toHexString() };
+    console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
     };

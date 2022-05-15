@@ -20,7 +20,7 @@ export class FriendsService {
   async deleteFriend(idFriend: String): Promise<User> {
     const currUser = (await this.userService.findAll())[0];
     currUser.friends = currUser.friends.filter(
-      (u) => u._id.toHexString() != idFriend,
+      (u) => u._id.toHexString() != idFriend
     );
     return await this.userService.update(currUser._id, currUser);
   }
