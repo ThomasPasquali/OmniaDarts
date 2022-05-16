@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="editable">
     <label for="input">{{ label }}</label>
     <Countries
       v-if="type === 'country'"
@@ -20,6 +20,6 @@ import Countries from "~/components/Countries";
 export default {
   name: "ProfileField",
   components: {Countries},
-  props: ['label', 'type', 'required']
+  props: ['label', 'type', 'required', 'editable']
 }
 </script>

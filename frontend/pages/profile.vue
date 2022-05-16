@@ -13,7 +13,10 @@
 
     <h1>Edit profile</h1>
 
-    <form @submit.prevent="submit">
+    <form
+      v-if="edit"
+      @submit.prevent="submit"
+    >
 
       <!-- TODO -->
       <input id="photo" type="file" />
@@ -21,18 +24,20 @@
       <br> <br>
       <ProfileField
         v-for="field in fields"
-        v-if="edit"
         :key="field.label"
         :label="field.label"
         :type="field.type"
         :required="field.required"
+        :editable="field.editable"
       />
-      <p v-else>{{ field.label }}</p>  <!-- fixme -->
-      <input type="submit" value="Save" />
+      <input type="submit" :value="edit ? 'Save' : 'Edit'" />
     </form>
 
-    <button @click="edit=!edit">Edit</button>
+    <div v-else v-for="field in fields">
+      <p class="label">{{ field.label }}</p>
+      <p class="value">{{ field.value }}</p></div>  <!-- fixme -->
 
+    <button @click="edit = !edit">{{ edit ? 'Cancel' : 'Edit' }}</button>
   </div>
 </template>
 
@@ -42,6 +47,7 @@ import ProfileField from '~/components/ProfileField';
 export default {
   name: "profile",
   components: {ProfileField},
+  computed: {},
   methods: {
     back() {
       window.history.back()
@@ -65,12 +71,12 @@ export default {
     return {
       edit: false,
       fields: [
-        {label: "Nickname", type: "text", required: true, editable: true},  // TODO add editable
-        {label: "First name", type: "text", required: false},
-        {label: "Last name", type: "text", required: false},
-        {label: "Country", type: "country"},
-        {label: "Darts", type: "text", required: false},
-        {label: "Team", type: "text", required: false}
+        {label: "Nickname", type: "text", required: true, editable: true, value: "xxx"},
+        {label: "First name", type: "text", required: false, editable: true, value: "xxx"},
+        {label: "Last name", type: "text", required: false, editable: true, value: "xxx"},
+        {label: "Country", type: "country", required: false, editable: true, value: "xxx"},
+        {label: "Darts", type: "text", required: false, editable: true, value: "xxx"},
+        {label: "Team", type: "text", required: false, editable: false, value: "xxx"},
       ]
     };
   }
@@ -88,7 +94,7 @@ input[type=text], select {
   box-sizing: border-box;
 }
 
-input[type=submit] {
+input[type=submit], button {
   width: 100%;
   background-color: #04AA6D;
   color: white;
@@ -99,7 +105,7 @@ input[type=submit] {
   cursor: pointer;
 }
 
-input[type=submit]:hover {
+input[type=submit]:hover, button {
   background-color: #45a049;
 }
 
