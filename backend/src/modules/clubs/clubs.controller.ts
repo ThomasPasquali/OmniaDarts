@@ -4,7 +4,9 @@ import { use } from 'passport';
 import { User } from 'src/schemas/user.schema';
 import { Club } from '../../schemas/club.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { PoliciesGuard } from '../casl/policies-guard.service';
+import { Action } from '../casl/actions';
+import { AppAbility } from '../casl/casl-ability.factory';
+import { CheckPolicies, PoliciesGuard } from '../casl/policies-guard.service';
 import { UsersService } from '../users/users.service';
 import { ClubsService } from './clubs.service';
 
@@ -53,6 +55,8 @@ export class ClubsController {
 
   @Post('players/:idPlayer')
   @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies(
+    (ability: AppAbility) => ability.can(Action.AddRemoveComponents, Club))
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Add a user to a club' })

@@ -28,8 +28,6 @@ export class PoliciesGuard implements CanActivate {
       ) || [];
 
     const { user } = context.switchToHttp().getRequest();
-    console.log("------------------------")
-    console.log(user)
     const ability = await this.caslAbilityFactory.createForUser(user, user.club);
 
     return policyHandlers.every((handler) =>

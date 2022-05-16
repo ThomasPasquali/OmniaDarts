@@ -17,13 +17,11 @@ export class CaslAbilityFactory {
     const { can, cannot, build } = new AbilityBuilder<Ability<[Action, Subjects]>
     >(Ability as AbilityClass<AppAbility>);
 
-    console.log(club);
-
     const adminsOfUsersClub = club.admin;
 
-    const isAdmin = adminsOfUsersClub.reduce( (_, next) => {
-        return next._id == user._id ? next : null;
-    }, null)
+    const isAdmin = adminsOfUsersClub.find(u => u._id.toString() == user._id.toString())
+    console.log(adminsOfUsersClub)
+    console.log(user._id)
 
     if (isAdmin) {
       can(Action.AddRemoveComponents, Club);
