@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './schemas/user.schema';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { Dart, DartSchema } from './schemas/dart.schema';
 import { Match, MatchSchema } from './schemas/match.schema';
 import { MatchThrows, MatchThrowsSchema } from './schemas/matchThrows.schema';
 import { Throw, ThrowSchema } from './schemas/throw.schema';
-import { Dart, DartSchema } from './schemas/dart.schema';
-import { UsersModule } from './modules/users/users.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FriendsModule } from './modules/friends/friends.module';
 import { CaslModule } from './modules/casl/casl.module';
 import { SchemasModule } from './schemas/schemas.module';
@@ -51,6 +50,7 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
   CaslModule,
   AuthModule,
   SchemasModule,
+  FriendsModule,
   ],
   controllers: [],
   providers: [ConfigService],

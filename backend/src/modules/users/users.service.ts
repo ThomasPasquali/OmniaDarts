@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Club, ClubDocument } from '../../schemas/club.schema';
@@ -26,7 +26,7 @@ export class UsersService {
       .populate('club', '', this.clubModel)
       .lean();
   }
-  
+
   async findById(id): Promise<User> {
     return await this.userModel.findOne({ _id: id })
     .populate('club')

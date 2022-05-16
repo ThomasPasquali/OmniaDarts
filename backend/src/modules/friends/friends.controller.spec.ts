@@ -1,8 +1,8 @@
 import { ConfigService } from '@nestjs/config';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '../../schemas/user.schema';
 import { AppModule } from '../../app.module';
+import { User } from '../../schemas/user.schema';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { FriendsController } from './friends.controller';
@@ -10,10 +10,9 @@ import { FriendsService } from './friends.service';
 import { Club } from '../../schemas/club.schema';
 
 describe('FriendsController', () => {
-
   function mockUserModel(dto: any) {
     this.data = dto;
-    this.save  = () => {
+    this.save = () => {
       return this.data;
     };
   }
