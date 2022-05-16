@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-form @submit="onSubmit">
+    <van-form @submit="submit">
       <van-cell-group inset>
         <van-field
           v-model="usr"
@@ -29,7 +29,7 @@
 
 <script>
 export default {
-  name: "LoginPage",
+  name: "LoginComponent",
   methods: {
     submit() {
       this.$axios

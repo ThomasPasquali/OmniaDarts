@@ -15,7 +15,7 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: ["vant/lib/index.css"],
+  css: ["vant/lib/index.css", "assets/css/main.css"],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: ["@/plugins/vant"],
@@ -27,7 +27,16 @@ export default {
   buildModules: [],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ["@nuxtjs/i18n", "@nuxtjs/axios"],
+  modules: ["@nuxtjs/i18n", "@nuxtjs/axios", "@nuxtjs/auth-next"],
+
+  auth: {
+    strategies: {
+      google: {
+        clientId:
+          "74003974763-het7c7fbnm4j7ov5dc4lvhf2sgbalha1.apps.googleusercontent.com",
+      },
+    },
+  },
 
   i18n: {
     locales: [
