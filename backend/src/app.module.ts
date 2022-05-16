@@ -12,40 +12,40 @@ import { config } from 'rxjs';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthService } from './modules/auth/auth.service';
 import { UsersService } from './modules/users/users.service';
-
+import { TournamentsModule } from './modules/tournaments/tournaments.module';
 
 @Module({
   imports: [
-
     ConfigModule.forRoot({
       isGlobal: true,
       ignoreEnvFile: false,
       envFilePath: 'dev.env',
     }),
 
-    MongooseModule
-        .forRootAsync({
-          imports: [ConfigModule],
-          useFactory: async (configService :ConfigService) => ({
-            uri: `mongodb://${configService.get<string>('DATABASE_USER')}`
-                            + `:${configService.get<string>('DATABASE_PWD')}`
-                            + `@${configService.get<string>('DATABASE_HOST')}`,
-            dbName: `${configService.get<string>('DATABASE_NAME')}`
-          }),
-          inject: [ConfigService]
-        }),
-    
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri:
+          `mongodb://${configService.get<string>('DATABASE_USER')}` +
+          `:${configService.get<string>('DATABASE_PWD')}` +
+          `@${configService.get<string>('DATABASE_HOST')}`,
+        dbName: `${configService.get<string>('DATABASE_NAME')}`,
+      }),
+      inject: [ConfigService],
+    }),
+
     MongooseModule.forFeature([
       { name: Match.name, schema: MatchSchema },
       { name: MatchThrows.name, schema: MatchThrowsSchema },
       { name: Throw.name, schema: ThrowSchema },
       { name: Dart.name, schema: DartSchema },
     ]),
-  UsersModule,
-  AuthModule,
+    UsersModule,
+    AuthModule,
+    TournamentsModule,
   ],
   controllers: [],
   providers: [ConfigService],
-  exports: [ConfigService]
+  exports: [ConfigService],
 })
 export class AppModule {}
