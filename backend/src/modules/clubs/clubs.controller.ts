@@ -29,7 +29,7 @@ export class ClubsController {
     let user : User = await this.usersService.findById(req.user._id);
     newClub.admin.push(user as User);
     const clubUpdated = await this.clubsService.update(newClub._id, newClub);
-    user.club = clubUpdated
+    user.club = clubUpdated;
     await this.usersService.update(user._id, user);
     return clubUpdated;
   }
