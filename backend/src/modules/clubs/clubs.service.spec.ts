@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '../../schemas/user.schema';
 import { AppModule } from '../../app.module';
 import { Club } from '../../schemas/club.schema';
 import { ClubsModule } from './clubs.module';
@@ -21,6 +22,9 @@ describe('ClubsService', () => {
       imports: [AppModule, ClubsModule],
       providers: [ClubsService, ConfigService, {
         provide: getModelToken(Club.name),
+        useValue: mockClubModel,
+      },{
+        provide: getModelToken(User.name),
         useValue: mockClubModel,
       }],
     }).compile();

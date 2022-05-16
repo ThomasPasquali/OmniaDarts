@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Club } from '../../schemas/club.schema';
 import { AppModule } from '../../app.module';
 import { User } from '../../schemas/user.schema';
 import { UsersModule } from '../users/users.module';
@@ -22,8 +23,7 @@ describe('FriendsService', () => {
       imports: [UsersModule, AppModule],
       providers: [FriendsService,  UsersService, ConfigService, {
         provide: getModelToken(User.name),
-        useValue: mockUserModel,
-      }],
+        useValue: mockUserModel,}, { provide: getModelToken(Club.name), useValue: mockUserModel }],
     }).compile();
 
     service = module.get<FriendsService>(FriendsService);

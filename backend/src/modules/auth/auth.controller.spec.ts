@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { getModelToken} from '@nestjs/mongoose';
 import { Test} from '@nestjs/testing';
+import { Club } from '../../schemas/club.schema';
 import { AppModule } from '../../app.module';
 import { User } from '../../schemas/user.schema';
 import { UsersModule } from '../users/users.module';
@@ -35,7 +36,7 @@ describe('AuthController', () => {
       providers: [UsersService, AuthService, ConfigService,{
         provide: getModelToken(User.name),
         useValue: mockUserModel,
-      }],
+      }, { provide: getModelToken(Club.name), useValue: mockUserModel }],
     }).compile();
 
     authService = moduleRef.get<AuthService>(AuthService);
@@ -69,7 +70,6 @@ describe('AuthController', () => {
 
       expect(await controller.login(u as User)).toHaveProperty('access_token');
       const decoded = jwtService.verify((await controller.login(u as User)).access_token);
-      console.log(decoded)
       expect(decoded.username).toBe('test');
       expect(decoded.sub).toBe('test');
 

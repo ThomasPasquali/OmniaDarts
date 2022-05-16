@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
+import { Club } from './club.schema';
 import { Match } from './match.schema';
 
 export type UserDocument = User & Document;
@@ -27,7 +28,7 @@ export class User extends mongoose.Document{
   imageUrl: string;
 
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: Match.name }],
   })
   @ApiProperty()
   matches: Match[];
@@ -35,6 +36,11 @@ export class User extends mongoose.Document{
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   @ApiProperty()
   friends: User[];
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Club.name  })
+  @ApiProperty()
+  club: Club;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

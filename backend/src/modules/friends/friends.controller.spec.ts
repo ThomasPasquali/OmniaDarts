@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { FriendsController } from './friends.controller';
 import { FriendsService } from './friends.service';
+import { Club } from '../../schemas/club.schema';
 
 describe('FriendsController', () => {
 
@@ -23,10 +24,7 @@ describe('FriendsController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule, UsersModule],
       controllers: [FriendsController],
-      providers: [FriendsService, UsersService, ConfigService, {
-        provide: getModelToken(User.name),
-        useValue: mockUserModel,
-      }],
+      providers: [FriendsService,{ provide: getModelToken(Club.name), useValue: mockUserModel }],
     }).compile();
 
     controller = module.get<FriendsController>(FriendsController);

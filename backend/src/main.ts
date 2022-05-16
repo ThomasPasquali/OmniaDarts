@@ -15,6 +15,8 @@ async function bootstrap() {
     .setDescription('The OmniaDarts API description')
     .addTag('users')
     .addTag('auth')
+    .addTag('friends')
+    .addTag('clubs')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

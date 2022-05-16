@@ -7,7 +7,7 @@ import { User } from './user.schema';
 export type ClubDocument = Club & Document;
 
 @Schema()
-export class Club {
+export class Club extends mongoose.Document{
   @Prop()
   @ApiProperty()
   name: string;

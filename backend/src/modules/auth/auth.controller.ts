@@ -38,10 +38,12 @@ export class AuthController {
     user.pwd = await bcrypt.hash(user.pwd.toString(), saltOrRounds as number);
     const u = await this.userService.create(user);
 
-    if(u) return await this.authService.login(user);
+    if(u) return await this.authService.login(u);
     else throw new InternalServerErrorException();
   }
 
+  // Only for test purposes
+  // JWT: logging out means deleting the token client side
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get()

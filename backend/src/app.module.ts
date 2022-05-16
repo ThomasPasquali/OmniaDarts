@@ -12,6 +12,10 @@ import { config } from 'rxjs';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthService } from './modules/auth/auth.service';
 import { UsersService } from './modules/users/users.service';
+import { FriendsModule } from './modules/friends/friends.module';
+import { CaslModule } from './modules/casl/casl.module';
+import { SchemasModule } from './schemas/schemas.module';
+import { ClubsModule } from './modules/clubs/clubs.module';
 
 
 @Module({
@@ -30,7 +34,11 @@ import { UsersService } from './modules/users/users.service';
             uri: `mongodb://${configService.get<string>('DATABASE_USER')}`
                             + `:${configService.get<string>('DATABASE_PWD')}`
                             + `@${configService.get<string>('DATABASE_HOST')}`,
-            dbName: `${configService.get<string>('DATABASE_NAME')}`
+            dbName: `${configService.get<string>('DATABASE_NAME')}`,
+            connectionFactory: (connection) => {
+              connection.plugin(require('mongoose-autopopulate'));
+              return connection;
+            } 
           }),
           inject: [ConfigService]
         }),
@@ -42,7 +50,11 @@ import { UsersService } from './modules/users/users.service';
       { name: Dart.name, schema: DartSchema },
     ]),
   UsersModule,
+  FriendsModule,
+  ClubsModule,
+  CaslModule,
   AuthModule,
+  SchemasModule,
   ],
   controllers: [],
   providers: [ConfigService],

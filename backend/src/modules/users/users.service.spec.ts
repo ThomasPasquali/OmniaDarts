@@ -1,5 +1,7 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AppModule } from '../../app.module';
+import { Club } from '../../schemas/club.schema';
 import { User } from '../../schemas/user.schema';
 import { UsersService } from './users.service';
 
@@ -15,10 +17,10 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [UsersService, {
-        provide: getModelToken(User.name),
-        useValue: mockUserModel,
-      }],
+      imports: [AppModule],
+      providers: [
+        UsersService, { provide: getModelToken(User.name), useValue: mockUserModel },
+        { provide: getModelToken(Club.name), useValue: mockUserModel }],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
