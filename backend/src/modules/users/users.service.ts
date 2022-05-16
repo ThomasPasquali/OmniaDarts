@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../../schemas/user.schema';
@@ -12,24 +12,24 @@ export class UsersService {
     return createdUser.save();
   }
 
-  async findByNickName(nickname : string): Promise<User> {
-      return await this.userModel.findOne({nickname: nickname});
+  async findByNickName(nickname: string): Promise<User> {
+    return await this.userModel.findOne({ nickname: nickname });
   }
 
   async findAll(): Promise<User[]> {
-      return await this.userModel.find().exec();
+    return await this.userModel.find().exec();
   }
-  
+
   async findById(id): Promise<User> {
-    return await this.userModel.findById(id).exec();
+    return await this.userModel.findById(id).lean();
   }
 
   async update(id, user: User): Promise<User> {
     return await this.userModel.findByIdAndUpdate(id, user, { new: true });
   }
 
-  async findByGoogleToken(token : string): Promise<User> {
-      return await this.userModel.findOne({googleToken : token}).exec();
+  async findByGoogleToken(token: string): Promise<User> {
+    return await this.userModel.findOne({ googleToken: token }).exec();
   }
 
   async delete(id): Promise<any> {

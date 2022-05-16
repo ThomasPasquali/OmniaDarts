@@ -6,21 +6,18 @@ import { UsersService } from '../users/users.service';
 export class FriendsService {
   constructor(private readonly userService: UsersService) {}
 
-  async addFriend(idFriend: String): Promise<User> {
-    const currUser = (await this.userService.findAll())[0];
+  async addFriend(currUser: User, idFriend: String): Promise<User> {
     currUser.friends.push(await this.userService.findById(idFriend));
     return await this.userService.update(currUser._id, currUser);
   }
 
-  async findAll(): Promise<User[]> {
-    const currUser = (await this.userService.findAll())[0];
+  async findAll(currUser: User): Promise<User[]> {
     return (await this.userService.getFriends(currUser._id)).friends;
   }
 
-  async deleteFriend(idFriend: String): Promise<User> {
-    const currUser = (await this.userService.findAll())[0];
+  async deleteFriend(currUser: User, idFriend: String): Promise<User> {
     currUser.friends = currUser.friends.filter(
-      (u) => u._id.toHexString() != idFriend
+      (u) => u._id.toHexString() != idFriend,
     );
     return await this.userService.update(currUser._id, currUser);
   }
