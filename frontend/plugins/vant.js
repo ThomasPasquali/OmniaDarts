@@ -1,4 +1,4 @@
-import Vue from 'vue'
-import Vant from 'vant'
+import Vant from "vant";
+import Vue from "vue";
 
-Vue.use(Vant)
+Vue.use(Vant);

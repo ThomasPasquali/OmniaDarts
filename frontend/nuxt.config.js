@@ -34,6 +34,12 @@ export default {
       google: {
         clientId:
           "74003974763-het7c7fbnm4j7ov5dc4lvhf2sgbalha1.apps.googleusercontent.com",
+        codeChallengeMethod: "",
+        responseType: "code",
+        endpoints: {
+          token: "http://localhost:4000/user/google/", // somm backend url to resolve your auth with google and give you the token back
+          userInfo: "http://localhost:4000/auth/user/", // the endpoint to get the user info after you recived the token
+        },
       },
     },
   },
