@@ -20,9 +20,10 @@ export class AuthController {
   @Post()
   @ApiOperation({ description: "Login a user in" })
   @ApiOkResponse({ description: "A user logged in successful"})
-  async login(@Body() user : Partial<User>){
-    if(await this.authService.validateUser(user.nickname, user.pwd))
-      return await this.authService.login(user);
+  async login(@Body() user : User){
+    const u : User = await this.authService.validateUser(user.nickname, user.pwd);
+    if(u)
+      return await this.authService.login(u);
     else
       throw new UnauthorizedException();
   }
