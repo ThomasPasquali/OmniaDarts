@@ -8,19 +8,14 @@ import { Dart, DartSchema } from './schemas/dart.schema';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { config } from 'rxjs';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { AuthService } from './modules/auth/auth.service';
-import { UsersService } from './modules/users/users.service';
 import { FriendsModule } from './modules/friends/friends.module';
 import { CaslModule } from './modules/casl/casl.module';
 import { SchemasModule } from './schemas/schemas.module';
 import { ClubsModule } from './modules/clubs/clubs.module';
-
+import { TournamentsModule } from './modules/tournaments/tournaments.module';
 
 @Module({
   imports: [
-
     ConfigModule.forRoot({
       isGlobal: true,
       ignoreEnvFile: false,
@@ -51,6 +46,7 @@ import { ClubsModule } from './modules/clubs/clubs.module';
     ]),
   UsersModule,
   FriendsModule,
+  TournamentsModule,
   ClubsModule,
   CaslModule,
   AuthModule,
@@ -58,6 +54,6 @@ import { ClubsModule } from './modules/clubs/clubs.module';
   ],
   controllers: [],
   providers: [ConfigService],
-  exports: [ConfigService]
+  exports: [ConfigService],
 })
 export class AppModule {}
