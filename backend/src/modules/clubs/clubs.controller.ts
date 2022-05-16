@@ -76,6 +76,8 @@ export class ClubsController {
 
   @Delete('players/:idPlayer')
   @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies(
+    (ability: AppAbility) => ability.can(Action.AddRemoveComponents, Club))
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Remove a user from a club' })
@@ -97,6 +99,8 @@ export class ClubsController {
 
   @Post('adminPrivileges/:idPlayer')
   @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies(
+    (ability: AppAbility) => ability.can(Action.AddRemoveComponents, Club))
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Grab' })
@@ -114,6 +118,8 @@ export class ClubsController {
 
   @Delete('adminPrivileges/:idPlayer')
   @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies(
+    (ability: AppAbility) => ability.can(Action.AddRemoveComponents, Club))
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Revoke privileges to a user' })
