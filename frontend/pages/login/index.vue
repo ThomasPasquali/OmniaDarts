@@ -9,6 +9,7 @@
     </van-divider>
 
     <GLogin />
+    
   </div>
 </template>
 
