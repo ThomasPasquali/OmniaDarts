@@ -1,5 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UnauthorizedException, UseGuards, InternalServerErrorException, Req, Logger, NotFoundException } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UnauthorizedException,
+  UseGuards,
+  InternalServerErrorException,
+  Req,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { User } from '../../schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
@@ -51,15 +69,35 @@ export class AuthController {
     return req.user;
   }
 
-  @UseGuards(AuthGuard("google"))
+  //@UseGuards(AuthGuard("google"))
   @Get("google")
-  async signInWithGoogle() {}
+  async signInWithGoogle(@Req() req, @Res() res) {
+    console.log(req)
+    return res.status(HttpStatus.OK).json(req.user);
+  }
 
   @UseGuards(AuthGuard("google"))
   @ApiOperation({ description: "Sign in with google" })
   @Get("google/redirect")
-  async signInWithGoogleRedirect(@Req() req) {
-    return this.authService.signInWithGoogle(req);
+  async signInWithGoogleRedirect(@Req() req, @Res() res) {
+    console.log('porca carota')
+    console.log("ciao");
+    return res.status(HttpStatus.OK).json(req.user);
+    /*console.log(user.accessToken)
+    const userFromMongo = 
+        await this.userService.findByGoogleToken(user.accessToken);
+    console.log('--------------------------');
+    console.log(userFromMongo)
+    console.log('--------------------------');
+    if(userFromMongo) { return this.authService.login(userFromMongo); } 
+    const newUser : User = {
+      nickname : user.firstName + " " + user.lastName,
+      googleToken : user.accessToken
+    } as User;
+    console.log('ciao')
+    const userCreated : User = await this.userService.create(newUser);
+    console.log('hei');
+    return this.authService.login(userCreated);*/
   }
   
 }

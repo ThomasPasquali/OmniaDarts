@@ -82,7 +82,7 @@ export class ClubsController {
   @ApiBearerAuth()
   @ApiOperation({ description: 'Remove a user from a club' })
   @ApiCreatedResponse({
-    description: 'A new player has just been added to a the club',
+    description: 'A player has just been removed from the club',
     type: Club,
   })
   async removeUserFromAClub(@Param('idPlayer') idPlayer : string,
@@ -123,12 +123,32 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Revoke privileges to a user' })
-  async removeUseFromAClub(@Param('idPlayer') idPlayer : string,
+  async revokePrivileges(@Param('idPlayer') idPlayer : string,
                            @Req() req){
     let club : Club = await this.clubsService.getClubById(req.user.club._id);
     const playerToRemove : User = await this.usersService.findById(idPlayer);
     club.admin = club.admin.filter( user => user._id !== playerToRemove._id);
     await this.clubsService.update(club._id, club);
+    return playerToRemove.id;
+  }
+
+  @Delete('clubEmergencyExit')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ description: '' })
+  async exitFromMyOwnClub(@Req() req){
+    let club : Club = await this.clubsService.getClubById(req.user.club._id);
+    const playerToRemove : User = 
+        await this.usersService.findById(req.user._id);
+    club.admin = club.admin
+          .filter( user => user._id !== playerToRemove._id);
+    club.players = club.players
+          .filter(user => user._id !== playerToRemove._id);
+    if(club.players.length == 0) await this.clubsService.delete(club._id);
+    else await this.clubsService.update(club._id, club);
+    playerToRemove.club = null;
+    await this.usersService.update(playerToRemove._id, playerToRemove);
     return playerToRemove.id;
   }
 

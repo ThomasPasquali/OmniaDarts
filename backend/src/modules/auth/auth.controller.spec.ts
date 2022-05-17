@@ -1,6 +1,6 @@
 import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { getModelToken} from '@nestjs/mongoose';
 import { Test} from '@nestjs/testing';
 import { Club } from '../../schemas/club.schema';
@@ -31,9 +31,11 @@ describe('AuthController', () => {
     }
 
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule, AuthModule, UsersModule],
+      imports: [UsersModule, 
+                JwtModule.register({}),
+                ConfigModule.forRoot({})],
       controllers: [AuthController],
-      providers: [UsersService, AuthService, ConfigService,{
+      providers: [UsersService, AuthService, {
         provide: getModelToken(User.name),
         useValue: mockUserModel,
       }, { provide: getModelToken(Club.name), useValue: mockUserModel }],

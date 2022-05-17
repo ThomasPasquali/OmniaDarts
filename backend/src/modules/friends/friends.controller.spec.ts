@@ -21,9 +21,10 @@ describe('FriendsController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, UsersModule],
+      imports: [UsersModule],
       controllers: [FriendsController],
-      providers: [FriendsService,{ provide: getModelToken(Club.name), useValue: mockUserModel }],
+      providers: [FriendsService,
+        { provide: getModelToken(User.name), useValue: mockUserModel }],
     }).compile();
 
     controller = module.get<FriendsController>(FriendsController);

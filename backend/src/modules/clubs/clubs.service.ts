@@ -31,4 +31,9 @@ export class ClubsService {
             .lean();
   }
 
+  async delete(id): Promise<Club> {
+    return await this.clubModel
+            .findByIdAndDelete(id).exec();
+  }
+
 }

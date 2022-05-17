@@ -24,7 +24,7 @@ describe('ClubsController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, CaslModule, UsersModule],
+      imports: [CaslModule, UsersModule],
       controllers: [ClubsController],
       providers: [
         ClubsService, { provide: getModelToken(Club.name), useValue: mockClubModel },

@@ -48,9 +48,8 @@ export class UsersService {
   }
 
   async findByGoogleToken(token : string): Promise<User> {
-      return await this.userModel.findOne({googleToken : token})
-      .populate('club', '', this.clubModel)
-      .lean();;
+    console.log(token)
+      return await this.userModel.findOne({googleToken : token}).exec();
   }
 
   async delete(id): Promise<any> {

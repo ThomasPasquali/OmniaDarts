@@ -42,32 +42,15 @@ export class AuthService {
     const payload = { username: user.nickname, sub: user._id.toString() };
     console.log(payload);
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload)
     };
   }
 
-  async signInWithGoogle(data) {
-    
-    if (!data.user) throw new BadRequestException();
-
-    let user = await this.usersService.findByGoogleToken(data.user.id);
-    if (user) return this.login(user);
-
-    user = await this.usersService.findById(data.user._id);
-    if (user)
-      throw new ForbiddenException(
-        "User already exists, but Google account was not connected to user's account"
-      );
-
-    try {
-      
-      const newUser = new User();
-      newUser.nickname= data.user.firstName + " " +  data.user.lastName;
-      //newUser.email = data.user.email;
-      newUser.googleToken = data.user.id;
-      await this.usersService.create(newUser);
-      return this.login(newUser);
-    } catch (e) { throw new InternalServerErrorException(e); }
+  googleLogin(req) {
+    console.log(req.user)
+    if (!req.user) {
+      return null;
+    }
+    return req.user;
   }
-
 }
