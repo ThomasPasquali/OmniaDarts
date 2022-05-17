@@ -9,15 +9,21 @@
     </van-divider>
 
     <GLogin />
-    
+
   </div>
 </template>
 
 <script>
-import Login from "../../components/login.vue";
-import GLogin from "../../components/googleLogin.vue";
+import Login from "../components/LoginForm.vue";
+import GLogin from "../components/GoogleLoginButton.vue";
 export default {
-  name: "LoginPage",
+  name: "LoginIndex",
   components: { Login, GLogin },
+  computed: {
+    user() {
+      console.log(this.$store.getters.user)
+      return this.$store.getters.user
+    }
+  }
 };
 </script>

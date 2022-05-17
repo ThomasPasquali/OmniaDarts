@@ -35,6 +35,13 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UsersService) {}
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('user')
+  async getLoggedUser(@Req() req) {
+    return req.user;
+  }
+
   @Post()
   @ApiOperation({ description: "Login a user in" })
   @ApiOkResponse({ description: "A user logged in successful"})
@@ -46,9 +53,17 @@ export class AuthController {
       throw new UnauthorizedException();
   }
 
+  @Post('logout')
+  @ApiOperation({ description: "Logout the current user" })
+  @ApiOkResponse({ description: "User logged out successfully" })
+  async logout(@Req() req) {
+    //TODO eventually blacklist tokens
+    return req.user;
+  }
+
   @Post('register')
   @ApiOperation({ description: "Register a user" })
-  @ApiCreatedResponse({ description: "User register successful" })
+  @ApiCreatedResponse({ description: "User register successfuly" })
   @ApiNotFoundResponse({ description: "User not found" })
   async register(@Body() user : User){
     
@@ -60,23 +75,15 @@ export class AuthController {
     else throw new InternalServerErrorException();
   }
 
-  // Only for test purposes
-  // JWT: logging out means deleting the token client side
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @Get()
-  async logout(@Req() req) {
-    return req.user;
-  }
 
   //@UseGuards(AuthGuard("google"))
   @Get("google")
-  async signInWithGoogle(@Req() req, @Res() res) {
-    console.log(req)
-    return res.status(HttpStatus.OK).json(req.user);
+  async signInWithGoogleet(@Req() req, @Res() res) {
+    console.log(req.headers.authorization) //TODO fetch google
+    return res.status(HttpStatus.OK).json({nickname: 'GOOGLE CULO'});
   }
 
-  @UseGuards(AuthGuard("google"))
+  /*@UseGuards(AuthGuard("google"))
   @ApiOperation({ description: "Sign in with google" })
   @Get("google/redirect")
   async signInWithGoogleRedirect(@Req() req, @Res() res) {
@@ -97,7 +104,7 @@ export class AuthController {
     console.log('ciao')
     const userCreated : User = await this.userService.create(newUser);
     console.log('hei');
-    return this.authService.login(userCreated);*/
-  }
+    return this.authService.login(userCreated);
+  }*/
   
 }

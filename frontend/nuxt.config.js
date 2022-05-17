@@ -30,19 +30,43 @@ export default {
   modules: ["@nuxtjs/i18n", "@nuxtjs/axios", "@nuxtjs/auth-next"],
 
   auth: {
+    redirect: {
+      login: '/login',
+      logout: '/login',
+      home: '/',
+    },
     strategies: {
+      local: {
+        token: {
+          property: 'access_token',
+          global: true,
+          required: true,
+          type: 'Bearer'
+        },
+        user: {
+          property: false,
+        },
+        endpoints: {
+          login: { url: 'http://localhost:4000/auth/', method: 'post' },
+          logout: { url: 'http://localhost:4000/auth/logout', method: 'post' },
+          user: { url: 'http://localhost:4000/auth/user', method: 'get' }
+        }
+      },
       google: {
-        clientId:
-          "74003974763-het7c7fbnm4j7ov5dc4lvhf2sgbalha1.apps.googleusercontent.com",
+        clientId: "74003974763-het7c7fbnm4j7ov5dc4lvhf2sgbalha1.apps.googleusercontent.com",
         codeChallengeMethod: "",
         scope: ['profile', 'email'],
         responseType: "id_token token",
         endpoints: {
-          token: `http://localhost:3000/login/google`,
-          userInfo: `http://localhost:3000/login/google`
+          //token: `http://localhost:4000/auth/google`,
+          userInfo: `http://localhost:4000/auth/google`,
         },
       },
     },
+  },
+
+  router: {
+    middleware: ['auth']
   },
 
   i18n: {
@@ -62,5 +86,5 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: { }
 };

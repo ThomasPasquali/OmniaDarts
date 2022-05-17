@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-form @submit="submit">
+    <van-form @submit="login">
       <van-cell-group inset>
         <van-field
           v-model="usr"
@@ -24,6 +24,7 @@
         </van-button>
       </div>
     </van-form>
+    <h4 v-show="failedLogin">{{ $t('wrong_credentials')}}</h4>
   </div>
 </template>
 
@@ -31,19 +32,12 @@
 export default {
   name: "LoginComponent",
   methods: {
-    submit() {
-      this.$axios
-        .$post("/auth", { nickname: this.usr, pwd: this.pwd })
-        .then((body) => {
-          // console.log(body);
-          let { access_token } = body;
-          // console.log(access_token);
-          this.failedLogin = false;
-          localStorage.setItem("auth", access_token);
-          this.$axios.setToken(access_token, "Bearer");
-          this.$router.push("/");
-        })
-        .catch((_) => (this.failedLogin = true));
+    async login() {
+      try {
+        await this.$auth.loginWith('local', { data: { nickname: this.usr, pwd: this.pwd } })
+      }catch {
+        this.failedLogin = true
+      }
     },
   },
   data() {

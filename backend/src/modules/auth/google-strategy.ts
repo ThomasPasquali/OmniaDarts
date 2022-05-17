@@ -16,6 +16,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
       passReqToCallback: true,
       scope: ["email", "profile"]
     }, (req, accessToken, refreshToken, profile, done) => {
+      console.log(req);
       const user: any = {
         email: profile.emails[0].value,
         displayName: profile.displayName,
