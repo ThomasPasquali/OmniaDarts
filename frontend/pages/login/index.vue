@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import Login from "../components/login.vue";
-import GLogin from "../components/googleLogin.vue";
+import Login from "../../components/login.vue";
+import GLogin from "../../components/googleLogin.vue";
 export default {
   name: "LoginPage",
   components: { Login, GLogin },
