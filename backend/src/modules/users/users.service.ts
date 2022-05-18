@@ -23,24 +23,39 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.find().populate('club').lean();
+    return await this.userModel
+      .find()
+      .populate('club', '', this.clubModel)
+      .lean();
   }
 
   async findById(id): Promise<User> {
-    console.log('find by id');
-    return await this.userModel.findOne({ _id: id }).populate('club').lean();
+    return await this.userModel
+      .findOne({ _id: id })
+      .populate('club')
+      .populate({
+        path: 'club',
+        populate: {
+          path: 'admin',
+          model: 'User',
+        },
+      })
+      .populate('friends')
+      .lean();
   }
 
   async update(id, user: User): Promise<User> {
     return await this.userModel
-      .findOneAndUpdate({ _id: id }, user)
+      .findOneAndUpdate({ _id: id }, user, { new: true })
       .populate('club')
       .lean();
   }
 
   async findByGoogleToken(token: string): Promise<User> {
-    console.log(token);
-    return await this.userModel.findOne({ googleToken: token }).exec();
+    return await this.userModel
+      .findOne({ googleToken: token })
+      .populate('club', '', this.clubModel)
+      .lean();
   }
 
   async delete(id): Promise<any> {
@@ -48,7 +63,10 @@ export class UsersService {
   }
 
   async getByIdPopulating(id: string): Promise<User> {
-    return await this.userModel.findOne({ _id: id }).populate('club').lean();
+    return await this.userModel
+      .findOne({ _id: id })
+      .populate('club', '', this.clubModel)
+      .lean();
   }
 
   async getFriends(id): Promise<User> {

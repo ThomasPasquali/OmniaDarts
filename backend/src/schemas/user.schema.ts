@@ -5,6 +5,7 @@ import {
   ApiPropertyOptional,
 } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
+import FriendsRequest from '../classes/friendsRequest';
 import ClubRequest from '../classes/clubRequest';
 import { Club } from './club.schema';
 import { Match } from './match.schema';
@@ -42,12 +43,13 @@ export class User extends Document {
   @ApiPropertyOptional()
   matches: Match[];
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  @ApiPropertyOptional()
-  friends: User[];
+  @Prop()
+  @ApiProperty({ type: () => FriendsRequest })
+  friends: FriendsRequest[];
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Club' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Club.name })
   @ApiPropertyOptional()
+  @ApiProperty()
   club: Club;
 
   @Prop()
