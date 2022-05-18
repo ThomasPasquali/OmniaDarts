@@ -25,7 +25,7 @@ export class UsersService {
   async findAll(): Promise<User[]> {
     return await this.userModel
       .find()
-      .populate('club', '', this.clubModel)
+      .populate('club')
       .lean();
   }
 
@@ -54,7 +54,7 @@ export class UsersService {
   async findByGoogleToken(token: string): Promise<User> {
     return await this.userModel
       .findOne({ googleToken: token })
-      .populate('club', '', this.clubModel)
+      .populate('club')
       .lean();
   }
 
@@ -65,7 +65,7 @@ export class UsersService {
   async getByIdPopulating(id: string): Promise<User> {
     return await this.userModel
       .findOne({ _id: id })
-      .populate('club', '', this.clubModel)
+      .populate('club')
       .lean();
   }
 
