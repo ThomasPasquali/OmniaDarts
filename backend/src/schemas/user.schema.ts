@@ -1,16 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
+import FriendsRequest from '../classes/friendsRequest';
 import { Club } from './club.schema';
 import { Match } from './match.schema';
-
 export type UserDocument = User & Document;
 
 @Schema({
-  autoIndex: true
+  autoIndex: true,
 })
-export class User extends mongoose.Document{
-  
+export class User extends mongoose.Document {
   @Prop()
   @ApiProperty()
   nickname: string;
@@ -33,15 +32,14 @@ export class User extends mongoose.Document{
   @ApiProperty()
   matches: Match[];
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  @ApiProperty()
-  friends: User[];
+  @Prop()
+  @ApiProperty({ type: () => FriendsRequest })
+  friends: FriendsRequest[];
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Club.name  })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Club.name })
   @ApiProperty()
   club: Club;
-
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-UserSchema.index({ nickname: 1}, { unique: true });
+UserSchema.index({ nickname: 1 }, { unique: true });

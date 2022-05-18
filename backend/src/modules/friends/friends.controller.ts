@@ -2,11 +2,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
+  Put,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -16,63 +17,77 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import FriendRequest from '../../classes/friendsRequest';
 import { User } from '../../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UsersService } from '../users/users.service';
 import { FriendsService } from './friends.service';
 
 @Controller('friends')
 @ApiTags('friends')
 export class FriendsController {
-  constructor(private readonly friendsService: FriendsService) {}
+  constructor(
+    private readonly friendsService: FriendsService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post(':id')
-  @ApiOperation({ description: 'Add friend to current user' })
+  @ApiOperation({ description: 'Create request to add a friend' })
   @ApiCreatedResponse({
-    description: 'A new friend has been created',
+    description: 'A new request friend has been created',
     type: User,
   })
-  async addFriend(@Req() req, @Param('id') id: string, @Res() response) {
-    const newUser = await this.friendsService.addFriend(req.user, id);
-    return response.status(HttpStatus.CREATED).json(newUser);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @Get()
-  @ApiOperation({ description: 'Get all friends of current user' })
-  @ApiOkResponse({ type: [User] })
-  async findAll(@Req() req, @Res() response) {
-    console.log(req.user);
-    const friends = await this.friendsService.findAll(req.user);
-    return response.status(HttpStatus.OK).json(friends);
-  }
-
-  @Get(':nickname')
-  @ApiOperation({
-    description: 'Get all users that contains the nickname in some position',
-  })
-  @ApiOkResponse({ type: [User] })
-  async findFriends(@Param('nickname') nickname: string, @Res() response) {
-    const friends = await this.friendsService.findByName(nickname);
-    return response.status(HttpStatus.OK).json(friends);
+  @HttpCode(HttpStatus.CREATED)
+  async addFriend(@Req() req, @Param('id') id: string) {
+    console.log('ciao');
+    const currUser = await this.usersService.findById(req.user._id);
+    const newUser = await this.friendsService.addFriend(currUser, id);
+    console.log(newUser);
+    return newUser;
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Delete(':idFriend')
-  @ApiOperation({ description: 'Delete a friend by id' })
+  @ApiOperation({ description: 'Delete or reject a friend by id' })
   @ApiOkResponse({ type: User })
-  async delete(
-    @Req() req,
-    @Res() response,
-    @Param('idFriend') idFriend: string,
-  ) {
-    const deletedFriend = await this.friendsService.deleteFriend(
-      req.user,
-      idFriend,
-    );
-    return response.status(HttpStatus.OK).json(deletedFriend);
+  @HttpCode(HttpStatus.OK)
+  async deleteFriend(@Req() req, @Param('idFriend') idFriend: string) {
+    return await this.friendsService.deleteFriend(req.user, idFriend);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Put(':idFriend')
+  @ApiOperation({ description: 'Accept a friend request' })
+  @ApiOkResponse({ type: User })
+  @HttpCode(HttpStatus.ACCEPTED)
+  async acceptRequest(@Req() req, @Param('idFriend') idFriend: string) {
+    return await this.friendsService.acceptRequest(req.user, idFriend);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get()
+  @ApiOperation({ description: 'Get the list of friends' })
+  @ApiOkResponse({ type: [FriendRequest] })
+  @HttpCode(HttpStatus.OK)
+  async fetchAll(@Req() req) {
+    const friends = req.user.friends;
+    return friends;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get(':nickname')
+  @ApiOperation({
+    description: 'Get the list of friends that contain the nickname',
+  })
+  @ApiOkResponse({ type: [User] })
+  @HttpCode(HttpStatus.OK)
+  async getByNickname(@Req() req, @Param('nickname') nickname: string) {
+    return await this.friendsService.findUsers(req.user, nickname);
   }
 }
