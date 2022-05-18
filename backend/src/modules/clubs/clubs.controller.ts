@@ -1,9 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   Param,
   Post,
@@ -53,6 +55,9 @@ export class ClubsController {
 
     const currUser = await this.usersService.findById(req.user._id);
     const clubToApply = await this.clubsService.getClubById(idClub);
+
+    this.checkNull(clubToApply, 'Club not exits');
+
     clubRequest.club = clubToApply;
     clubToApply.players.push(currUser);
 
@@ -68,7 +73,9 @@ export class ClubsController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'My club', type: [Club] })
   async getMyClub(@Req() req): Promise<Club> {
-    return await this.clubsService.getClubById(req.user.club._id);
+    const club = await this.clubsService.getClubById(req.user.club._id);
+    this.checkNull(club, "You don't belong to a club");
+    return club;
   }
 
   @Post()
@@ -81,8 +88,15 @@ export class ClubsController {
     type: Club,
   })
   async addClub(@Body() club: Club, @Req() req) {
+    const current: Club = await this.clubsService.addClub(req.user.club._id);
+    this.checkCurrentCLubNull(
+      current,
+      'You must exit your current club, before creating a new one',
+    );
     const newClub: Club = await this.clubsService.addClub(club);
-    let user: User = await this.usersService.findById(req.user._id.toString());
+    const user: User = await this.usersService.findById(
+      req.user._id.toString(),
+    );
     user.isAdmin = true;
     newClub.players.push(user);
     const clubUpdated = await this.clubsService.update(newClub._id, newClub);
@@ -125,7 +139,12 @@ export class ClubsController {
     type: Club,
   })
   async addUserToAClub(@Param('idPlayer') idPlayer: string, @Req() req) {
-    let club: Club = await this.clubsService.getClubById(req.user.club._id);
+    const club: Club = await this.clubsService.getClubById(req.user.club._id);
+    this.checkPlayerAlreadyPresent(
+      club,
+      idPlayer,
+      'The player is alreaady present',
+    );
     const playerToAdd: User = await this.usersService.findById(idPlayer);
     club.players.push(playerToAdd);
     playerToAdd.club = club;
@@ -147,6 +166,11 @@ export class ClubsController {
   })
   async removeUserFromAClub(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
+    this.checkPlayerNotAlreadyPresent(
+      club,
+      idPlayer,
+      'The player does not belong to you club',
+    );
     const playerToRemove: User = await this.usersService.findById(idPlayer);
     playerToRemove.isAdmin = false;
     club.players = club.players.filter(
@@ -170,6 +194,12 @@ export class ClubsController {
     type: User,
   })
   async grantPrivileges(@Param('idPlayer') idPlayer: string, @Req() req) {
+    const club: Club = await this.clubsService.getClubById(req.user.club._id);
+    this.checkPlayerNotAlreadyPresent(
+      club,
+      idPlayer,
+      'The player does not belong to you club',
+    );
     const playerToAdd: User = await this.usersService.findById(idPlayer);
     playerToAdd.isAdmin = true;
     return await this.usersService.update(playerToAdd._id, playerToAdd);
@@ -184,6 +214,12 @@ export class ClubsController {
   @ApiBearerAuth()
   @ApiOperation({ description: 'Revoke privileges to a user' })
   async revokePrivileges(@Param('idPlayer') idPlayer: string, @Req() req) {
+    const club: Club = await this.clubsService.getClubById(req.user.club._id);
+    this.checkPlayerNotAlreadyPresent(
+      club,
+      idPlayer,
+      'The player does not belong to your club',
+    );
     const playerToRemove: User = await this.usersService.findById(idPlayer);
     playerToRemove.isAdmin = false;
     await this.usersService.update(playerToRemove._id, playerToRemove);
@@ -196,7 +232,8 @@ export class ClubsController {
   @ApiBearerAuth()
   @ApiOperation({ description: '' })
   async exitFromMyOwnClub(@Req() req) {
-    let club: Club = await this.clubsService.getClubById(req.user.club._id);
+    const club: Club = await this.clubsService.getClubById(req.user.club._id);
+    this.checkNull(club, "You don't belong to a club");
     const playerToRemove: User = await this.usersService.findById(req.user._id);
     playerToRemove.isAdmin = false;
     club.players = club.players.filter(
@@ -223,7 +260,13 @@ export class ClubsController {
   })
   async acceptJoin(@Req() req, @Param('idPlayer') idPlayer: string) {
     const sender = await this.usersService.findById(idPlayer);
-    sender.club = await this.clubsService.getClubById(req.user.club._id);
+    const club = await this.clubsService.getClubById(req.user.club._id);
+    this.checkPlayerNotAlreadyPresent(
+      club,
+      idPlayer,
+      'The player does not belong to your club',
+    );
+    sender.club = club;
     sender.clubRequest = null;
     await this.usersService.update(sender._id, sender);
     return sender._id;
@@ -239,16 +282,53 @@ export class ClubsController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'club updated', type: Club })
   async rejectJoin(@Req() req, @Param('idPlayer') idPlayer: string) {
+    const club = await this.clubsService.getClubById(req.user.club._id);
+    this.checkPlayerNotAlreadyPresent(
+      club,
+      idPlayer,
+      'The player does not belong to your club',
+    );
     const sender = await this.usersService.findById(idPlayer);
     sender.clubRequest = null;
-
-    const clubInvolved = await this.clubsService.getClubById(req.user.club._id);
-    clubInvolved.players = clubInvolved.players.filter(
-      (p) => p._id != idPlayer,
-    );
-
+    club.players = club.players.filter((p) => p._id != idPlayer);
     await this.usersService.update(sender._id, sender);
-    return await this.clubsService.update(clubInvolved._id, clubInvolved);
+    return await this.clubsService.update(club._id, club);
+  }
+
+  private checkNull(obj: any, message: string) {
+    if (obj == null) this.throwHttpExc(message, HttpStatus.BAD_REQUEST);
+  }
+
+  private checkCurrentCLubNull(obj: any, message: string) {
+    if (obj != null) this.throwHttpExc(message, HttpStatus.CONFLICT);
+  }
+
+  private checkPlayerAlreadyPresent(
+    club: Club,
+    idPlayer: string,
+    message: string,
+  ) {
+    if (club.players.findIndex((u) => u._id == idPlayer) != -1)
+      this.throwHttpExc(message, HttpStatus.BAD_REQUEST);
+  }
+
+  private checkPlayerNotAlreadyPresent(
+    club: Club,
+    idPlayer: string,
+    message: string,
+  ) {
+    if (club.players.findIndex((u) => u._id == idPlayer) == -1)
+      this.throwHttpExc(message, HttpStatus.BAD_REQUEST);
+  }
+
+  private throwHttpExc(message: string, code) {
+    throw new HttpException(
+      {
+        status: code,
+        error: message,
+      },
+      code,
+    );
   }
 }
 
