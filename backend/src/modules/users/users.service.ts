@@ -7,41 +7,34 @@ import { User, UserDocument } from '../../schemas/user.schema';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Club.name) private clubModel: Model<ClubDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
   async create(user: User): Promise<User> {
-    const createdUser = new this.userModel(user);
-    return createdUser.save();
+    const createdUser = await this.userModel.create(user);
+    return createdUser;
   }
 
   async findByNickName(nickname: string): Promise<User> {
     return await this.userModel
       .findOne({ nickname: nickname })
-      .populate('club', '', this.clubModel)
+      .populate('club')
       .lean();
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel
-      .find()
-      .populate('club', '', this.clubModel)
-      .lean();
+    return await this.userModel.find().populate('club').lean();
   }
 
   async findById(id): Promise<User> {
     console.log('find by id');
-    return await this.userModel
-      .findOne({ _id: id })
-      .populate('club', '', this.clubModel)
-      .lean();
+    return await this.userModel.findOne({ _id: id }).populate('club').lean();
   }
 
   async update(id, user: User): Promise<User> {
     return await this.userModel
       .findOneAndUpdate({ _id: id }, user)
-      .populate('club', '', this.clubModel)
+      .populate('club')
       .lean();
   }
 
@@ -55,16 +48,10 @@ export class UsersService {
   }
 
   async getByIdPopulating(id: string): Promise<User> {
-    return await this.userModel
-      .findOne({ _id: id })
-      .populate('club', '', this.clubModel)
-      .lean();
+    return await this.userModel.findOne({ _id: id }).populate('club').lean();
   }
 
   async getFriends(id): Promise<User> {
-    return await this.userModel
-      .findOne({ _id: id })
-      .populate('friends', '', this.userModel)
-      .exec();
+    return await this.userModel.findOne({ _id: id }).populate('friends').exec();
   }
 }

@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from '../../schemas/user.schema';
 import { Club, ClubDocument } from '../../schemas/club.schema';
 
 @Injectable()
 export class ClubsService {
   constructor(
-    @InjectModel(Club.name) private clubModel: Model<ClubDocument>,
-    @InjectModel(User.name) private userModel: Model<ClubDocument>,
+    @InjectModel(Club.name) private readonly clubModel: Model<ClubDocument>,
   ) {}
 
   async addClub(club: Club): Promise<Club> {

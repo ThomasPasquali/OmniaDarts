@@ -5,7 +5,7 @@ import {
   ApiPropertyOptional,
 } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import ClubRequest from 'src/classes/clubRequest';
+import ClubRequest from '../classes/clubRequest';
 import { Club } from './club.schema';
 import { Match } from './match.schema';
 
@@ -14,7 +14,7 @@ export type UserDocument = User & Document;
 @Schema({
   autoIndex: true,
 })
-export class User extends mongoose.Document {
+export class User extends Document {
   @Prop()
   @ApiProperty({
     required: true,

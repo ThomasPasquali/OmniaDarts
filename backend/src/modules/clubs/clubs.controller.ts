@@ -19,9 +19,8 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { send } from 'process';
-import ClubRequest from 'src/classes/clubRequest';
-import { User } from 'src/schemas/user.schema';
+import ClubRequest from '../../classes/clubRequest';
+import { User } from '../../schemas/user.schema';
 import { Club } from '../../schemas/club.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Action } from '../casl/actions';

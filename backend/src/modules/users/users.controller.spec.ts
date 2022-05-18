@@ -9,20 +9,20 @@ describe('UsersController', () => {
   let controller: UsersController;
 
   beforeEach(async () => {
-
     function mockUserModel(dto: any) {
       this.data = dto;
-      this.save  = () => {
+      this.save = () => {
         return this.data;
       };
     }
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [UsersService,
-        {provide: getModelToken(User.name), useValue: mockUserModel},
-        {provide: getModelToken(Club.name), useValue: mockUserModel}
-      ]
+      providers: [
+        UsersService,
+        { provide: getModelToken(User.name), useValue: mockUserModel },
+        { provide: getModelToken(Club.name), useValue: mockUserModel },
+      ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
