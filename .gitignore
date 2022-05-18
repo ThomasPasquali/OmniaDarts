@@ -21,3 +21,8 @@
 /backend/.idea
 /backend/mongo/
 /backend/dist/
+
+# ???
+/package.json
+/package-lock.json
+/node_modules/
