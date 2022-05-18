@@ -11,7 +11,10 @@ export type UserDocument = User & Document;
 })
 export class User extends mongoose.Document {
   @Prop()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The nickname of the user',
+    required: true,
+  })
   nickname: string;
 
   @Prop()
