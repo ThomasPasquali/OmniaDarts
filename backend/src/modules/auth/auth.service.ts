@@ -13,9 +13,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
-    private config: ConfigService,
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly config: ConfigService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) {}
 
   /**

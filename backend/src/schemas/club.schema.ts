@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
 import { TextMessage } from './textMessage.schema';
 import { User } from './user.schema';
+import Post from "../classes/post";
 
 export type ClubDocument = Club & Document;
 
@@ -20,9 +21,17 @@ export class Club extends mongoose.Document{
   @ApiProperty()
   players: User[];
 
-  @Prop()
+  @Prop({
+    default: String,
+  })
   @ApiProperty()
   imageUri: string;
+
+  @Prop({
+        default: []
+      })
+  @ApiProperty()
+  posts: Post[];
 
   @Prop()
   @ApiProperty()

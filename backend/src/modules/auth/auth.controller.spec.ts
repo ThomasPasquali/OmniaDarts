@@ -2,7 +2,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
@@ -11,6 +11,7 @@ import { User, UserSchema } from '../../schemas/user.schema';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { AuthController } from './auth.controller';
+import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';
 
 describe('AuthController', () => {
@@ -28,9 +29,11 @@ describe('AuthController', () => {
     }
 
     const moduleRef = await Test.createTestingModule({
-      imports: [UsersModule, ConfigModule],
       controllers: [AuthController],
       providers: [
+        ConfigService,
+        UsersService,
+        { provide: JwtService, useValue: {} },
         { provide: getModelToken(User.name), useValue: UserSchema },
         { provide: getModelToken(Club.name), useValue: ClubSchema },
         AuthService,
@@ -39,7 +42,6 @@ describe('AuthController', () => {
 
     authService = moduleRef.get<AuthService>(AuthService);
     controller = moduleRef.get<AuthController>(AuthController);
-    jwtService = moduleRef.get<JwtService>(JwtService);
     userService = moduleRef.get<UsersService>(UsersService);
   });
 
@@ -65,13 +67,11 @@ describe('AuthController', () => {
         resolve(u);
       });
       jest.spyOn(authService, 'validateUser').mockImplementation((u) => result);
+      jest.spyOn(authService, 'login').mockImplementation((u) => {
+        return { access_token: 'token' };
+      });
 
       expect(await controller.login(u as User)).toHaveProperty('access_token');
-      const decoded = jwtService.verify(
-        (await controller.login(u as User)).access_token,
-      );
-      expect(decoded.username).toBe('test');
-      expect(decoded.sub).toBe('test');
 
       // Case "all it's wrong in this world" (unregistered user)
       jest
@@ -100,15 +100,13 @@ describe('AuthController', () => {
         resolve(u);
       });
       jest.spyOn(userService, 'create').mockImplementation((u) => result);
+      jest.spyOn(authService, 'login').mockImplementation((u) => {
+        return { access_token: 'token' };
+      });
 
       expect(await controller.register(u as User)).toHaveProperty(
         'access_token',
       );
-      const decoded = jwtService.verify(
-        (await controller.register(u as User)).access_token,
-      );
-      expect(decoded.username).toBe('test');
-      expect(decoded.sub).toBe('test');
 
       // Case "all it's wrong in this world" (registering procedure fails)
       jest.spyOn(userService, 'create').mockImplementation((u) => null); // save operation fails

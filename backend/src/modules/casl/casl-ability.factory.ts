@@ -26,6 +26,7 @@ export class CaslAbilityFactory {
       can(Action.AddRemoveComponents, Club);
       can(Action.AddRemovePrivileges, Club);
       can(Action.AcceptRejectRequests, Club);
+      can(Action.CreatePost, Club);
     } else {
       //nothing for now
     }

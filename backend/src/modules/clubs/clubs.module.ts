@@ -5,6 +5,7 @@ import { CaslModule } from '../casl/casl.module';
 import { UsersModule } from '../users/users.module';
 import { ClubsController } from './clubs.controller';
 import { ClubsService } from './clubs.service';
+import { PostsController } from './posts/posts.controller';
 
 @Module({
   imports: [

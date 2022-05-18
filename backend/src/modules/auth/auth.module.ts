@@ -9,23 +9,22 @@ import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './google-strategy';
 
-
 @Module({
-  imports: [ 
+  imports: [
     UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
-      useFactory: async (config : ConfigService) => ({
+      useFactory: async (config: ConfigService) => ({
         secretOrPrivateKey: config.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: parseInt(config.get<string>('JWT_EXPIRATION_TIME'), 10)
+          expiresIn: parseInt(config.get<string>('JWT_EXPIRATION_TIME'), 10),
         },
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
-   ],
+  ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, GoogleStrategy],
-  exports: [JwtModule]
+  exports: [JwtModule, AuthService],
 })
 export class AuthModule {}
