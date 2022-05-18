@@ -29,34 +29,37 @@ import { ConfigService } from '@nestjs/config';
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-
   constructor(
     private readonly config: ConfigService,
     private readonly authService: AuthService,
-    private readonly userService: UsersService) {}
+    private readonly userService: UsersService,
+  ) {}
 
   @Post()
-  @ApiOperation({ description: "Login a user in" })
-  @ApiOkResponse({ description: "A user logged in successful"})
-  async login(@Body() user : User){
-    const u : User = await this.authService.validateUser(user.nickname, user.pwd);
-    if(u)
-      return await this.authService.login(u);
-    else
-      throw new UnauthorizedException();
+  @ApiOperation({ description: 'Login a user in' })
+  @ApiOkResponse({ description: 'A user logged in successful' })
+  async login(@Body() user: User) {
+    const u: User = await this.authService.validateUser(
+      user.nickname,
+      user.pwd,
+    );
+    if (u != null) return await this.authService.login(u);
+    else throw new UnauthorizedException();
   }
 
   @Post('register')
-  @ApiOperation({ description: "Register a user" })
-  @ApiCreatedResponse({ description: "User register successful" })
-  @ApiNotFoundResponse({ description: "User not found" })
-  async register(@Body() user : User){
-    
-    const saltOrRounds : number = parseInt(this.config.get('SALTROUNDS'), 10);
+  @ApiOperation({ description: 'Register a user' })
+  @ApiCreatedResponse({ description: 'User register successful' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  async register(@Body() user: User) {
+    const saltOrRounds: number = parseInt(this.config.get('SALTROUNDS'), 10);
     user.pwd = await bcrypt.hash(user.pwd.toString(), saltOrRounds as number);
+    user.club = null;
+    user.isAdmin = false;
+    user.clubRequest = null;
     const u = await this.userService.create(user);
 
-    if(u) return await this.authService.login(u);
+    if (u) return this.authService.login(u);
     else throw new InternalServerErrorException();
   }
 
@@ -69,19 +72,19 @@ export class AuthController {
     return req.user;
   }
 
-  //@UseGuards(AuthGuard("google"))
-  @Get("google")
+  @UseGuards(AuthGuard('google'))
+  @Get('google')
   async signInWithGoogle(@Req() req, @Res() res) {
-    console.log(req)
+    console.log(req);
     return res.status(HttpStatus.OK).json(req.user);
   }
 
-  @UseGuards(AuthGuard("google"))
-  @ApiOperation({ description: "Sign in with google" })
-  @Get("google/redirect")
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ description: 'Sign in with google' })
+  @Get('google/redirect')
   async signInWithGoogleRedirect(@Req() req, @Res() res) {
-    console.log('porca carota')
-    console.log("ciao");
+    console.log('porca carota');
+    console.log('ciao');
     return res.status(HttpStatus.OK).json(req.user);
     /*console.log(user.accessToken)
     const userFromMongo = 
@@ -99,5 +102,4 @@ export class AuthController {
     console.log('hei');
     return this.authService.login(userCreated);*/
   }
-  
 }

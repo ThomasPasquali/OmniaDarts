@@ -1,5 +1,5 @@
-
 export enum Action {
-    AddRemoveComponents = 'addremcomponents',
-    AddRemovePrivileges = 'addremprivileges'
-  }
+  AddRemoveComponents = 'addremcomponents',
+  AddRemovePrivileges = 'addremprivileges',
+  AcceptRejectRequests = 'accrejrequests',
+}

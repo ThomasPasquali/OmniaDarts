@@ -38,8 +38,8 @@ export default {
         scope: ['profile', 'email'],
         responseType: "id_token token",
         endpoints: {
-          token: `http://localhost:3000/login/google`,
-          userInfo: `http://localhost:3000/login/google`
+          token: `http://localhost:3000/google`,
+          userInfo: `http://localhost:3000/google`
         },
       },
     },

@@ -6,8 +6,10 @@ import { Club, ClubDocument } from '../../schemas/club.schema';
 
 @Injectable()
 export class ClubsService {
-  constructor(@InjectModel(Club.name) private clubModel: Model<ClubDocument>,
-              @InjectModel(User.name) private userModel: Model<ClubDocument>) {}
+  constructor(
+    @InjectModel(Club.name) private clubModel: Model<ClubDocument>,
+    @InjectModel(User.name) private userModel: Model<ClubDocument>,
+  ) {}
 
   async addClub(club: Club): Promise<Club> {
     const createdClub = new this.clubModel(club);
@@ -18,22 +20,18 @@ export class ClubsService {
     return this.clubModel.find().exec();
   }
 
-  async getClubById(id : string): Promise<Club> {
-    const club = this.clubModel.findById(id);
-    return club;
+  async getClubById(id: string): Promise<Club> {
+    return await this.clubModel.findById(id).populate('players').exec();
   }
 
   async update(id, club: Club): Promise<Club> {
     return await this.clubModel
-            .findByIdAndUpdate(id, club, {new: true})
-            .populate('admin', '', this.userModel)
-            .populate('players', '', this.userModel)
-            .lean();
+      .findByIdAndUpdate(id, club, { new: true })
+      .populate('players')
+      .lean();
   }
 
   async delete(id): Promise<Club> {
-    return await this.clubModel
-            .findByIdAndDelete(id).exec();
+    return await this.clubModel.findByIdAndDelete(id).exec();
   }
-
 }

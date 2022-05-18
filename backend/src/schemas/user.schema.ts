@@ -1,47 +1,63 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  ApiHideProperty,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
+import ClubRequest from 'src/classes/clubRequest';
 import { Club } from './club.schema';
 import { Match } from './match.schema';
 
 export type UserDocument = User & Document;
 
 @Schema({
-  autoIndex: true
+  autoIndex: true,
 })
-export class User extends mongoose.Document{
-  
+export class User extends mongoose.Document {
   @Prop()
-  @ApiProperty()
+  @ApiProperty({
+    required: true,
+  })
   nickname: string;
 
   @Prop()
-  @ApiProperty()
+  @ApiPropertyOptional()
   googleToken: string;
 
   @Prop()
-  @ApiProperty()
+  @ApiProperty({
+    required: true,
+  })
   pwd: string;
 
   @Prop()
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @ApiHideProperty()
   imageUrl: string;
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: Match.name }],
   })
-  @ApiProperty()
+  @ApiPropertyOptional()
   matches: Match[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  @ApiProperty()
+  @ApiPropertyOptional()
   friends: User[];
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Club.name  })
-  @ApiProperty()
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Club' })
+  @ApiPropertyOptional()
   club: Club;
 
+  @Prop()
+  @ApiHideProperty()
+  clubRequest: ClubRequest;
+
+  @Prop()
+  @ApiHideProperty()
+  isAdmin: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-UserSchema.index({ nickname: 1}, { unique: true });
+UserSchema.index({ nickname: 1 }, { unique: true });
