@@ -12,6 +12,7 @@ import { CaslModule } from './modules/casl/casl.module';
 import { SchemasModule } from './schemas/schemas.module';
 import { ClubsModule } from './modules/clubs/clubs.module';
 import { TournamentsModule } from './modules/tournaments/tournaments.module';
+import { NotificationsModule } from "./modules/notifications/notifications.module";
 
 @Module({
   imports: [
@@ -43,14 +44,15 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
       { name: Throw.name, schema: ThrowSchema },
       { name: Dart.name, schema: DartSchema },
     ]),
-  UsersModule,
-  FriendsModule,
-  TournamentsModule,
-  ClubsModule,
-  CaslModule,
-  AuthModule,
-  SchemasModule,
-  FriendsModule,
+    UsersModule,
+    FriendsModule,
+    TournamentsModule,
+    ClubsModule,
+    CaslModule,
+    AuthModule,
+    SchemasModule,
+    FriendsModule,
+    NotificationsModule,
   ],
   controllers: [],
   providers: [ConfigService],

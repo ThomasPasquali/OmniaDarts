@@ -1,19 +1,27 @@
 export const state = () => ({
-  user: 'NO_USER',
+  sockets: {},
 })
 
 export const actions = {
-  setUser({ state, commit }, user){
-    commit('setUser', user)
+  action({ state, commit }, a){
+    //commit('set', a)
   }
 }
 
 export const mutations = {
-  setUser(state, user) {
-    state.user = user
+  set(state, a) {
   },
 }
 
 export const getters = {
-  user(state) { return state.user }
+  newIo: state => (app, channel) => {
+    //if(!state.sockets[channel])state.sockets[channel] =
+    return app.$nuxtSocket({
+      channel,
+      forceNew: false,
+      persist: true,
+      auth: { token: app.$auth.strategy.token.get() }
+    })
+    //return state.sockets[channel]
+  },
 }

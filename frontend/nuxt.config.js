@@ -14,6 +14,43 @@ export default {
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   },
 
+  publicRuntimeConfig: {
+    API_BASE_URL: process.env.BASE_URL || 'http://localhost:4000/',
+    io: {
+      sockets: [
+        {
+          name: 'default',
+          url: process.env.API_BASE_URL,
+          default: true,
+          vuex: {
+            mutations: [
+              'new --> notifications/addNew',
+              'checked --> notifications/checked',
+            ],
+            emitBacks: [
+              'checked <-- notifications/notificationUpdate'
+            ]
+          },
+          namespaces: {
+            '/notifications': {
+
+              /*emitBacks: ['sample3', 'sample4 <-- myObj.sample4'],
+              emitters: [
+                'reset] getProgress + refreshInfo --> progress [handleDone'
+              ],
+              listeners: ['progress']*/
+            }
+          }
+        },
+      ]
+    },
+  },
+
+  privateRuntimeConfig: {
+    API_BASE_URL: process.env.BASE_URL || 'http://localhost:4000/'
+    //apiSecret: process.env.API_SECRET
+  },
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: ["vant/lib/index.css", "assets/css/main.css"],
 
@@ -27,7 +64,7 @@ export default {
   buildModules: [],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ["@nuxtjs/i18n", "@nuxtjs/axios", "@nuxtjs/auth-next"],
+  modules: ['@nuxtjs/i18n', '@nuxtjs/axios', '@nuxtjs/auth-next', 'nuxt-socket-io'],
 
   auth: {
     redirect: {
@@ -47,19 +84,19 @@ export default {
           property: false,
         },
         endpoints: {
-          login: { url: 'http://localhost:4000/auth/', method: 'post' },
-          logout: { url: 'http://localhost:4000/auth/logout', method: 'post' },
-          user: { url: 'http://localhost:4000/auth/user', method: 'get' }
+          login: { url: process.env.API_BASE_URL+'auth', method: 'post' },
+          logout: { url: process.env.API_BASE_URL+'auth/logout', method: 'post' },
+          user: { url: process.env.API_BASE_URL+'auth/user', method: 'get' }
         }
       },
       google: {
-        clientId: "74003974763-het7c7fbnm4j7ov5dc4lvhf2sgbalha1.apps.googleusercontent.com",
+        clientId: process.env.GOOGLE_CLIENT_ID,
         codeChallengeMethod: "",
         scope: ['profile', 'email'],
         responseType: "id_token token",
         endpoints: {
           //token: `http://localhost:4000/auth/google`,
-          userInfo: `http://localhost:4000/auth/google`,
+          userInfo: process.env.API_BASE_URL+'auth/google',
         },
       },
     },
@@ -82,9 +119,11 @@ export default {
   },
 
   axios: {
-    baseURL: "http://localhost:4000", // Used as fallback if no runtime config is provided
+    baseURL: process.env.API_BASE_URL, //Used as fallback if no runtime config is provided
   },
 
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: { }
+
+
+// Build Configuration: https://go.nuxtjs.dev/config-build
+build: { }
 };

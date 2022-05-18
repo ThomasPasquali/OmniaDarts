@@ -8,24 +8,22 @@
       :to="switchLocalePath(locale.code)">{{ locale.name }}</nuxt-link> -->
 
 
-    <van-row justify="space-between">
-      <van-col><van-button type="primary" size="large" to="tournaments">Tornei</van-button></van-col>
-    </van-row>
+    <van-button type="primary" size="large" to="tournaments">Tornei</van-button>
+    <van-button type="primary" size="large" to="dev">Dev</van-button>
 
-    <pre>
-      User: {{$auth.user}}
-      Token: {{$auth.strategy.token.get()}}
-    </pre>
+
+
   </div>
 </template>
 
 <script>
 export default {
   name: 'HomePage',
+  layout: 'home',
   computed: {
     availableLocales () {
       return this.$i18n.locales
-    }
-  }
+    },
+  },
 }
 </script>

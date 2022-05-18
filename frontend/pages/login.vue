@@ -19,6 +19,7 @@ import GLogin from "../components/GoogleLoginButton.vue";
 export default {
   name: "LoginIndex",
   components: { Login, GLogin },
+  layout: 'login',
   computed: {
     user() {
       console.log(this.$store.getters.user)
