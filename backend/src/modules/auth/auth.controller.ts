@@ -29,27 +29,42 @@ import { ConfigService } from '@nestjs/config';
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
+
   constructor(
     private readonly config: ConfigService,
     private readonly authService: AuthService,
     private readonly userService: UsersService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('user')
+  async getLoggedUser(@Req() req) {
+    return req.user;
+  }
+
   @Post()
-  @ApiOperation({ description: 'Login a user in' })
-  @ApiOkResponse({ description: 'A user logged in successful' })
-  async login(@Body() user: User) {
-    const u: User = await this.authService.validateUser(
-      user.nickname,
-      user.pwd,
-    );
-    if (u != null) return await this.authService.login(u);
-    else throw new UnauthorizedException();
+  @ApiOperation({ description: "Login a user in" })
+  @ApiOkResponse({ description: "A user logged in successful"})
+  async login(@Body() user : User){
+    const u : User = await this.authService.validateUser(user.nickname, user.pwd);
+    if(u)
+      return await this.authService.login(u);
+    else
+      throw new UnauthorizedException();
+  }
+
+  @Post('logout')
+  @ApiOperation({ description: "Logout the current user" })
+  @ApiOkResponse({ description: "User logged out successfully" })
+  async logout(@Req() req) {
+    //TODO eventually blacklist tokens
+    return req.user;
   }
 
   @Post('register')
   @ApiOperation({ description: 'Register a user' })
-  @ApiCreatedResponse({ description: 'User register successful' })
+  @ApiCreatedResponse({ description: 'User register successfuly' })
   @ApiNotFoundResponse({ description: 'User not found' })
   async register(@Body() user: User) {
     const saltOrRounds: number = parseInt(this.config.get('SALTROUNDS'), 10);
@@ -59,32 +74,23 @@ export class AuthController {
     user.clubRequest = null;
     const u = await this.userService.create(user);
 
-    if (u) return this.authService.login(u);
+    if(u) return await this.authService.login(u);
     else throw new InternalServerErrorException();
   }
 
-  // Only for test purposes
-  // JWT: logging out means deleting the token client side
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @Get()
-  async logout(@Req() req) {
-    return req.user;
+  //@UseGuards(AuthGuard("google"))
+  @Get("google")
+  async signInWithGoogleet(@Req() req, @Res() res) {
+    console.log(req.headers.authorization) //TODO fetch google
+    return res.status(HttpStatus.OK).json({nickname: 'GOOGLE CULO'});
   }
 
-  @UseGuards(AuthGuard('google'))
-  @Get('google')
-  async signInWithGoogle(@Req() req, @Res() res) {
-    console.log(req);
-    return res.status(HttpStatus.OK).json(req.user);
-  }
-
-  @UseGuards(AuthGuard('google'))
-  @ApiOperation({ description: 'Sign in with google' })
-  @Get('google/redirect')
+  /*@UseGuards(AuthGuard("google"))
+  @ApiOperation({ description: "Sign in with google" })
+  @Get("google/redirect")
   async signInWithGoogleRedirect(@Req() req, @Res() res) {
-    console.log('porca carota');
-    console.log('ciao');
+    console.log('porca carota')
+    console.log("ciao");
     return res.status(HttpStatus.OK).json(req.user);
     /*console.log(user.accessToken)
     const userFromMongo = 
@@ -100,6 +106,7 @@ export class AuthController {
     console.log('ciao')
     const userCreated : User = await this.userService.create(newUser);
     console.log('hei');
-    return this.authService.login(userCreated);*/
-  }
+    return this.authService.login(userCreated);
+  }*/
+  
 }

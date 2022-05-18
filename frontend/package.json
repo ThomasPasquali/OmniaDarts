@@ -13,10 +13,13 @@
   "dependencies": {
     "@nuxtjs/auth-next": "^5.0.0-1648802546.c9880dc",
     "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/i18n": "^7.2.2",
     "core-js": "^3.19.3",
     "dotenv": "^16.0.1",
+    "lodash": "^4.17.21",
     "nuxt": "^2.15.8",
+    "nuxt-socket-io": "^2.0.3",
     "vant": "^2.12.36",
     "vue": "^2.6.14",
     "vue-server-renderer": "^2.6.14",

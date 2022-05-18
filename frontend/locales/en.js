@@ -1,3 +1,3 @@
 export default {
-  hello: 'HALLO Astrobolide',
+  wrong_credentials: 'Wrong credentials',
 }

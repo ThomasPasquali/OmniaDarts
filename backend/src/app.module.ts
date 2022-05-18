@@ -15,6 +15,7 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { PostsModule } from './modules/clubs/posts/posts.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { NotificationsModule } from "./modules/notifications/notifications.module";
 
 @Module({
 
@@ -52,7 +53,6 @@ import { join } from 'path';
       { name: Dart.name, schema: DartSchema },
     ]),
     UsersModule,
-      PostsModule,
     FriendsModule,
     TournamentsModule,
     ClubsModule,
@@ -60,6 +60,8 @@ import { join } from 'path';
     AuthModule,
     SchemasModule,
     FriendsModule,
+    NotificationsModule,
+    PostsModule,
   ],
   controllers: [],
   providers: [ConfigService],

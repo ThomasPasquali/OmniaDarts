@@ -1,8 +1,8 @@
 <template>
   <section class="section">
-      <b-button class="Glogin" @click="loginWithGoogle()" icon-left="google">
+      <van-button class="Glogin" @click="loginWithGoogle()" icon-left="google">
         Sign in with Google
-      </b-button>
+      </van-button>
   </section>
 </template>
 
@@ -10,11 +10,7 @@
 export default {
   methods: {
     loginWithGoogle() {
-      //window.location = 'http://localhost:4000/auth/google'
-      //console.log('googleing')
       this.$auth.loginWith('google', { params: { prompt: "select_account" } });
-
-      //console.log(access)
     },
   },
 };
@@ -22,13 +18,13 @@ export default {
 
 <style scoped>
 .Glogin {
-  display: inline-block;
+  display: grid;
   padding: 4px 8px;
   border-radius: 3px;
   background-color: #3c82f7;
   color: #fff;
   box-shadow: 0 3px 0 #0f69ff;
-  display: table;
   margin: 0 auto;
+  text-decoration: none;
 }
 </style>
