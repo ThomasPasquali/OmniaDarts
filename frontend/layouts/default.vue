@@ -21,6 +21,8 @@ export default {
   },
   computed: {
     title() {
+      //dev/notifications --> Dev Notifications
+      //findClub --> Find club
       let path = this.$route.path
       return `${path.charAt(1).toUpperCase()}${path.substring(2)}`
     }

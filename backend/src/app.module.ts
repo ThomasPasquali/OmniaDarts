@@ -16,6 +16,7 @@ import { PostsModule } from './modules/clubs/posts/posts.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { NotificationsModule } from "./modules/notifications/notifications.module";
+import {TextchatsModule} from "./modules/textchats/textchats.module";
 
 @Module({
 
@@ -61,6 +62,7 @@ import { NotificationsModule } from "./modules/notifications/notifications.modul
     SchemasModule,
     FriendsModule,
     NotificationsModule,
+    TextchatsModule,
     PostsModule,
   ],
   controllers: [],
