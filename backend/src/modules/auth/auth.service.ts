@@ -12,6 +12,7 @@ import { google, Auth } from 'googleapis';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { use } from 'passport';
 import { oauth2 } from 'googleapis/build/src/apis/oauth2';
+import {generateString} from "../../utils/utils";
 
 @Injectable()
 export class AuthService {
@@ -56,30 +57,37 @@ export class AuthService {
    */
   async login(user: User) {
     console.log(user);
-    const payload = { username: user.nickname, sub: user._id.toString() };
+    const payload = { username: user.nickname, sub: user._id };
     console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  async validateUserGoogle(code: any) {
+  async getAccessToken(code: any) {
     const googleResp = await this.oauthClient.getToken(code);
     this.oauthClient.setCredentials(googleResp.tokens);
+    return googleResp.tokens.access_token;
+  }
+
+  async validateUserGoogle(token: any) {
     const tokenInfo = await this.oauthClient.getTokenInfo(
-      googleResp.tokens.access_token,
+      token,
     );
-    const user = await this.usersService.findByGoogleToken(tokenInfo.sub);
+    let user = await this.usersService.findByGoogleToken(tokenInfo.sub);
     const info = await oauth2('v2').userinfo.v2.me.get({
       auth: this.oauthClient,
     });
     if (user == null) {
-      const createUser = {
-        nickname: info.data.name,
+      const sameName = (await this.usersService.findAllWithSame(info.data.name))
+        .length;
+      user = {
+        nickname: info.data.name + (sameName == 0 ? '' : '-' + sameName),
         imageUrl: info.data.picture,
         googleToken: tokenInfo.sub,
+        pwd: generateString(36),
       } as User;
-      return await this.usersService.create(createUser);
+      user = await this.usersService.create(user);
     }
     return user;
   }

@@ -22,6 +22,10 @@ export class UsersService {
       .lean();
   }
 
+  async findAllWithSame(nickname: string): Promise<User[]> {
+    return await this.userModel.find({ nickname: nickname }).lean();
+  }
+
   async findAll(): Promise<User[]> {
     return await this.userModel.find().populate('club').lean();
   }

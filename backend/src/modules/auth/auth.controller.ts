@@ -79,34 +79,17 @@ export class AuthController {
   }
 
   @Post('google')
-  async authenticate(@Body() tokenData: any, @Req() req) {
-    const user = await this.authService.validateUserGoogle(tokenData);
-    console.log(user);
-    const u = await this.authService.login(user);
-    console.log(u);
-    return u;
+  async authenticateGoogle(@Body() tokenData: any, @Req() req) {
+    const token = await this.authService.getAccessToken(tokenData);
+    const user = await this.authService.validateUserGoogle(token);
+    const res = await this.authService.login(user);
+    return res;
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Sign in with google' })
   @Get('google/user')
   async signInWithGoogleRedirect(@Req() req, @Res() res) {
-    console.log(req.headers.authorization);
     return res.status(HttpStatus.OK).json(req.user);
   }
-  /*console.log(user.accessToken)
-    const userFromMongo = 
-        await this.userService.findByGoogleToken(user.accessToken);
-    console.log('--------------------------');
-    console.log(userFromMongo)
-    console.log('--------------------------');
-    if(userFromMongo) { return this.authService.login(userFromMongo); } 
-    const newUser : User = {
-      nickname : user.firstName + " " + user.lastName,
-      googleToken : user.accessToken
-    } as User;
-    console.log('ciao')
-    const userCreated : User = await this.userService.create(newUser);
-    console.log('hei');
-    return this.authService.login(userCreated);
-  }*/
 }
