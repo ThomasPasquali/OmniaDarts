@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
-  Res,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -36,7 +38,43 @@ export class TournamentsController {
   async newTournament(@Body() tournament: Tournament) {
     return await this.tournamentService.create(tournament);
   }
-  /* 
-  Aggiungi tournament
-   */
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Get all available tournaments' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'All tournaments',
+    type: [Tournament],
+  })
+  async getAllTournamentsAvailable(): Promise<Tournament[]> {
+    const tournaments = await this.tournamentService.findAll();
+    tournaments.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    return tournaments;
+  }
+
+  @Get(':tournamentName')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    description: 'Get all available tournaments ordered by creation reversed',
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'All tournaments',
+    type: [Tournament],
+  })
+  async getTournamentsByName(
+    @Req() req,
+    @Param('tournamentName') tournamentName: string,
+  ): Promise<Tournament[]> {
+    const tournaments = await this.getAllTournamentsAvailable();
+    tournaments.filter(
+      (t) =>
+        t.name.toLowerCase().includes(tournamentName.toLowerCase()) &&
+        t.players.includes(req.user),
+    );
+    return tournaments;
+  }
 }

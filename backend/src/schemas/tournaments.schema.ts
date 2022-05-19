@@ -5,6 +5,7 @@ import WinningMode from '../classes/winningmode';
 import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
 import { getEnumDescription } from '../utils/utils';
+import { Club } from './club.schema';
 import { TournamentMatch } from './tournamentMatch.schema';
 import { User } from './user.schema';
 
@@ -61,6 +62,10 @@ export class Tournament {
 
   @Prop()
   matches: TournamentMatch[];
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Club' })
+  @ApiProperty()
+  clubRef: Club;
 }
 
 export const TournamentsSchema = SchemaFactory.createForClass(Tournament);

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -11,19 +10,17 @@ import {
   Post,
   Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
-  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import ClubRequest from '../../classes/clubRequest';
-import { User } from '../../schemas/user.schema';
 import { Club } from '../../schemas/club.schema';
+import { User } from '../../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Action } from '../casl/actions';
 import { AppAbility } from '../casl/casl-ability.factory';
@@ -71,10 +68,10 @@ export class ClubsController {
   @ApiOperation({ description: 'Get my club' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'My club', type: [Club] })
+  @ApiCreatedResponse({ description: 'My club', type: Club })
   async getMyClub(@Req() req): Promise<Club> {
+    this.checkNull(req.user.club, "You don't belong to a club");
     const club = await this.clubsService.getClubById(req.user.club._id);
-    this.checkNull(club, "You don't belong to a club");
     return club;
   }
 
@@ -88,9 +85,8 @@ export class ClubsController {
     type: Club,
   })
   async addClub(@Body() club: Club, @Req() req) {
-    const current: Club = await this.clubsService.addClub(req.user.club._id);
-    this.checkCurrentCLubNull(
-      current,
+    this.checkCurrentClubNull(
+      req.user.club,
       'You must exit your current club, before creating a new one',
     );
     const newClub: Club = await this.clubsService.addClub(club);
@@ -232,7 +228,7 @@ export class ClubsController {
   @ApiBearerAuth()
   @ApiOperation({ description: '' })
   async exitFromMyOwnClub(@Req() req) {
-    const club: Club = await this.clubsService.getClubById(req.user.club._id);
+    const club: Club = req.user.club;
     this.checkNull(club, "You don't belong to a club");
     const playerToRemove: User = await this.usersService.findById(req.user._id);
     playerToRemove.isAdmin = false;
@@ -299,7 +295,7 @@ export class ClubsController {
     if (obj == null) this.throwHttpExc(message, HttpStatus.BAD_REQUEST);
   }
 
-  private checkCurrentCLubNull(obj: any, message: string) {
+  private checkCurrentClubNull(obj: any, message: string) {
     if (obj != null) this.throwHttpExc(message, HttpStatus.CONFLICT);
   }
 

@@ -5,9 +5,9 @@ import {
   ApiPropertyOptional,
 } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import FriendsRequest from '../classes/friendsRequest';
 import ClubRequest from '../classes/clubRequest';
 import { Club } from './club.schema';
+import { FriendRequest } from './friendRequest.schema';
 import { Match } from './match.schema';
 
 export type UserDocument = User & Document;
@@ -18,10 +18,7 @@ export type UserDocument = User & Document;
 export class User extends Document {
   @Prop()
   @ApiProperty({
-<<<<<<< HEAD
-=======
     description: 'The nickname of the user',
->>>>>>> origin/massimo/friends-test
     required: true,
   })
   nickname: string;
@@ -36,7 +33,7 @@ export class User extends Document {
   })
   pwd: string;
 
-  @Prop()
+  @Prop({ default: null })
   @ApiPropertyOptional()
   @ApiHideProperty()
   imageUrl: string;
@@ -48,10 +45,11 @@ export class User extends Document {
   matches: Match[];
 
   @Prop()
-  @ApiProperty({ type: () => FriendsRequest })
-  friends: FriendsRequest[];
+  @ApiProperty({ type: () => FriendRequest })
+  @ApiPropertyOptional()
+  friends: FriendRequest[];
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Club.name })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Club.name, default: null })
   @ApiPropertyOptional()
   @ApiProperty()
   club: Club;

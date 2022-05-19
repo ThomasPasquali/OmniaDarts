@@ -1,24 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AuthModule } from './modules/auth/auth.module';
+import { CaslModule } from './modules/casl/casl.module';
+import { ClubsModule } from './modules/clubs/clubs.module';
+import { PostsModule } from './modules/clubs/posts/posts.module';
+import { FriendRequestsModule } from './modules/friendRequests/friendRequests.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { UsersModule } from './modules/users/users.module';
 import { Dart, DartSchema } from './schemas/dart.schema';
 import { Match, MatchSchema } from './schemas/match.schema';
 import { MatchThrows, MatchThrowsSchema } from './schemas/matchThrows.schema';
-import { Throw, ThrowSchema } from './schemas/throw.schema';
-import { FriendsModule } from './modules/friends/friends.module';
-import { CaslModule } from './modules/casl/casl.module';
 import { SchemasModule } from './schemas/schemas.module';
-import { ClubsModule } from './modules/clubs/clubs.module';
-import { TournamentsModule } from './modules/tournaments/tournaments.module';
-import { PostsModule } from './modules/clubs/posts/posts.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
-import { NotificationsModule } from "./modules/notifications/notifications.module";
+import { Throw, ThrowSchema } from './schemas/throw.schema';
 
 @Module({
-
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -53,13 +52,13 @@ import { NotificationsModule } from "./modules/notifications/notifications.modul
       { name: Dart.name, schema: DartSchema },
     ]),
     UsersModule,
-    FriendsModule,
+    FriendRequestsModule,
     TournamentsModule,
     ClubsModule,
     CaslModule,
     AuthModule,
     SchemasModule,
-    FriendsModule,
+    FriendRequestsModule,
     NotificationsModule,
     PostsModule,
   ],

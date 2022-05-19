@@ -19,8 +19,7 @@ export class ClubsService {
   }
 
   async getClubById(id: string): Promise<Club> {
-    return this.clubModel.findById(id)
-        .populate('players').lean();
+    return this.clubModel.findById(id).populate('players').lean();
   }
 
   async update(id, club: Club): Promise<Club> {

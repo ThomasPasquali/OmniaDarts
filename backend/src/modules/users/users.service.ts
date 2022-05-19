@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Club, ClubDocument } from '../../schemas/club.schema';
 import { User, UserDocument } from '../../schemas/user.schema';
 
 @Injectable()
@@ -23,10 +22,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel
-      .find()
-      .populate('club')
-      .lean();
+    return await this.userModel.find().populate('club').lean();
   }
 
   async findById(id): Promise<User> {
@@ -48,6 +44,7 @@ export class UsersService {
     return await this.userModel
       .findOneAndUpdate({ _id: id }, user, { new: true })
       .populate('club')
+      // .populate('friends')
       .lean();
   }
 
@@ -63,10 +60,7 @@ export class UsersService {
   }
 
   async getByIdPopulating(id: string): Promise<User> {
-    return await this.userModel
-      .findOne({ _id: id })
-      .populate('club')
-      .lean();
+    return await this.userModel.findOne({ _id: id }).populate('club').lean();
   }
 
   async getFriends(id): Promise<User> {
