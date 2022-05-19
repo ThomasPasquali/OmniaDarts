@@ -7,12 +7,11 @@ export type ThrowDocument = Throw & Document;
 
 @Schema()
 export class Throw {
-  
   @Prop()
   darts: Dart[];
 
   @Prop()
-  score: Number;
+  score: number;
 
 }
 

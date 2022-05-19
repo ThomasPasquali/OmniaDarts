@@ -92,11 +92,10 @@ export default {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID,
         codeChallengeMethod: "",
-        scope: ['profile', 'email'],
-        responseType: "id_token token",
+        responseType: "code",
         endpoints: {
-          //token: `http://localhost:4000/auth/google`,
-          userInfo: process.env.API_BASE_URL+'auth/google',
+          token: `http://localhost:4000/auth/google`,
+          userInfo: `http://localhost:4000/auth/google/user`,
         },
       },
     },

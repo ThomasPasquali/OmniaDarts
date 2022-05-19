@@ -20,7 +20,7 @@ async function bootstrap() {
     .addTag('friends')
     .addTag('clubs')
     .addTag('posts')
-    .addTag('tournaments')
+    .addTag('tournaments').addTag('chat')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

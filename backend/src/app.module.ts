@@ -15,10 +15,10 @@ import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { PostsModule } from './modules/clubs/posts/posts.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { NotificationsModule } from "./modules/notifications/notifications.module";
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
-
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -58,6 +58,7 @@ import { NotificationsModule } from "./modules/notifications/notifications.modul
     ClubsModule,
     CaslModule,
     AuthModule,
+    ChatModule,
     SchemasModule,
     FriendsModule,
     NotificationsModule,
