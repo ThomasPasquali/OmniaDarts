@@ -11,16 +11,10 @@
       </template>
     </van-nav-bar>
 
-    <h1>Edit profile</h1>
+    <h1>{{ edit ? 'Edit profile' : 'Profile' }}</h1>
 
-    <form
-      v-if="edit"
-      @submit.prevent="submit"
-    >
-
-      <!-- TODO -->
-      <input id="photo" type="file" />
-
+    <form v-if="edit" @submit.prevent="submit">
+      <input id="photo" type="file" />  <!-- TODO -->
       <br> <br>
       <ProfileField
         v-for="field in fields"
@@ -33,9 +27,13 @@
       <input type="submit" :value="edit ? 'Save' : 'Edit'" />
     </form>
 
-    <div v-else v-for="field in fields">
-      <p class="label">{{ field.label }}</p>
-      <p class="value">{{ field.value }}</p></div>  <!-- fixme -->
+    <div v-else>
+      <img src="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png">
+      <div v-for="field in fields">
+        <p class="label">{{ field.label }}</p>
+        <p class="value">{{ field.value }}</p>  <!-- fixme -->
+      </div>
+    </div>
 
     <button @click="edit = !edit">{{ edit ? 'Cancel' : 'Edit' }}</button>
   </div>
