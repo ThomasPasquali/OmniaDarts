@@ -1,16 +1,20 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import {FriendRequest, FriendRequestDocument} from '../../schemas/friendRequest.schema';
-import {User, UserDocument} from '../../schemas/user.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import {
+  FriendRequest,
+  FriendRequestDocument,
+} from '../../schemas/friendRequest.schema';
+import { User } from '../../schemas/user.schema';
 import { UsersService } from '../users/users.service';
-import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
 
 @Injectable()
 export class FriendRequestsService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
-    @InjectModel(FriendRequest.name) private readonly friendReqModel: Model<FriendRequestDocument>,
+    @InjectModel(FriendRequest.name)
+    private readonly friendReqModel: Model<FriendRequestDocument>,
   ) {}
 
   async addFriend(currUser: User, idFriend: string): Promise<User> {
@@ -22,7 +26,7 @@ export class FriendRequestsService {
       user: currUser,
     } as FriendRequest;
     const req1 = await this.friendReqModel.create(requestReceiver);
-    friend.friends.push(req1);
+    friend.friendRequests.push(req1);
     await this.userService.update(friend._id, friend);
 
     const requestSender = {
@@ -31,21 +35,25 @@ export class FriendRequestsService {
       user: friend,
     } as FriendRequest;
     const req2 = await this.friendReqModel.create(requestSender);
-    currUser.friends.push(req2);
+    currUser.friendRequests.push(req2);
     const newCurrUser = await this.userService.update(currUser._id, currUser);
 
-    console.log('ok2');
     return newCurrUser;
   }
 
   async deleteFriend(currUser: User, idFriend: String): Promise<User> {
     const friend: User = await this.userService.findById(idFriend);
-    friend.friends = friend.friends.filter((f) => {
-      return f.user != currUser;
+    // Find request
+    const indexReq1: number = friend.friendRequests.findIndex((f) => {
+      return f.user._id.toString() == currUser._id.toString();
     });
+    // Delete request
+    await this.friendReqModel.remove(friend.friendRequests[indexReq1]._id);
+    // Delete riferiment
+    friend.friendRequests.splice(indexReq1, 1);
 
     await this.userService.update(friend._id, friend);
-    currUser.friends = currUser.friends.filter((f) => {
+    currUser.friendRequests = currUser.friendRequests.filter((f) => {
       return f.user != friend;
     });
     return await this.userService.update(currUser._id, currUser);
@@ -53,12 +61,12 @@ export class FriendRequestsService {
 
   async acceptRequest(currUser: User, idFriend: string): Promise<User> {
     const friend: User = await this.userService.findById(idFriend);
-    const index1 = friend.friends.findIndex((u) => u.user == currUser);
-    currUser.friends[index1].pending = false;
+    const index1 = friend.friendRequests.findIndex((u) => u.user == currUser);
+    currUser.friendRequests[index1].pending = false;
     await this.userService.update(friend._id, friend);
 
-    const index2 = currUser.friends.findIndex((u) => u.user == friend);
-    friend.friends[index2].pending = false;
+    const index2 = currUser.friendRequests.findIndex((u) => u.user == friend);
+    friend.friendRequests[index2].pending = false;
     return await this.userService.update(currUser._id, currUser);
   }
 

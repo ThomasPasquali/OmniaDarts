@@ -42,9 +42,7 @@ export class FriendRequestsController {
   @HttpCode(HttpStatus.CREATED)
   async addFriend(@Req() req, @Param('id') id: string) {
     const currUser = await this.usersService.findById(req.user._id);
-    const newUser = await this.friendsService.addFriend(currUser, id);
-    // console.log(newUser);
-    return newUser;
+    return await this.friendsService.addFriend(currUser, id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -75,7 +73,7 @@ export class FriendRequestsController {
   @HttpCode(HttpStatus.OK)
   async fetchAll(@Req() req) {
     const user = await this.usersService.findById(req.user._id);
-    return user.friends;
+    return user.friendRequests;
   }
 
   @UseGuards(JwtAuthGuard)
