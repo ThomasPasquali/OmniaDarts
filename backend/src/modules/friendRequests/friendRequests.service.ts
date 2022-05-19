@@ -13,7 +13,6 @@ export class FriendRequestsService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
-    private readonly friendRequestService: FriendRequestsService,
     @InjectModel(FriendRequest.name)
     private readonly friendReqModel: Model<FriendRequestDocument>,
   ) {}
@@ -81,14 +80,14 @@ export class FriendRequestsService {
     );
     let reqFriend = friend.friendRequests[index1];
     reqFriend.pending = false;
-    await this.friendRequestService.update(reqFriend._id, reqFriend);
+    await this.update(reqFriend._id, reqFriend);
 
     const index2 = currUser.friendRequests.findIndex(
       (u) => u.user._id.toString() == friend._id.toString(),
     );
     let reqCurrUser = friend.friendRequests[index2];
     reqCurrUser.pending = false;
-    return await this.friendRequestService.update(reqCurrUser._id, reqCurrUser);
+    return await this.update(reqCurrUser._id, reqCurrUser);
   }
 
   async findUsers(currUser: User, nickname: string): Promise<User[]> {
