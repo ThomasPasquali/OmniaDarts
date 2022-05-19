@@ -1,16 +1,22 @@
 export const state = () => ({
-  sockets: {},
+  club: null,
 })
 
 export const actions = {
-  action({ state, commit }, a){
-    //commit('set', a)
+  async fetchClub({ commit }) {
+    try {
+      let club = await this.$axios.$get('clubs/myClub')
+      commit('friends/setClubFriends', club.players)
+      delete club.players
+      commit('setClub', club)
+    }catch (e) {
+      //console.error(e) //User does not belong to a club
+    }
   }
 }
 
 export const mutations = {
-  set(state, a) {
-  },
+  setClub(state, club) { state.club = club },
 }
 
 export const getters = {
@@ -24,4 +30,5 @@ export const getters = {
     })
     //return state.sockets[channel]
   },
+  club(state) { return state.club }
 }

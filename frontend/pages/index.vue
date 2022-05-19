@@ -25,5 +25,10 @@ export default {
       return this.$i18n.locales
     },
   },
+  //Could be created
+  mounted() {
+    this.$store.dispatch('fetchClub')
+    this.$store.dispatch('friends/fetchFriends')
+  }
 }
 </script>
