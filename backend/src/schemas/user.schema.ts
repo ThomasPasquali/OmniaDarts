@@ -44,7 +44,9 @@ export class User extends Document {
   @ApiPropertyOptional()
   matches: Match[];
 
-  @Prop()
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: FriendRequest.name }],
+  })
   @ApiProperty({ type: () => FriendRequest })
   @ApiPropertyOptional()
   friends: FriendRequest[];

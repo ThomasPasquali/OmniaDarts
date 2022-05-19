@@ -1,24 +1,28 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { FriendRequest } from '../../schemas/friendRequest.schema';
-import { User } from '../../schemas/user.schema';
+import {FriendRequest, FriendRequestDocument} from '../../schemas/friendRequest.schema';
+import {User, UserDocument} from '../../schemas/user.schema';
 import { UsersService } from '../users/users.service';
+import {InjectModel} from "@nestjs/mongoose";
+import {Model} from "mongoose";
 
 @Injectable()
 export class FriendRequestsService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
+    @InjectModel(FriendRequest.name) private readonly friendReqModel: Model<FriendRequestDocument>,
   ) {}
 
   async addFriend(currUser: User, idFriend: string): Promise<User> {
-    let friend: User = await this.userService.findById(idFriend);
+    const friend: User = await this.userService.findById(idFriend);
 
     const requestReceiver = {
       isSender: false,
       pending: true,
       user: currUser,
     } as FriendRequest;
-    friend.friends.push(requestReceiver);
+    const req1 = await this.friendReqModel.create(requestReceiver);
+    friend.friends.push(req1);
     await this.userService.update(friend._id, friend);
 
     const requestSender = {
@@ -26,8 +30,8 @@ export class FriendRequestsService {
       pending: true,
       user: friend,
     } as FriendRequest;
-    currUser.friends.push(requestSender);
-
+    const req2 = await this.friendReqModel.create(requestSender);
+    currUser.friends.push(req2);
     const newCurrUser = await this.userService.update(currUser._id, currUser);
 
     console.log('ok2');

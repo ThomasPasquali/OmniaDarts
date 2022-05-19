@@ -37,6 +37,13 @@ export class UsersService {
         },
       })
       .populate('friends')
+      .populate({
+        path: 'friends',
+        populate: {
+          path: 'user',
+          model: 'User',
+        },
+      })
       .lean();
   }
 

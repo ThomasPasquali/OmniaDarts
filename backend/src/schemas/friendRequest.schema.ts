@@ -7,7 +7,8 @@ export type FriendRequestDocument = FriendRequest & Document;
 
 @Schema()
 export class FriendRequest extends Document {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User'})
   @ApiProperty({ type: () => User })
   user: User;
 

@@ -74,8 +74,8 @@ export class FriendRequestsController {
   @ApiOkResponse({ type: [FriendRequest] })
   @HttpCode(HttpStatus.OK)
   async fetchAll(@Req() req) {
-    const friends = req.user.friends;
-    return friends;
+    const user = await this.usersService.findById(req.user._id);
+    return user.friends;
   }
 
   @UseGuards(JwtAuthGuard)
