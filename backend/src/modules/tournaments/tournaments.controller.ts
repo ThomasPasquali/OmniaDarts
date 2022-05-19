@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
+  HttpCode,
   HttpStatus,
+  Param,
   Post,
-  Res,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -13,12 +16,15 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Tournament } from '../../schemas/tournaments.schema';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { TournamentsService } from './tournaments.service';
 
 @Controller('tournaments')
 @ApiTags('tournaments')
 export class TournamentsController {
+  constructor(private readonly tournamentService: TournamentsService) {}
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -28,7 +34,47 @@ export class TournamentsController {
     type: Tournament,
   })
   @ApiBadRequestResponse({ description: 'Invalid payload' })
-  async newTournament(@Body() tournament: Tournament, @Res() response) {
-    return response.status(HttpStatus.OK).json(tournament);
+  @HttpCode(HttpStatus.CREATED)
+  async newTournament(@Body() tournament: Tournament) {
+    return await this.tournamentService.create(tournament);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Get all available tournaments' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'All tournaments',
+    type: [Tournament],
+  })
+  async getAllTournamentsAvailable(): Promise<Tournament[]> {
+    const tournaments = await this.tournamentService.findAll();
+    tournaments.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    return tournaments;
+  }
+
+  @Get(':tournamentName')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    description: 'Get all available tournaments ordered by creation reversed',
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'All tournaments',
+    type: [Tournament],
+  })
+  async getTournamentsByName(
+    @Req() req,
+    @Param('tournamentName') tournamentName: string,
+  ): Promise<Tournament[]> {
+    const tournaments = await this.getAllTournamentsAvailable();
+    tournaments.filter(
+      (t) =>
+        t.name.toLowerCase().includes(tournamentName.toLowerCase()) &&
+        t.players.includes(req.user),
+    );
+    return tournaments;
   }
 }

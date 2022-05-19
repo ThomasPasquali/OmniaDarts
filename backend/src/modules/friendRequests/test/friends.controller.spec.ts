@@ -1,12 +1,10 @@
-import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User, UserDocument, UserSchema } from '../../../schemas/user.schema';
-import { UsersModule } from '../../users/users.module';
-import mongoose, { Model } from 'mongoose';
-import { FriendsController } from '../friends.controller';
-import { UserModel } from './user.model';
-import { FriendsService } from '../friends.service';
+import { User } from '../../../schemas/user.schema';
 import { UsersService } from '../../users/users.service';
+import { FriendsRequestsController } from '../friendRequests.controller';
+import { FriendRequestsService } from '../friendRequests.service';
+import { UserModel } from './user.model';
 
 describe('FriendsController', () => {
   let userService = { findAll: () => ['test'] };
@@ -14,15 +12,15 @@ describe('FriendsController', () => {
   const mockUser = { nickname: 'test', pwd: 'test', _id: 'test' };
   const mockClub = { name: 'Robotics', description: 'only for test purpose' };
 
-  let controller: FriendsController;
+  let controller: FriendsRequestsController;
   let spyModel;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [FriendsController],
+      controllers: [FriendsRequestsController],
       providers: [
         UsersService,
-        FriendsService,
+        FriendRequestsService,
         {
           provide: getModelToken(User.name),
           useValue: UserModel,
@@ -30,7 +28,9 @@ describe('FriendsController', () => {
       ],
     }).compile();
 
-    controller = module.get<FriendsController>(FriendsController);
+    controller = module.get<FriendsRequestsController>(
+      FriendsRequestsController,
+    );
   });
 
   it('should be defined', () => {

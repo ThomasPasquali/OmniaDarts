@@ -17,17 +17,17 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import FriendRequest from '../../classes/friendsRequest';
+import { FriendRequest } from '../../schemas/friendRequest.schema';
 import { User } from '../../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from '../users/users.service';
-import { FriendsService } from './friends.service';
+import { FriendRequestsService } from './friendRequests.service';
 
 @Controller('friends')
 @ApiTags('friends')
-export class FriendsController {
+export class FriendRequestsController {
   constructor(
-    private readonly friendsService: FriendsService,
+    private readonly friendsService: FriendRequestsService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -41,10 +41,9 @@ export class FriendsController {
   })
   @HttpCode(HttpStatus.CREATED)
   async addFriend(@Req() req, @Param('id') id: string) {
-    console.log('ciao');
     const currUser = await this.usersService.findById(req.user._id);
     const newUser = await this.friendsService.addFriend(currUser, id);
-    console.log(newUser);
+    // console.log(newUser);
     return newUser;
   }
 
@@ -75,8 +74,8 @@ export class FriendsController {
   @ApiOkResponse({ type: [FriendRequest] })
   @HttpCode(HttpStatus.OK)
   async fetchAll(@Req() req) {
-    const friends = req.user.friends;
-    return friends;
+    const user = await this.usersService.findById(req.user._id);
+    return user.friends;
   }
 
   @UseGuards(JwtAuthGuard)

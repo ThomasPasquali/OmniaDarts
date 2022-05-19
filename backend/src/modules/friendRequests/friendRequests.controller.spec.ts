@@ -4,8 +4,8 @@ import { AppModule } from '../../app.module';
 import { User } from '../../schemas/user.schema';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
-import { FriendsController } from './friends.controller';
-import { FriendsService } from './friends.service';
+import { FriendRequestsController } from './friendRequests.controller';
+import { FriendRequestsService } from './friendRequests.service';
 
 describe('FriendsController', () => {
   function mockUserModel(dto: any) {
@@ -15,22 +15,22 @@ describe('FriendsController', () => {
     };
   }
 
-  let controller: FriendsController;
-  let service: FriendsService;
+  let controller: FriendRequestsController;
+  let service: FriendRequestsService;
   let userService: UsersService;
   jest.setTimeout(120000);
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule, UsersModule],
-      controllers: [FriendsController],
+      controllers: [FriendRequestsController],
       providers: [
-        FriendsService,
+        FriendRequestsService,
         { provide: getModelToken(User.name), useValue: mockUserModel },
       ],
     }).compile();
 
-    controller = module.get<FriendsController>(FriendsController);
-    service = module.get<FriendsService>(FriendsService);
+    controller = module.get<FriendRequestsController>(FriendRequestsController);
+    service = module.get<FriendRequestsService>(FriendRequestsService);
     userService = module.get<UsersService>(UsersService);
   });
 
