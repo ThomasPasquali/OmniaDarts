@@ -5,11 +5,11 @@
       left-arrow
       @click-left="back">
       <template #right>
-        <van-icon name="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" />
+        <van-icon name="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png"/>
         {{ ($auth.user && $auth.user.nickname) || 'NO_USER' }}
       </template>
     </van-nav-bar>
-    <Nuxt class="h-100" />
+    <Nuxt class="h-100"/>
   </div>
 </template>
 
@@ -17,12 +17,22 @@
 export default {
   name: 'DefaultLayout',
   methods: {
-    back() { window.history.back() }
+    back() {
+      window.history.back()
+    }
   },
   computed: {
     title() {
+      //dev/notifications --> Dev Notifications
+      //findClub --> Find club
       let path = this.$route.path
-      return `${path.charAt(1).toUpperCase()}${path.substring(2)}`
+      return `${path.split('/').at(-1)
+        .replace(/([A-Z])/g, function (str) {
+          return ' ' + str.toLowerCase();
+        })
+        .replace(/^./, function (str) {
+          return str.toUpperCase();
+        })}`
     }
   }
 }

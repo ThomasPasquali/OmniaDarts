@@ -1,15 +1,16 @@
 <template>
-  <div class="container">
+  <div v-if="$auth.user.club" class="container">
 
     <img id="club_photo" src="https://pickywallpapers.com/img/2018/10/dart-board-game-desktop-wallpaper-1306-1311-hd-wallpapers.jpg">
 
-    <div v-if="!edit" id="content">
+    <div v-if="!edit" class="content">
 
-      <h1>{{ clubName }}</h1>
+      <h1>{{ club.name }}</h1>
 
       <div id="buttons">
         <van-button
-          v-for="btn in buttons.filter((b) => {return b.admin === false || b.admin === admin})"
+          v-for="(btn, i) in buttons.filter((b) => {return b.admin === false || b.admin === admin})"
+          :key="i"
           :icon="btn.icon"
           @click="btn.onClick()"
         >{{ btn.label }}
@@ -17,7 +18,7 @@
       </div>
 
       <h3>Description</h3>
-      <p>{{ descr }}</p>
+      <p>{{ club.description }}</p>
 
       <div v-if="!edit">
         <h3>Members</h3>
@@ -35,44 +36,41 @@
             :key="member.id"
             :user="member"
           />
-          <van-button id="add_btn" icon="add">Invite player</van-button>
+          <!-- <van-button id="add_btn" icon="add">Invite player</van-button> -->
         </div>
       </div>
 
     </div>
 
-    <div v-else id="content">
-      <form>
-        <!-- TODO -->
-        <label for="input_photo">Club photo</label>
-        <input id="input_photo" type="file" />
-        <label for="input_name">Club name</label>
-        <input id="input_name" type="text" :value="clubName" />
-        <label for="input_descr">Description</label>
-        <textarea id="input_descr" :value="descr" rows="5" />
-        <input type="submit" value="Save" />
-      </form>
+    <div v-else class="content">
+      <EditClub :club="club" @submitClub="submit"/>
     </div>
 
+  </div>
+  <div v-else class="content">
+    <h1>{{ $t('user_has_no_club') }}</h1>
   </div>
 </template>
 
 <script>
-import ClubPlayer from "~/components/ClubPlayer";
+import ClubPlayer from '~/components/ClubPlayer';
+import EditClub from '~/components/EditClub';
 
 export default {
-  name: "club",
-  components: {ClubPlayer},
+  name: 'club',
+  components: {ClubPlayer, EditClub},
   data() {
     return {
-      clubName: "Abbiamo vinto!",
-      descr: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris convallis nisi sed mi cursus maximus eget ac enim.",
+      club: {
+        name: 'Abbiamo vinto!',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris convallis nisi sed mi cursus maximus eget ac enim.'
+      },
       admin: true,
       edit: false,
       buttons: [
-        {label: "Edit club", icon: "edit", admin: true, onClick: () => this.edit = true},
-        {label: "Leave club", icon: "cross", admin: false, onClick: () => 0},
-        {label: "Delete club", icon: "delete", admin: true, onClick: () => 0},
+        {label: 'Edit club', icon: 'edit', admin: true, onClick: () => this.edit = true},
+        {label: 'Leave club', icon: 'cross', admin: false, onClick: () => 0},
+        {label: 'Delete club', icon: 'delete', admin: true, onClick: () => 0},
       ],
       members: [
         {
@@ -133,7 +131,7 @@ export default {
 
 <style scoped>
 
-#content {
+.content {
   padding: 16px;
 }
 
@@ -152,41 +150,4 @@ export default {
 #add_btn {
   width: 100%;
 }
-
-#input_descr {
-  width: 100%;
-}
-
-input[type=text], textarea {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  display: block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-input[type=submit], button {
-  width: 100%;
-  background-color: #04AA6D;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-input[type=submit]:hover, button {
-  background-color: #45a049;
-}
-
-label, h3 {
-  margin-top: 24px;
-  font-size: 24px;
-  font-weight: bold;
-  display: block;
-}
-
 </style>

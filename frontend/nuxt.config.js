@@ -26,9 +26,11 @@ export default {
             mutations: [
               'new --> notifications/addNew',
               'checked --> notifications/checked',
+              'newMessage --> textchats/newMessage',
             ],
             emitBacks: [
-              'checked <-- notifications/notificationUpdate'
+              'checked <-- notifications/notificationUpdate',
+              'newMessage <-- textchats/lastMessageSent',
             ]
           },
           namespaces: {

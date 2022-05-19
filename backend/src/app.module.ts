@@ -17,8 +17,11 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { NotificationsModule } from "./modules/notifications/notifications.module";
+import {TextchatsModule} from "./modules/textchats/textchats.module";
 
 @Module({
+
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -62,6 +65,7 @@ import { ChatModule } from './modules/chat/chat.module';
     SchemasModule,
     FriendsModule,
     NotificationsModule,
+    TextchatsModule,
     PostsModule,
   ],
   controllers: [],
