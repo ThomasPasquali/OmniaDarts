@@ -17,6 +17,6 @@ import { FriendRequestsService } from './friendRequests.service';
   ],
   controllers: [FriendRequestsController],
   providers: [FriendRequestsService],
-  exports: [FriendRequestsModule, FriendRequestsService],
+  exports: [FriendRequestsService],
 })
 export class FriendRequestsModule {}

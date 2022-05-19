@@ -58,7 +58,6 @@ import { Throw, ThrowSchema } from './schemas/throw.schema';
     CaslModule,
     AuthModule,
     SchemasModule,
-    FriendRequestsModule,
     NotificationsModule,
     PostsModule,
   ],
