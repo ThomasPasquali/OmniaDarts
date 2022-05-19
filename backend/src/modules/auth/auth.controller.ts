@@ -29,7 +29,6 @@ import { ConfigService } from '@nestjs/config';
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-
   constructor(
     private readonly config: ConfigService,
     private readonly authService: AuthService,
@@ -44,19 +43,20 @@ export class AuthController {
   }
 
   @Post()
-  @ApiOperation({ description: "Login a user in" })
-  @ApiOkResponse({ description: "A user logged in successful"})
-  async login(@Body() user : User){
-    const u : User = await this.authService.validateUser(user.nickname, user.pwd);
-    if(u)
-      return await this.authService.login(u);
-    else
-      throw new UnauthorizedException();
+  @ApiOperation({ description: 'Login a user in' })
+  @ApiOkResponse({ description: 'A user logged in successful' })
+  async login(@Body() user: User) {
+    const u: User = await this.authService.validateUser(
+      user.nickname,
+      user.pwd,
+    );
+    if (u) return await this.authService.login(u);
+    else throw new UnauthorizedException();
   }
 
   @Post('logout')
-  @ApiOperation({ description: "Logout the current user" })
-  @ApiOkResponse({ description: "User logged out successfully" })
+  @ApiOperation({ description: 'Logout the current user' })
+  @ApiOkResponse({ description: 'User logged out successfully' })
   async logout(@Req() req) {
     //TODO eventually blacklist tokens
     return req.user;
@@ -74,25 +74,26 @@ export class AuthController {
     user.clubRequest = null;
     const u = await this.userService.create(user);
 
-    if(u) return await this.authService.login(u);
+    if (u) return await this.authService.login(u);
     else throw new InternalServerErrorException();
   }
 
-  //@UseGuards(AuthGuard("google"))
-  @Get("google")
-  async signInWithGoogleet(@Req() req, @Res() res) {
-    console.log(req.headers.authorization) //TODO fetch google
-    return res.status(HttpStatus.OK).json({nickname: 'GOOGLE CULO'});
+  @Post('google')
+  async authenticate(@Body() tokenData: any, @Req() req) {
+    const user = await this.authService.validateUserGoogle(tokenData);
+    console.log(user);
+    const u = await this.authService.login(user);
+    console.log(u);
+    return u;
   }
 
-  /*@UseGuards(AuthGuard("google"))
-  @ApiOperation({ description: "Sign in with google" })
-  @Get("google/redirect")
+  @ApiOperation({ description: 'Sign in with google' })
+  @Get('google/user')
   async signInWithGoogleRedirect(@Req() req, @Res() res) {
-    console.log('porca carota')
-    console.log("ciao");
+    console.log(req.headers.authorization);
     return res.status(HttpStatus.OK).json(req.user);
-    /*console.log(user.accessToken)
+  }
+  /*console.log(user.accessToken)
     const userFromMongo = 
         await this.userService.findByGoogleToken(user.accessToken);
     console.log('--------------------------');
@@ -108,5 +109,4 @@ export class AuthController {
     console.log('hei');
     return this.authService.login(userCreated);
   }*/
-  
 }

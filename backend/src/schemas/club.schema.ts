@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import { TextMessage } from './textMessage.schema';
+import { Chat } from './chat.schema';
 import { User } from './user.schema';
-import Post from "../classes/post";
+import Post from '../classes/post';
 
 export type ClubDocument = Club & Document;
 
@@ -28,8 +28,8 @@ export class Club extends mongoose.Document{
   imageUri: string;
 
   @Prop({
-        default: []
-      })
+    default: [],
+  })
   @ApiProperty()
   posts: Post[];
 
@@ -37,9 +37,9 @@ export class Club extends mongoose.Document{
   @ApiProperty()
   description: string;
 
-  @Prop()
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: Chat.name }] })
   @ApiProperty()
-  messages: TextMessage[];
+  chat: Chat;
 }
 
 export const ClubSchema = SchemaFactory.createForClass(Club);

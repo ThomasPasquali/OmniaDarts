@@ -15,7 +15,9 @@ export type UserDocument = User & Document;
   autoIndex: true,
 })
 export class User extends Document {
-  @Prop()
+  @Prop({
+    default: '',
+  })
   @ApiProperty({
     required: true,
   })

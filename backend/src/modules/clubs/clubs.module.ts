@@ -6,9 +6,11 @@ import { UsersModule } from '../users/users.module';
 import { ClubsController } from './clubs.controller';
 import { ClubsService } from './clubs.service';
 import { PostsController } from './posts/posts.controller';
+import { ChatModule } from '../chat/chat.module';
 
 @Module({
   imports: [
+    ChatModule,
     CaslModule,
     UsersModule,
     MongooseModule.forFeature([{ name: Club.name, schema: ClubSchema }]),

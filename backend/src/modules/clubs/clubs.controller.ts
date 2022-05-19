@@ -30,6 +30,7 @@ import { AppAbility } from '../casl/casl-ability.factory';
 import { CheckPolicies, PoliciesGuard } from '../casl/policies-guard.service';
 import { UsersService } from '../users/users.service';
 import { ClubsService } from './clubs.service';
+import {ChatService} from "../chat/chat.service";
 
 @Controller('clubs')
 @ApiTags('clubs')
@@ -37,6 +38,7 @@ export class ClubsController {
   constructor(
     private readonly clubsService: ClubsService,
     private readonly usersService: UsersService,
+    private readonly chatService: ChatService,
   ) {}
 
   @Post('joinRequest')
@@ -73,8 +75,8 @@ export class ClubsController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'My club', type: [Club] })
   async getMyClub(@Req() req): Promise<Club> {
+    this.checkNull(req.user.club, "You don't belong to a club");
     const club = await this.clubsService.getClubById(req.user.club._id);
-    this.checkNull(club, "You don't belong to a club");
     return club;
   }
 
@@ -88,7 +90,9 @@ export class ClubsController {
     type: Club,
   })
   async addClub(@Body() club: Club, @Req() req) {
-    const current: Club = await this.clubsService.addClub(req.user.club._id);
+    const current: Club = await this.clubsService.getClubById(
+      req.user.club._id,
+    );
     this.checkCurrentCLubNull(
       current,
       'You must exit your current club, before creating a new one',
@@ -99,6 +103,7 @@ export class ClubsController {
     );
     user.isAdmin = true;
     newClub.players.push(user);
+    newClub.chat = await this.chatService.create();
     const clubUpdated = await this.clubsService.update(newClub._id, newClub);
     user.club = clubUpdated;
     await this.usersService.update(user._id, user);
