@@ -40,9 +40,9 @@ export class UsersService {
           model: 'User',
         },
       })
-      .populate('friends')
+      .populate('friendRequests')
       .populate({
-        path: 'friends',
+        path: 'friendRequests',
         populate: {
           path: 'user',
           model: 'User',
@@ -55,7 +55,7 @@ export class UsersService {
     return await this.userModel
       .findOneAndUpdate({ _id: id }, user, { new: true })
       .populate('club')
-      // .populate('friends')
+      .populate('friendRequests')
       .lean();
   }
 

@@ -51,7 +51,7 @@ export class User extends Document {
   })
   @ApiProperty({ type: () => FriendRequest })
   @ApiPropertyOptional()
-  friends: FriendRequest[];
+  friendRequests: FriendRequest[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Club.name, default: null })
   @ApiPropertyOptional()
