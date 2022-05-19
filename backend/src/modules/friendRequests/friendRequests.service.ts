@@ -13,6 +13,7 @@ export class FriendRequestsService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
+    private readonly friendRequestService: FriendRequestsService,
     @InjectModel(FriendRequest.name)
     private readonly friendReqModel: Model<FriendRequestDocument>,
   ) {}
@@ -43,31 +44,51 @@ export class FriendRequestsService {
 
   async deleteFriend(currUser: User, idFriend: String): Promise<User> {
     const friend: User = await this.userService.findById(idFriend);
-    // Find request
+
+    // Find request request 1
     const indexReq1: number = friend.friendRequests.findIndex((f) => {
       return f.user._id.toString() == currUser._id.toString();
     });
-    // Delete request
-    await this.friendReqModel.remove(friend.friendRequests[indexReq1]._id);
-    // Delete riferiment
-    friend.friendRequests.splice(indexReq1, 1);
-
-    await this.userService.update(friend._id, friend);
-    currUser.friendRequests = currUser.friendRequests.filter((f) => {
-      return f.user != friend;
+    // Find request request 2
+    const indexReq2: number = currUser.friendRequests.findIndex((f) => {
+      return f.user._id.toString() == friend._id.toString();
     });
+
+    // Delete request 1
+    await this.friendReqModel.deleteOne(friend.friendRequests[indexReq1]._id);
+    // Delete request 2
+    await this.friendReqModel.deleteOne(currUser.friendRequests[indexReq2]._id);
+
+    // Delete rif 1
+    friend.friendRequests.splice(indexReq1, 1);
+    // Delete rif 2
+    currUser.friendRequests.splice(indexReq2, 1);
+
+    // Update friend
+    await this.userService.update(friend._id, friend);
+    // Update currUser
     return await this.userService.update(currUser._id, currUser);
   }
 
-  async acceptRequest(currUser: User, idFriend: string): Promise<User> {
-    const friend: User = await this.userService.findById(idFriend);
-    const index1 = friend.friendRequests.findIndex((u) => u.user == currUser);
-    currUser.friendRequests[index1].pending = false;
-    await this.userService.update(friend._id, friend);
+  async acceptRequest(
+    currUser: User,
+    idFriend: string,
+  ): Promise<FriendRequest> {
+    let friend: User = await this.userService.findById(idFriend);
 
-    const index2 = currUser.friendRequests.findIndex((u) => u.user == friend);
-    friend.friendRequests[index2].pending = false;
-    return await this.userService.update(currUser._id, currUser);
+    const index1 = friend.friendRequests.findIndex(
+      (u) => u.user._id.toString() == currUser._id.toString(),
+    );
+    let reqFriend = friend.friendRequests[index1];
+    reqFriend.pending = false;
+    await this.friendRequestService.update(reqFriend._id, reqFriend);
+
+    const index2 = currUser.friendRequests.findIndex(
+      (u) => u.user._id.toString() == friend._id.toString(),
+    );
+    let reqCurrUser = friend.friendRequests[index2];
+    reqCurrUser.pending = false;
+    return await this.friendRequestService.update(reqCurrUser._id, reqCurrUser);
   }
 
   async findUsers(currUser: User, nickname: string): Promise<User[]> {
@@ -76,5 +97,14 @@ export class FriendRequestsService {
     return users.filter((u) =>
       u.nickname.toLowerCase().includes(nickname.toLowerCase()),
     );
+  }
+  async update(
+    id: string,
+    friendRequest: FriendRequest,
+  ): Promise<FriendRequest> {
+    return await this.friendReqModel
+      .findOneAndUpdate({ _id: id }, friendRequest, { new: true })
+      .populate('user')
+      .lean();
   }
 }

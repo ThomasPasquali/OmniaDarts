@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from '../users/users.module';
-import { FriendRequestsController } from './friendRequests.controller';
-import { FriendRequestsService } from './friendRequests.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../schemas/user.schema';
 import {
   FriendRequest,
   FriendRequestSchema,
 } from '../../schemas/friendRequest.schema';
+import { UsersModule } from '../users/users.module';
+import { FriendRequestsController } from './friendRequests.controller';
+import { FriendRequestsService } from './friendRequests.service';
 
 @Module({
   imports: [
@@ -18,6 +17,6 @@ import {
   ],
   controllers: [FriendRequestsController],
   providers: [FriendRequestsService],
-  exports: [FriendRequestsModule],
+  exports: [FriendRequestsModule, FriendRequestsService],
 })
 export class FriendRequestsModule {}
