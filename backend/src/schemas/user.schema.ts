@@ -18,6 +18,10 @@ export type UserDocument = User & Document;
 export class User extends Document {
   @Prop()
   @ApiProperty({
+<<<<<<< HEAD
+=======
+    description: 'The nickname of the user',
+>>>>>>> origin/massimo/friends-test
     required: true,
   })
   nickname: string;
