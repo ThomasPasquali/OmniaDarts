@@ -62,7 +62,6 @@ import { TextchatsModule } from './modules/textchats/textchats.module';
     AuthModule,
     ChatModule,
     SchemasModule,
-    FriendsModule,
     NotificationsModule,
     TextchatsModule,
     PostsModule,
