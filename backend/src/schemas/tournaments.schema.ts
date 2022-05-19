@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
-import { Match } from './match.schema';
 import { ApiProperty } from '@nestjs/swagger';
+import mongoose, { Document } from 'mongoose';
 import WinningMode from '../classes/winningmode';
 import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
 import { getEnumDescription } from '../utils/utils';
+import { TournamentMatch } from './tournamentMatch.schema';
 import { User } from './user.schema';
 
 export type TournamentDocument = Tournament & Document;
@@ -19,7 +19,14 @@ export class Tournament {
   name: string;
 
   @Prop()
+  @ApiProperty()
   timestamp: Date;
+
+  @Prop()
+  @ApiProperty({
+    required: true,
+  })
+  randomOrder: boolean;
 
   @Prop()
   @ApiProperty({
@@ -53,7 +60,7 @@ export class Tournament {
   players: User[];
 
   @Prop()
-  matches: Match[];
+  matches: TournamentMatch[];
 }
 
 export const TournamentsSchema = SchemaFactory.createForClass(Tournament);

@@ -28,7 +28,10 @@ export class TournamentsController {
     type: Tournament,
   })
   @ApiBadRequestResponse({ description: 'Invalid payload' })
-  async newTournament(@Body() tournament: Tournament, @Res() response) {
+  async addTournament(@Body() tournament: Tournament, @Res() response) {
     return response.status(HttpStatus.OK).json(tournament);
   }
+  /* 
+  Aggiungi tournament
+   */
 }
