@@ -68,7 +68,7 @@ export class FriendRequestsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get()
-  @ApiOperation({ description: 'Get the list of friends' })
+  @ApiOperation({ description: 'Get the list of friends (pending and not)' })
   @ApiOkResponse({ type: [FriendRequest] })
   @HttpCode(HttpStatus.OK)
   async fetchAll(@Req() req) {
@@ -80,7 +80,7 @@ export class FriendRequestsController {
   @ApiBearerAuth()
   @Get(':nickname')
   @ApiOperation({
-    description: 'Get the list of friends that contain the nickname',
+    description: 'Get the list of users that contain the nickname',
   })
   @ApiOkResponse({ type: [User] })
   @HttpCode(HttpStatus.OK)

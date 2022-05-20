@@ -45,7 +45,6 @@ export class TournamentsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({
-    description: 'All tournaments',
     type: [Tournament],
   })
   async getAllTournamentsAvailable(): Promise<Tournament[]> {
@@ -62,7 +61,6 @@ export class TournamentsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({
-    description: 'All tournaments',
     type: [Tournament],
   })
   async getTournamentsByName(
