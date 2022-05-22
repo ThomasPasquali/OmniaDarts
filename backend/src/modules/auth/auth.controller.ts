@@ -1,30 +1,31 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  UnauthorizedException,
-  UseGuards,
+  HttpStatus,
   InternalServerErrorException,
+  Post,
   Req,
   Res,
-  HttpStatus,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import * as bcrypt from 'bcrypt';
+import SimpleUser from '../../classes/SimpleUser';
 import { User } from '../../schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import * as bcrypt from 'bcrypt';
-import { AuthGuard } from '@nestjs/passport';
-import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -37,6 +38,8 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ description: 'Return the current user authenticated' })
+  @ApiOkResponse({ description: 'The user logged in', type: User })
   @Get('user')
   async getLoggedUser(@Req() req) {
     return req.user;
@@ -44,8 +47,12 @@ export class AuthController {
 
   @Post()
   @ApiOperation({ description: 'Login a user in' })
-  @ApiOkResponse({ description: 'A user logged in successful' })
-  async login(@Body() user: User) {
+  @ApiOkResponse({ description: 'A user logged in successfully', type: User })
+  @ApiBody({
+    description: 'Simple user',
+    type: SimpleUser,
+  })
+  async login(@Body() user: SimpleUser) {
     const u: User = await this.authService.validateUser(
       user.nickname,
       user.pwd,
@@ -56,7 +63,7 @@ export class AuthController {
 
   @Post('logout')
   @ApiOperation({ description: 'Logout the current user' })
-  @ApiOkResponse({ description: 'User logged out successfully' })
+  @ApiOkResponse({ description: 'User logged out successfully', type: User })
   async logout(@Req() req) {
     //TODO eventually blacklist tokens
     return req.user;
@@ -64,11 +71,20 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ description: 'Register a user' })
-  @ApiCreatedResponse({ description: 'User register successfuly' })
+  @ApiCreatedResponse({
+    description: 'User register successfully',
+    type: SimpleUser,
+  })
   @ApiNotFoundResponse({ description: 'User not found' })
-  async register(@Body() user: User) {
+  @ApiBody({
+    description: 'Simple user',
+    type: SimpleUser,
+  })
+  async register(@Body() sUser: SimpleUser) {
+    let user: User;
+    user.nickname = sUser.nickname;
     const saltOrRounds: number = parseInt(this.config.get('SALTROUNDS'), 10);
-    user.pwd = await bcrypt.hash(user.pwd.toString(), saltOrRounds as number);
+    user.pwd = await bcrypt.hash(sUser.pwd.toString(), saltOrRounds as number);
     user.club = null;
     user.isAdmin = false;
     user.clubRequest = null;
@@ -79,7 +95,8 @@ export class AuthController {
   }
 
   @Post('google')
-  async authenticateGoogle(@Body() tokenData: any, @Req() req) {
+  async authenticateGoogle(@Body() tokenData: any) {
+    //, @Req() req) {
     const token = await this.authService.getAccessToken(tokenData);
     const user = await this.authService.validateUserGoogle(token);
     const res = await this.authService.login(user);
@@ -88,6 +105,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Sign in with google' })
+  @ApiOkResponse({ description: 'A user logged in succesfully using google' })
   @Get('google/user')
   async signInWithGoogleRedirect(@Req() req, @Res() res) {
     return res.status(HttpStatus.OK).json(req.user);

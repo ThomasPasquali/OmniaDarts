@@ -1,44 +1,71 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
+import Post from '../classes/post';
 import { Chat } from './chat.schema';
 import { User } from './user.schema';
-import Post from '../classes/post';
 
 export type ClubDocument = Club & Document;
 
 @Schema()
-export class Club extends mongoose.Document{
+export class Club extends mongoose.Document {
   @Prop()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Name of the club',
+    required: true,
+    default: 'club_name',
+  })
   name: string;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  @ApiProperty()
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  })
+  @ApiProperty({
+    description: 'Admins of the club',
+    required: false,
+    default: [],
+  })
   admin: User[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  @ApiProperty()
+  @ApiProperty({
+    description: 'List of the members of the club',
+    required: false,
+    default: [],
+  })
   players: User[];
 
-  @Prop({
-    default: String,
+  @Prop()
+  @ApiProperty({
+    description: 'Image of the club',
+    required: false,
   })
-  @ApiProperty()
   imageUri: string;
 
   @Prop({
     default: [],
   })
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Posts of the club',
+    required: false,
+    default: [],
+  })
   posts: Post[];
 
   @Prop()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Small description of the club',
+    required: false,
+    default: null,
+  })
   description: string;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: Chat.name }] })
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Chat inside the club',
+    required: false,
+    default: null,
+  })
   chat: Chat;
 }
 

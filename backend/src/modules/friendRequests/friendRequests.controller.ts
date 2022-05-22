@@ -49,7 +49,10 @@ export class FriendRequestsController {
   @ApiBearerAuth()
   @Delete(':idFriend')
   @ApiOperation({ description: 'Delete or reject a friend by id' })
-  @ApiOkResponse({ type: User })
+  @ApiOkResponse({
+    description: 'A user has been deleted',
+    type: User,
+  })
   @HttpCode(HttpStatus.OK)
   async deleteFriend(@Req() req, @Param('idFriend') idFriend: string) {
     return await this.friendsService.deleteFriend(req.user, idFriend);
@@ -59,7 +62,10 @@ export class FriendRequestsController {
   @ApiBearerAuth()
   @Put(':idFriend')
   @ApiOperation({ description: 'Accept a friend request' })
-  @ApiOkResponse({ type: User })
+  @ApiOkResponse({
+    description: 'A friend request has been accepted',
+    type: User,
+  })
   @HttpCode(HttpStatus.ACCEPTED)
   async acceptRequest(@Req() req, @Param('idFriend') idFriend: string) {
     return await this.friendsService.acceptRequest(req.user, idFriend);
@@ -69,7 +75,10 @@ export class FriendRequestsController {
   @ApiBearerAuth()
   @Get()
   @ApiOperation({ description: 'Get the list of friends (pending and not)' })
-  @ApiOkResponse({ type: [FriendRequest] })
+  @ApiOkResponse({
+    description: 'The list of friend',
+    type: [FriendRequest],
+  })
   @HttpCode(HttpStatus.OK)
   async fetchAll(@Req() req) {
     const user = await this.usersService.findById(req.user._id);
@@ -80,9 +89,13 @@ export class FriendRequestsController {
   @ApiBearerAuth()
   @Get(':nickname')
   @ApiOperation({
-    description: 'Get the list of users that contain the nickname',
+    description:
+      "Get the list of users that contain the nickname inside their's",
   })
-  @ApiOkResponse({ type: [User] })
+  @ApiOkResponse({
+    description: "The list of users that contain the nickname inside their's",
+    type: [User],
+  })
   @HttpCode(HttpStatus.OK)
   async getByNickname(@Req() req, @Param('nickname') nickname: string) {
     return await this.friendsService.findUsers(req.user, nickname);

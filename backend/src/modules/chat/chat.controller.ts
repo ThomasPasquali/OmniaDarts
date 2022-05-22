@@ -1,26 +1,26 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Put,
-  UseGuards,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
   Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ChatService } from './chat.service';
-import { TextMessage } from '../../classes/textMessage';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
-  ApiOperation, ApiTags,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
+import { TextMessage } from '../../classes/textMessage';
 import { User } from '../../schemas/user.schema';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ChatService } from './chat.service';
 
 @Controller('chat')
 @ApiTags('chat')
@@ -29,12 +29,14 @@ export class ChatController {
 
   @Post()
   @ApiOperation({ description: 'Create a new chat standalone' })
+  @ApiCreatedResponse({ description: 'Created a new chat', type: TextMessage })
   async create() {
     return await this.chatService.create();
   }
 
   @Get(':id')
   @ApiOperation({ description: 'Find a chat' })
+  @ApiOkResponse({ description: 'Found the chat' })
   async findOne(@Param('id') id: string) {
     return this.chatService.findById(id);
   }
@@ -43,7 +45,7 @@ export class ChatController {
   @ApiOperation({ description: 'Write a message on a specific chat' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'club updated', type: TextMessage })
+  @ApiCreatedResponse({ description: 'Club updated', type: TextMessage })
   @Patch(':id')
   async addMessage(
     @Req() req,

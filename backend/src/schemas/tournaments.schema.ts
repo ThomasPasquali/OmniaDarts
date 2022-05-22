@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import WinningMode from '../classes/winningmode';
+import WinningMode from '../classes/Winningmode';
 import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
 import { getEnumDescription } from '../utils/utils';
@@ -70,6 +70,13 @@ export class Tournament {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Club' })
   @ApiPropertyOptional()
   clubRef: Club;
+
+  @Prop()
+  @ApiProperty({
+    required: true,
+    default: false,
+  })
+  finished: boolean;
 }
 
 export const TournamentsSchema = SchemaFactory.createForClass(Tournament);
