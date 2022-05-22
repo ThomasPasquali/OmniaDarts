@@ -49,9 +49,9 @@ export const state = () => ({
 })
 
 export const actions = {
-  async fetchUsersCmp({commit}) {
-    commit('setUsersCmp', await this.$axios.$get('stats'));  // fixme ???
-  }
+  // async fetchUsersCmp({commit}) {
+  //   commit('setUsersCmp', await this.$axios.$get('stats'));  // fixme ???
+  // }
 }
 
 export const mutations = {
