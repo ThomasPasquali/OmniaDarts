@@ -24,18 +24,17 @@ export default {
           default: true,
           vuex: {
             mutations: [
-              'new --> notifications/addNew',
+              'newNotification --> notifications/addNew',
               'checked --> notifications/checked',
-              'newMessage --> textchats/newMessage',
+              'newTextMessage --> textchats/newTextMessage',
             ],
             emitBacks: [
               'checked <-- notifications/notificationUpdate',
-              'newMessage <-- textchats/lastMessageSent',
+              'newTextMessage <-- textchats/lastMessageSent',
             ]
           },
           namespaces: {
             '/notifications': {
-
               /*emitBacks: ['sample3', 'sample4 <-- myObj.sample4'],
               emitters: [
                 'reset] getProgress + refreshInfo --> progress [handleDone'

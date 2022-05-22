@@ -6,17 +6,15 @@ export const state = () => ({
 })
 
 export const actions = {
-  newMessage({state, commit}, {id, text}) {
-    console.log('New message action', {id, text})
+  newTextMessage({state, commit}, {chatID, text, sender}) {
     let message = {
-      id: Math.floor(Math.random()*10),
       text,
       datetime: new Date(),
-      sender: 'CAIO',//FIXME
+      sender,
       sent: false
     }
     commit('emitLastMessage', message)
-    commit('newMessage', { chatID: id, message, isEvent: false })
+    commit('newTextMessage', { chatID, message, isEvent: false })
   }
 }
 
@@ -24,16 +22,30 @@ export const mutations = {
   newChat(state, id) {
     if (!state.chats[id]) {
       console.log("Created chat " + id)
-      state.chats[id] = {messages: [], /*TODO more props*/}
+      state.chats[id] = {
+        idCount: 0,
+        messages: [],
+        /*TODO more props*/
+      }
     }
   },
-  newMessage(state, {chatID, message, isEvent = true}) {
+  newTextMessage(state, {chatID, message, isEvent = true}) {
     if (message.datetime instanceof String) message.datetime = new Date(message.datetime) //FIXME
-    if(isEvent) {
-      let i = _.findIndex(state.chats[chatID].messages, { id: message.id })
-      if(i >= 0) state.chats[chatID] && (state.chats[chatID].messages[i].sent = true)
-    } else
-      state.chats[chatID] && state.chats[chatID].messages.push(message)
+    const chat = state.chats[chatID]
+    if(chat) {
+      if (isEvent) {
+        let i = _.findIndex(chat.messages, {id: message.id})
+        if (i >= 0) {
+          chat.messages[i].sender = message.sender
+          chat.messages[i].sent = message.sent
+          chat.idCount = Math.max(chat.idCount, message.id)
+        }
+      } else {
+        chat.messages.push(message)
+        message.id = chat.idCount
+        chat.idCount = chat.idCount + 1
+      }
+    }
   },
   emitLastMessage(state, message) {
     state.lastMessageSent = message

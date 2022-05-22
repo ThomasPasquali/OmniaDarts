@@ -25,8 +25,10 @@ export const getters = {
     return app.$nuxtSocket({
       channel,
       forceNew: false,
-      persist: true,
-      auth: { token: app.$auth.strategy.token.get() }
+      persist: 'channel',
+      extraHeaders: {
+        Authorization: app.$auth.strategy.token.get()
+      },
     })
     //return state.sockets[channel]
   },

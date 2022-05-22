@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     sendMessage(text) {
-      this.$store.dispatch('textchats/newMessage', { id: this.chatID, text })
+      this.$store.dispatch('textchats/newTextMessage', { chatID: this.chatID, text, sender: this.$auth.user.nickname })
     }
   },
   mounted() {
