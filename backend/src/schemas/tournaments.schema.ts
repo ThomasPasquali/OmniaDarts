@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import WinningMode from '../classes/Winningmode';
+import WinningMode from '../classes/winningmode';
 import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
 import { getEnumDescription } from '../utils/utils';

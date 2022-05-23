@@ -42,6 +42,7 @@ import { MatchesModule } from './modules/matches/matches.module';
           `:${configService.get<string>('DATABASE_PWD')}` +
           `@${configService.get<string>('DATABASE_HOST')}`,
         dbName: `${configService.get<string>('DATABASE_NAME')}`,
+        autoIndex: false,
         connectionFactory: (connection) => {
           connection.plugin(require('mongoose-autopopulate'));
           return connection;

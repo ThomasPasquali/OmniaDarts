@@ -59,11 +59,21 @@ export class ClubsController {
 
     this.checkNull(clubToApply, 'Club not exits');
 
-    clubRequest.club = clubToApply;
-    clubToApply.players.push(currUser);
+    clubRequest.club = {
+      _id: clubToApply._id,
+      name: clubToApply.name
+    } as Club;
+    clubToApply.players.push({
+      _id: currUser._id
+    } as User);
 
     currUser.clubRequest = clubRequest;
-    await this.usersService.update(currUser._id, currUser);
+    console.log('hei')
+    await this.usersService.update(
+      currUser._id,
+      JSON.parse(JSON.stringify(currUser)),
+    );
+    console.log('ciao')
     return await this.clubsService.update(clubToApply._id, clubToApply);
   }
 

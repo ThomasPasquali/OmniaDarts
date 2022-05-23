@@ -12,9 +12,7 @@ import { Match } from './match.schema';
 
 export type UserDocument = User & Document;
 
-@Schema({
-  autoIndex: true,
-})
+@Schema()
 export class User extends Document {
   @Prop({
     default: '',
