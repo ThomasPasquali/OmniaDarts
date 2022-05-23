@@ -24,6 +24,12 @@ export default {
     return {
       options: [
         {
+          title: 'Profile',
+          to: 'profile',
+          show: true,
+          onClick: this.onConfirm
+        },
+        {
           title: 'Club',
           to: 'club',
           show: this.$auth.user.club,
