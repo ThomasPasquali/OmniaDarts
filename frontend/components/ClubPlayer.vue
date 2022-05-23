@@ -1,17 +1,17 @@
 <template>
-  <div id="club_player">
+  <div class="club_player">
 
-    <div><img id="pic" :src="user.photo" /></div>
-    <div id="info">
-      <p id="name">{{ user.name }}</p>
-      <p id="stats">{{ user.stats }}</p>
+    <div><img class="pic" :src="user.photo" /></div>
+    <div class="info">
+      <p class="title">{{ user.name }}</p>
+      <p class="message">{{ user.stats }}</p>
     </div>
 
-    <div v-if="!user.request" id="buttons">
+    <div v-if="!user.request" class="buttons">
       <van-button icon="star"></van-button>
       <van-button icon="delete" v-if="admin"></van-button>
     </div>
-    <div v-else id="buttons">
+    <div v-else class="buttons">
       <van-button icon="success"></van-button>
       <van-button icon="cross"></van-button>
     </div>
@@ -29,7 +29,7 @@ export default {
 
 <style scoped>
 
-#club_player {
+.club_player {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -41,35 +41,35 @@ export default {
   gap: 16px;
 }
 
-#club_player > div {
+.club_player > div {
   max-width: inherit;
   max-height: inherit;
 }
 
-#pic {
+.pic {
   object-fit: scale-down;
   max-width: inherit;
   max-height: inherit;
 }
 
-#info {
+.info {
   width: 100%;
 }
 
-#info > p {
+.info > p {
   margin: 0;
 }
 
-#name {
+.title {
   font-size: 20px;
   margin-bottom: 12px !important;
 }
 
-#stats {
+.message {
   font-size: 16px;
 }
 
-#buttons {
+.buttons {
   display: flex;
   flex-direction: row;
   gap: 8px;
