@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import WinningMode from '../classes/winningmode';
+import WinningMode from '../classes/Winningmode';
 import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
 import { getEnumDescription } from '../utils/utils';
@@ -15,12 +15,12 @@ export type TournamentDocument = Tournament & Document;
 export class Tournament {
   @Prop()
   @ApiProperty({
-    required: false,
+    required: true,
   })
   name: string;
 
   @Prop()
-  @ApiProperty()
+  @ApiPropertyOptional()
   timestamp: Date;
 
   @Prop()
@@ -56,16 +56,27 @@ export class Tournament {
     isArray: true,
     required: true,
     minLength: 4,
+    maxLength: 100,
     example: '',
   })
   players: User[];
 
-  @Prop()
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TournamentMatch' }],
+  })
+  @ApiPropertyOptional()
   matches: TournamentMatch[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Club' })
-  @ApiProperty()
+  @ApiPropertyOptional()
   clubRef: Club;
+
+  @Prop()
+  @ApiProperty({
+    required: true,
+    default: false,
+  })
+  finished: boolean;
 }
 
 export const TournamentsSchema = SchemaFactory.createForClass(Tournament);

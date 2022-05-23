@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -19,6 +25,8 @@ export class FriendRequestsService {
 
   async addFriend(currUser: User, idFriend: string): Promise<User> {
     const friend: User = await this.userService.findById(idFriend);
+    this.checkFriendExist(friend);
+    this.shouldBeFriend(currUser, friend, false);
 
     const requestReceiver = {
       isSender: false,
@@ -43,12 +51,14 @@ export class FriendRequestsService {
 
   async deleteFriend(currUser: User, idFriend: String): Promise<User> {
     const friend: User = await this.userService.findById(idFriend);
+    this.checkFriendExist(friend);
+    this.shouldBeFriend(currUser, friend, true);
 
-    // Find request request 1
+    // Find index request 1
     const indexReq1: number = friend.friendRequests.findIndex((f) => {
       return f.user._id.toString() == currUser._id.toString();
     });
-    // Find request request 2
+    // Find index request 2
     const indexReq2: number = currUser.friendRequests.findIndex((f) => {
       return f.user._id.toString() == friend._id.toString();
     });
@@ -58,9 +68,9 @@ export class FriendRequestsService {
     // Delete request 2
     await this.friendReqModel.deleteOne(currUser.friendRequests[indexReq2]._id);
 
-    // Delete rif 1
+    // Delete rif request 1
     friend.friendRequests.splice(indexReq1, 1);
-    // Delete rif 2
+    // Delete rif request 2
     currUser.friendRequests.splice(indexReq2, 1);
 
     // Update friend
@@ -74,18 +84,27 @@ export class FriendRequestsService {
     idFriend: string,
   ): Promise<FriendRequest> {
     let friend: User = await this.userService.findById(idFriend);
+    this.checkFriendExist(friend);
+    this.shouldBeFriend(currUser, friend, true);
 
-    const index1 = friend.friendRequests.findIndex(
-      (u) => u.user._id.toString() == currUser._id.toString(),
-    );
-    let reqFriend = friend.friendRequests[index1];
+    // Find index request 1
+    const indexReq1: number = friend.friendRequests.findIndex((f) => {
+      return f.user._id.toString() == currUser._id.toString();
+    });
+    // Find index request 2
+    const indexReq2: number = currUser.friendRequests.findIndex((f) => {
+      return f.user._id.toString() == friend._id.toString();
+    });
+
+    // Update request 1
+    let reqFriend = friend.friendRequests[indexReq1];
+    this.shouldBePending(reqFriend, true);
     reqFriend.pending = false;
     await this.update(reqFriend._id, reqFriend);
 
-    const index2 = currUser.friendRequests.findIndex(
-      (u) => u.user._id.toString() == friend._id.toString(),
-    );
-    let reqCurrUser = friend.friendRequests[index2];
+    // Update request 2
+    let reqCurrUser = currUser.friendRequests[indexReq2];
+    this.shouldBePending(reqCurrUser, true);
     reqCurrUser.pending = false;
     return await this.update(reqCurrUser._id, reqCurrUser);
   }
@@ -97,6 +116,7 @@ export class FriendRequestsService {
       u.nickname.toLowerCase().includes(nickname.toLowerCase()),
     );
   }
+
   async update(
     id: string,
     friendRequest: FriendRequest,
@@ -105,5 +125,47 @@ export class FriendRequestsService {
       .findOneAndUpdate({ _id: id }, friendRequest, { new: true })
       .populate('user')
       .lean();
+  }
+
+  private checkFriendExist(friend: User) {
+    if (friend == null)
+      this.throwHttpExc('The friend does not exist', HttpStatus.BAD_REQUEST);
+  }
+
+  private shouldBeFriend(
+    currUser: User,
+    friend: User,
+    shouldBeFriend: boolean,
+  ) {
+    let isFriend = false;
+    currUser.friendRequests.forEach((fr) => {
+      if (fr.user._id.toString() == friend._id.toString()) isFriend = true;
+    });
+    if (isFriend != shouldBeFriend) {
+      if (isFriend)
+        this.throwHttpExc("It shouldn't be friend", HttpStatus.CONFLICT);
+      else this.throwHttpExc('It shouldn be friend', HttpStatus.CONFLICT);
+    }
+  }
+
+  private shouldBePending(friendReq: FriendRequest, shouldBePending: boolean) {
+    if (friendReq.pending != shouldBePending)
+      if (friendReq.pending)
+        this.throwHttpExc(
+          "The request shouldn't be pending",
+          HttpStatus.CONFLICT,
+        );
+      else
+        this.throwHttpExc('The request should be pending', HttpStatus.CONFLICT);
+  }
+
+  private throwHttpExc(message: string, code: HttpStatus) {
+    throw new HttpException(
+      {
+        status: code,
+        error: message,
+      },
+      code,
+    );
   }
 }

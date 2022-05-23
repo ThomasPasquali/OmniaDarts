@@ -17,6 +17,7 @@ import {
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -44,7 +45,7 @@ export class ClubsController {
   @ApiOperation({ description: 'Send request to join a club' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'club updated', type: Club })
+  @ApiCreatedResponse({ description: 'Club updated', type: Club })
   async sendRequest(
     @Req() req,
     @Query('message') message: string,
@@ -71,7 +72,7 @@ export class ClubsController {
   @ApiOperation({ description: 'Get my club' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'My club', type: Club })
+  @ApiOkResponse({ description: 'My club', type: Club })
   async getMyClub(@Req() req): Promise<Club> {
     this.checkNull(req.user.club, "You don't belong to a club");
     const club = await this.clubsService.getClubById(req.user.club._id);
