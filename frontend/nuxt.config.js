@@ -29,7 +29,7 @@ export default {
               'newTextMessage --> textchats/newTextMessage',
             ],
             emitBacks: [
-              'checked <-- notifications/notificationUpdate',
+              'checkedNotification <-- notifications/notificationUpdate',
               'newTextMessage <-- textchats/lastMessageSent',
             ]
           },

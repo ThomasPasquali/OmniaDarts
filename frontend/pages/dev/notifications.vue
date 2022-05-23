@@ -8,7 +8,7 @@
         :key="i"
         @click="notificationChecked(i)"
         :title="`${n.message} (${n.id}) cliccami...`"
-        :value="n.state || 'new'" />
+        :value="n.state || 'new'"><pre>{{n.payload}}</pre></van-cell>
     </van-cell-group>
 
     <h1>Last update</h1>

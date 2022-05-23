@@ -1,14 +1,14 @@
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  ConnectedSocket,
 } from '@nestjs/websockets';
 import Notification from '../../classes/notification';
 import { Socket } from 'net';
-import { Req } from '@nestjs/common';
 import { SocketIOBodyUnwrapper } from '../../utils/utils';
-import {EventsGateway} from "../events/events.gateway";
+import { EventsGateway } from '../events/events.gateway';
+import { NotificationState } from '../../enums/notifications';
 
 @WebSocketGateway({
   namespace: 'notifications',
@@ -17,22 +17,22 @@ import {EventsGateway} from "../events/events.gateway";
   },
 })
 export class NotificationsGateway extends EventsGateway {
-
-  @SubscribeMessage('newNotification')
-  newNotification(@ConnectedSocket() client: Socket, @Req() req): void {
-    console.log('New notification', req.handshake.auth, client['culo']);
-    this.broadcast(
-      'new',
-      new Notification(Math.floor(Math.random() * 100), 'Backend test'),
-    );
+  async handleConnection(client: any): Promise<any> {
+    await super.handleConnection(client);
+    for (const provider of this.notificationsProviders)
+      for (const c of this.clients)
+        for (const n of await provider.getNotifications(c.user))
+          c.emit('newNotification', n);
   }
 
   @SubscribeMessage('checkedNotification')
-  checkNotification(@MessageBody() body: any, @ConnectedSocket() client: Socket): void {
+  checkNotification(
+    @MessageBody() body: any,
+    @ConnectedSocket() client: Socket,
+  ): void {
     const n = new SocketIOBodyUnwrapper<Notification>(body).get();
-    n.state = 'checked';
+    n.state = NotificationState.ACCEPTED;
     console.log('Notification check ', n);
-    //this.broadcast('checked', n);
+    this.broadcast('newNotification', n);
   }
-
 }

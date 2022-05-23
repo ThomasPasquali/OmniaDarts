@@ -3,57 +3,88 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
   WebSocketGateway,
-  WebSocketServer
+  WebSocketServer,
 } from '@nestjs/websockets';
-import {EventsService} from './events.service';
-import {Server} from "socket.io";
-import {JwtService} from "@nestjs/jwt";
-import {UsersService} from "../users/users.service";
+import { EventsService } from './events.service';
+import { Server } from 'socket.io';
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
+import { ClubsService } from '../clubs/clubs.service';
+import { NotificationsProvider } from '../../interfaces/notifications';
+import { User } from '../../schemas/user.schema';
 
 @WebSocketGateway()
-export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit{
+export class EventsGateway
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
+{
+  protected notificationsProviders: NotificationsProvider[];
+  private static servers: any = {};
 
   constructor(
     private readonly eventsService: EventsService,
     private readonly jwtService: JwtService,
-    private readonly usersService: UsersService
-  ) {}
-
-  private static servers: any = {};
+    private readonly usersService: UsersService,
+    protected readonly clubService: ClubsService,
+  ) {
+    this.notificationsProviders = [clubService];
+  }
 
   private static registerNamespaceServer(server): boolean {
-    let namespace = server.name
-    if(EventsGateway.servers[namespace]) return false;
+    const namespace = server.name;
+    if (EventsGateway.servers[namespace]) return false;
     EventsGateway.servers[namespace] = server;
     return true;
   }
 
   @WebSocketServer()
   private server: Server;
-  private clients=[];
+  protected clients = [];
 
   afterInit(server: any): any {
-    EventsGateway.registerNamespaceServer(server);
+    EventsGateway.registerNamespaceServer(this);
   }
 
   async handleConnection(client: any) {
     this.clients.push(client);
-    const payload = this.jwtService.decode(client.handshake.headers.authorization.split(' ')[1]);
-    client.user = await this.usersService.findById(payload.sub)
-    console.log(`IO: "${client.user.nickname}" connected to "${this.server['name']}"`);
+    const payload = this.jwtService.decode(
+      client.handshake.headers.authorization.split(' ')[1],
+    );
+    client.user = await this.usersService.findById(payload.sub);
+    console.log(
+      `IO: "${client.user.nickname}" connected to "${this.server['name']}"`,
+    );
   }
 
   handleDisconnect(client) {
     for (let i = 0; i < this.clients.length; i++)
       if (this.clients[i] === client) {
         this.clients.splice(i, 1);
-        console.log(`IO: "${client.user.nickname}" disconnected from "${this.server['name']}"`);
+        console.log(
+          `IO: "${client.user.nickname}" disconnected from "${this.server['name']}"`,
+        );
         break;
       }
   }
 
-  public broadcast(event:string, payload: any) {
-    for (let c of this.clients)
-      c.emit(event, payload);
+  public broadcast(event: string, payload: any) {
+    for (const c of this.clients) c.emit(event, payload);
   }
+
+  public broadcastTo(namespace: string, event: string, payload: any) {
+    const server = EventsGateway.servers[namespace];
+    if (server) for (const c of server.clients) c.emit(event, payload);
+  }
+
+  public sentToUser(user: User, event: string, payload: any) {
+    for (const c of this.clients) if(c.user._id == user._id) c.emit(event, payload);
+  }
+
+  public sentToClub(clubID: string, event: string, payload: any) {
+    for (const c of this.clients) if(c.user.club._id == clubID) c.emit(event, payload);
+  }
+
+  public sentToClubAdmins(clubID: string, event: string, payload: any) {
+    for (const c of this.clients) if(c.user.club._id == clubID && c.user.isAdmin) c.emit(event, payload);
+  }
+
 }

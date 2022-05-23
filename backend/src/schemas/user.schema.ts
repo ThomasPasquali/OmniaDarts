@@ -62,7 +62,9 @@ export class User extends Document {
   @ApiHideProperty()
   clubRequest: ClubRequest;
 
-  @Prop()
+  @Prop({
+    default: false
+  })
   @ApiHideProperty()
   isAdmin: boolean;
 }
