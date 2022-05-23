@@ -22,7 +22,7 @@ export default {
   name: "AppbarMenu",
   data() {
     return {
-      options: [
+      options: [  // fixme full path
         {
           title: 'Club',
           to: 'club',
