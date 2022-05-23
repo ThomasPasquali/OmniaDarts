@@ -17,6 +17,7 @@ import {
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -44,7 +45,7 @@ export class ClubsController {
   @ApiOperation({ description: 'Send request to join a club' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'club updated', type: Club })
+  @ApiCreatedResponse({ description: 'Club updated', type: Club })
   async sendRequest(
     @Req() req,
     @Query('message') message: string,
@@ -58,11 +59,21 @@ export class ClubsController {
 
     this.checkNull(clubToApply, 'Club not exits');
 
-    clubRequest.club = clubToApply;
-    clubToApply.players.push(currUser);
+    clubRequest.club = {
+      _id: clubToApply._id,
+      name: clubToApply.name
+    } as Club;
+    clubToApply.players.push({
+      _id: currUser._id
+    } as User);
 
     currUser.clubRequest = clubRequest;
-    await this.usersService.update(currUser._id, currUser);
+    console.log('hei')
+    await this.usersService.update(
+      currUser._id,
+      JSON.parse(JSON.stringify(currUser)),
+    );
+    console.log('ciao')
     return await this.clubsService.update(clubToApply._id, clubToApply);
   }
 
@@ -71,7 +82,7 @@ export class ClubsController {
   @ApiOperation({ description: 'Get my club' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'My club', type: Club })
+  @ApiOkResponse({ description: 'My club', type: Club })
   async getMyClub(@Req() req): Promise<Club> {
     this.checkNull(req.user.club, "You don't belong to a club");
     const club = await this.clubsService.getClubById(req.user.club._id);

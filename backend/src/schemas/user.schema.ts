@@ -12,9 +12,7 @@ import { Match } from './match.schema';
 
 export type UserDocument = User & Document;
 
-@Schema({
-  autoIndex: true,
-})
+@Schema()
 export class User extends Document {
   @Prop({
     default: '',
@@ -62,7 +60,9 @@ export class User extends Document {
   @ApiHideProperty()
   clubRequest: ClubRequest;
 
-  @Prop()
+  @Prop({
+    default: false
+  })
   @ApiHideProperty()
   isAdmin: boolean;
 }

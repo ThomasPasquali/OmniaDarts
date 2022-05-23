@@ -1,20 +1,12 @@
 import {
+    ConnectedSocket,
     MessageBody,
     SubscribeMessage,
     WebSocketGateway,
-    WebSocketServer,
-    WsResponse,
-    ConnectedSocket,
-    OnGatewayConnection,
-    OnGatewayDisconnect,
-    OnGatewayInit
 } from '@nestjs/websockets';
-import Notification from "../../classes/notification";
-import { Server } from 'socket.io';
-import { Socket } from "net";
-import { Req } from "@nestjs/common";
-import { SocketIOBodyUnwrapper } from "../../utils/utils";
-import SocketIOServer from "../../utils/socketio.server";
+import {Req} from "@nestjs/common";
+import {EventsGateway} from "../events/events.gateway";
+import {Socket} from "net";
 
 @WebSocketGateway({
     namespace: 'textchats',
@@ -22,16 +14,15 @@ import SocketIOServer from "../../utils/socketio.server";
         origin: '*',
     },
 })
-export class TextchatsGateway extends SocketIOServer {
-    @WebSocketServer()
-    server: Server;
+export class TextchatsGateway extends EventsGateway {
 
-    @SubscribeMessage('newMessage')
-    async newNotification(@MessageBody() body: any): Promise<void> {
-        console.log("New message", body);
-        body.data.sender = 'Backend'
-
-        setTimeout(_ => this.broadcast('newMessage', { chatID: 'dev', message: body.data }), 2000)
+    @SubscribeMessage('newTextMessage')
+    async newNotification(@MessageBody() body: any, @ConnectedSocket() client: Socket): Promise<void> {
+        const msg = body.data
+        msg.sender = client['user'].nickname;
+        msg.sent = true;
+        //console.log(msg)
+        setTimeout(_ => this.broadcast('newTextMessage', { chatID: 'dev', message: msg }), 2000);
     }
 
 }

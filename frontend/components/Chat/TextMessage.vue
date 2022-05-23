@@ -3,8 +3,12 @@
     <div :class="'bubble ' + (msg.sender === '' ? 'sent' : 'received')">
       <p v-if="msg.sender !== ''">{{ msg.sender }}</p>
       <p>{{ msg.text }}</p>
-      <p>{{ msg.datetime/*.toLocaleDateString && ('en-US')FIXME*/ }}</p>  <!-- todo locale -->
-      <van-icon :name="msg.sent ? 'success' : 'clock-o'"/>
+      <div class="info">
+        <span> <!-- todo locale -->
+          {{ msg.datetime.toLocaleDateString('en-US') + ' - ' + msg.datetime.toLocaleTimeString('en-US') }}
+        </span>
+        <van-icon v-if="msg.sender === ''" class="status_icon" :name="msg.sent ? 'success' : 'clock-o'" />
+      </div>
     </div>
   </div>
 </template>
@@ -23,7 +27,7 @@ export default {
 
 <style scoped>
 .msg_block {
-  padding: 1rem;
+  padding: .4rem .8rem;
 }
 
 .msg_block.sent {
@@ -35,8 +39,8 @@ export default {
 }
 
 .bubble {
-  border-radius: 2rem;
-  padding: 1rem;
+  border-radius: 1.6rem;
+  padding: .01rem 1rem .8rem .8rem;
 }
 
 .bubble.sent {
@@ -47,6 +51,16 @@ export default {
 .bubble.received {
   border-bottom-left-radius: 0 !important;;
   background: gray;
+}
+
+.info {
+  display: flex;
+  width: 100%;
+}
+
+.status_icon {
+  margin-left: auto;
+  margin-right: 0;
 }
 
 </style>

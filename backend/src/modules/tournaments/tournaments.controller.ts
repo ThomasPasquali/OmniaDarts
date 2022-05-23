@@ -41,11 +41,13 @@ export class TournamentsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ description: 'Get all available tournaments' })
+  @ApiOperation({
+    description: 'Get all available tournaments (finished and not)',
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({
-    description: 'All tournaments',
+    description: 'The list of all tournaments (finished and not)',
     type: [Tournament],
   })
   async getAllTournamentsAvailable(): Promise<Tournament[]> {
@@ -57,12 +59,14 @@ export class TournamentsController {
   @Get(':tournamentName')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    description: 'Get all available tournaments ordered by creation reversed',
+    description:
+      'Get all available tournaments ordered by creation (from new to old)',
   })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({
-    description: 'All tournaments',
+    description:
+      'The list of all available tournaments ordered by creation (from new to old)',
     type: [Tournament],
   })
   async getTournamentsByName(

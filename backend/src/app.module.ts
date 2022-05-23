@@ -18,6 +18,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ChatModule } from './modules/chat/chat.module';
 import { TextchatsModule } from './modules/textchats/textchats.module';
+import { EventsModule } from './modules/events/events.module';
+import { MatchesModule } from './modules/matches/matches.module';
 
 @Module({
 
@@ -40,6 +42,7 @@ import { TextchatsModule } from './modules/textchats/textchats.module';
           `:${configService.get<string>('DATABASE_PWD')}` +
           `@${configService.get<string>('DATABASE_HOST')}`,
         dbName: `${configService.get<string>('DATABASE_NAME')}`,
+        autoIndex: false,
         connectionFactory: (connection) => {
           connection.plugin(require('mongoose-autopopulate'));
           return connection;
@@ -65,6 +68,8 @@ import { TextchatsModule } from './modules/textchats/textchats.module';
     NotificationsModule,
     TextchatsModule,
     PostsModule,
+    EventsModule,
+    MatchesModule,
   ],
   controllers: [],
   providers: [ConfigService],

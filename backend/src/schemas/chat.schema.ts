@@ -1,12 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import { Document } from 'mongoose';
 import { TextMessage } from '../classes/textMessage';
 
 export type ChatDocument = Chat & Document;
 
 @Schema()
-export class Chat extends Document{
-
+export class Chat extends Document {
   @Prop({
     default: [],
   })

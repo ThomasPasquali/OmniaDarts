@@ -5,7 +5,7 @@ import { Match } from './match.schema';
 export type TournamentMatchDocument = TournamentMatch & Document;
 
 @Schema()
-export class TournamentMatch extends Match{
+export class TournamentMatch extends Match {
   
   @Prop()
   round: number;

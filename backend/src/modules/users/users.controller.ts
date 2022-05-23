@@ -10,7 +10,6 @@ import {
   Res,
 } from '@nestjs/common';
 import {
-  ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
