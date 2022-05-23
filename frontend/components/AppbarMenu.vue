@@ -1,5 +1,6 @@
 <template>
   <div class="appbar_menu">
+    <van-badge class="badge" :content="notifications.length" />
     <img src="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" height="24px">  <!-- fixme -->
     <van-dropdown-menu>
       <van-dropdown-item ref="item">
@@ -54,6 +55,12 @@ export default {
           onClick: this.onConfirm
         },
         {
+          title: 'Notifications',
+          to: 'notifications',
+          show: true,
+          onClick: this.onConfirm
+        },
+        {
           title: 'Logout',
           to: '',
           show: true,
@@ -68,24 +75,39 @@ export default {
     },
     onConfirm() {
       this.$refs.item.toggle();
-    }
+    },
+  },
+  computed: {
+    notifications() {
+      return this.$store.getters["notifications/notifications"]
+    },
   },
   mounted: function () {
     this.$nextTick(() => {
       document.querySelector(".van-dropdown-menu__bar").style.opacity = "0";
     })
-  }
+  },
 
 }
 </script>
 
 <style scoped>
 .appbar_menu {
+  display: flex;
+  flex-direction: row;
 }
 
 img {
   position: fixed;
   right: 12px; /* fixme */
   top: 12px; /* fixme */
+}
+
+.badge {
+  min-width: 20px;
+  max-height: 20px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 8px;
 }
 </style>

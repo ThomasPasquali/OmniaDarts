@@ -1,29 +1,21 @@
 <template>
   <div class="club_player">
 
-    <div><img class="pic" :src="user.photo" /></div>
     <div class="info">
-      <p class="title">{{ user.name }}</p>
-      <p class="message">{{ user.stats }}</p>
+      <p class="title">{{ notif.title }}</p>
+      <p class="message">{{ notif.message }}</p>
     </div>
-
-    <div v-if="!user.request" class="buttons">
-      <van-button icon="star"></van-button>
-      <van-button icon="delete" v-if="admin"></van-button>
-    </div>
-    <div v-else class="buttons">
+    <div class="buttons">
       <van-button icon="success"></van-button>
-      <van-button icon="cross"></van-button>
     </div>
 
   </div>
 </template>
 
 <script>
-
 export default {
-  name: "ClubPlayer",
-  props: ['user', 'admin'],
+  name: "Notification",
+  props: ['notif'],
 }
 </script>
 

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+// TODO import { NotificationAction, NotificationState } from '/backend/src/enums/notifications';
 
 export const state = () => ({
   notifications: [],

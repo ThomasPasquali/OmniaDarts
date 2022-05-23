@@ -1,5 +1,5 @@
 import { NotificationsGateway } from '../modules/notifications/notifications.gateway';
-import {NotificationAction, NotificationState} from "../enums/notifications";
+import { NotificationAction, NotificationState } from '../enums/notifications';
 
 export default class Notification {
   public static idCount = 0;
