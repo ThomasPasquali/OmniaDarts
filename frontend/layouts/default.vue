@@ -1,25 +1,34 @@
 <template>
   <div class="h-100">
+
     <van-nav-bar
       :title="title"
+      fixed
+      placeholder
+      safe-area-inset-top
       left-arrow
       @click-left="back">
       <template #right>
-        <van-icon name="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png"/>
-        {{ ($auth.user && $auth.user.nickname) || 'NO_USER' }}
+        <AppbarMenu />
+        <!--        <van-icon name="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" />-->
+        <!--        {{ ($auth.user && $auth.user.nickname) || 'NO_USER' }}-->
       </template>
     </van-nav-bar>
-    <Nuxt class="h-100"/>
+    <Nuxt class="h-100" />
+
   </div>
 </template>
 
 <script>
+import AppbarMenu from "~/components/AppbarMenu";
+
 export default {
   name: 'DefaultLayout',
+  components: {AppbarMenu},
   methods: {
     back() {
       window.history.back()
-    }
+    },
   },
   computed: {
     title() {
