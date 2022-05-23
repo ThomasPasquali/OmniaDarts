@@ -1,7 +1,7 @@
 <template>
   <div>
     <TextChat :id="chatID" @sendMessage="sendMessage"/>
-    <pre>{{ lastMessageSent }}</pre>
+<!--    <pre>{{ lastMessageSent }}</pre>-->
   </div>
 </template>
 

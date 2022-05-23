@@ -6,15 +6,19 @@ export const state = () => ({
 })
 
 export const actions = {
-  newTextMessage({state, commit}, {chatID, text, sender}) {
-    let message = {
-      text,
-      datetime: new Date(),
-      sender,
-      sent: false
+  newMessage({state, commit}, {id, text}) {
+    if (text) {
+      console.log('New message action', {id, text})
+      let message = {
+        id: Math.floor(Math.random() * 10),
+        text,
+        datetime: new Date(),
+        sender: Math.random() > .5 ? '' : 'CAIO',//FIXME
+        sent: false
+      }
+      commit('emitLastMessage', message)
+      commit('newMessage', {chatID: id, message, isEvent: false})
     }
-    commit('emitLastMessage', message)
-    commit('newTextMessage', { chatID, message, isEvent: false })
   }
 }
 
@@ -22,30 +26,16 @@ export const mutations = {
   newChat(state, id) {
     if (!state.chats[id]) {
       console.log("Created chat " + id)
-      state.chats[id] = {
-        idCount: 0,
-        messages: [],
-        /*TODO more props*/
-      }
+      state.chats[id] = {messages: [], /*TODO more props*/}
     }
   },
-  newTextMessage(state, {chatID, message, isEvent = true}) {
+  newMessage(state, {chatID, message, isEvent = true}) {
     if (message.datetime instanceof String) message.datetime = new Date(message.datetime) //FIXME
-    const chat = state.chats[chatID]
-    if(chat) {
-      if (isEvent) {
-        let i = _.findIndex(chat.messages, {id: message.id})
-        if (i >= 0) {
-          chat.messages[i].sender = message.sender
-          chat.messages[i].sent = message.sent
-          chat.idCount = Math.max(chat.idCount, message.id)
-        }
-      } else {
-        chat.messages.push(message)
-        message.id = chat.idCount
-        chat.idCount = chat.idCount + 1
-      }
-    }
+    if (isEvent) {
+      let i = _.findIndex(state.chats[chatID].messages, {id: message.id})
+      if (i >= 0) state.chats[chatID] && (state.chats[chatID].messages[i].sent = true)
+    } else
+      state.chats[chatID] && state.chats[chatID].messages.push(message)
   },
   emitLastMessage(state, message) {
     state.lastMessageSent = message
