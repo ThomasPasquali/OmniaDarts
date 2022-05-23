@@ -24,13 +24,13 @@ export default {
           default: true,
           vuex: {
             mutations: [
-              'newNotification --> notifications/addNew',
-              'checked --> notifications/checked',
-              'newTextMessage --> textchats/newTextMessage',
+              'notification_new --> notifications/addNew',
+              'notification_update --> notifications/update',
+              'text_msg_new --> textchats/newTextMessage',
             ],
             emitBacks: [
-              'checkedNotification <-- notifications/notificationUpdate',
-              'newTextMessage <-- textchats/lastMessageSent',
+              'notification_update <-- notifications/notificationUpdate',
+              'text_msg_new <-- textchats/lastMessageSent',
             ]
           },
           namespaces: {

@@ -6,21 +6,24 @@ export const state = () => ({
 })
 
 export const actions = {
-  checkNotification({ state, commit }, { i, action }){
-    commit('updateNotification', {notification: state.notifications[i], action})
-  }
+  sendUpdate({ state, commit }, { i, action }) {
+    commit('sendUpdate', {notification: state.notifications[i], action})
+  },
 }
 
 export const mutations = {
   addNew(state, notification) {
     state.notifications.push(notification)
   },
-  updateNotification(state, update) {
+  dismiss(state, i) {
+    state.notifications.splice(i, 1)
+  },
+  sendUpdate(state, update) {
     state.notificationUpdate = update
   },
-  checked(state, notification) {
+  update(state, notification) {
     console.log(notification)
-    let pred = { id: notification.id }
+    let pred = { _id: notification._id }
     let i = _.findIndex(state.notifications, pred)
     if(i >= 0) state.notifications[i].state = notification.state
     state.updates = _.remove(state.updates, pred)

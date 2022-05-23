@@ -6,9 +6,11 @@
       <van-cell
         v-for="(n, i) in notifications"
         :key="i"
-        @click="notificationChecked(i)"
-        :title="`${n.message} (${n.id}) cliccami...`"
-        :value="n.state || 'new'"><pre>{{n.payload}}</pre></van-cell>
+        :title="`${n.message} (${n._id}) ${n.state}`">
+        <button @click="notificationUpdate(i, 'ACCEPT')">OK</button>
+        <button @click="notificationUpdate(i, 'REJECT')">NO</button>
+        <button @click="notificationDismiss(i)">DISMISS</button>
+      </van-cell>
     </van-cell-group>
 
     <h1>Last update</h1>
@@ -20,8 +22,11 @@
 export default {
   name: "NotificationsDev",
   methods: {
-    notificationChecked(i) {
-      this.$store.dispatch('notifications/checkNotification', { i, action: 'check' })
+    notificationDismiss(i) {
+      this.$store.commit('notifications/dismiss', i)
+    },
+    notificationUpdate(i, action) {
+      this.$store.dispatch('notifications/sendUpdate', { i, action })
     },
     newWindow() {
       window.open(window.location)
@@ -36,7 +41,6 @@ export default {
     }
   },
   mounted() {
-    //this.$store.commit('notifications/addNew', 'Frontend test '+Math.floor(Math.random()*100))
     this.sockets = {
       notifications: this.$store.getters.newIo(this, 'notifications') //Setup io for notifications
     }

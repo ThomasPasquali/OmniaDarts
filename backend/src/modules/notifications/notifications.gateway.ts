@@ -8,7 +8,7 @@ import Notification from '../../classes/notification';
 import { Socket } from 'net';
 import { SocketIOBodyUnwrapper } from '../../utils/utils';
 import { EventsGateway } from '../events/events.gateway';
-import { NotificationState } from '../../enums/notifications';
+import {NotificationAction, NotificationState} from '../../enums/notifications';
 
 @WebSocketGateway({
   namespace: 'notifications',
@@ -22,17 +22,27 @@ export class NotificationsGateway extends EventsGateway {
     for (const provider of this.notificationsProviders)
       for (const c of this.clients)
         for (const n of await provider.getNotifications(c.user))
-          c.emit('newNotification', n);
+          c.emit('notification_new', n);
   }
 
-  @SubscribeMessage('checkedNotification')
-  checkNotification(
+  @SubscribeMessage('notification_update')
+  updateNotification(
     @MessageBody() body: any,
     @ConnectedSocket() client: Socket,
   ): void {
-    const n = new SocketIOBodyUnwrapper<Notification>(body).get();
-    n.state = NotificationState.ACCEPTED;
-    console.log('Notification check ', n);
-    this.broadcast('newNotification', n);
+    //console.log(body)
+    //const n = new SocketIOBodyUnwrapper<Notification>(body).get();
+    const n = body.data.notification;
+    switch (body.data.action) {
+      case NotificationAction.ACCEPT:
+        n.state = NotificationState.ACCEPTED;
+        break;
+      case NotificationAction.REJECT:
+        n.state = NotificationState.REJECTED;
+        break;
+    }
+
+    //console.log('Notification check ', n);
+    this.broadcast('notification_update', n);
   }
 }

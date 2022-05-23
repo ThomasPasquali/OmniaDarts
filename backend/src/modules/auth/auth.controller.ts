@@ -81,13 +81,11 @@ export class AuthController {
     type: SimpleUser,
   })
   async register(@Body() sUser: SimpleUser) {
-    let user: User;
-    user.nickname = sUser.nickname;
     const saltOrRounds: number = parseInt(this.config.get('SALTROUNDS'), 10);
-    user.pwd = await bcrypt.hash(sUser.pwd.toString(), saltOrRounds as number);
-    user.club = null;
-    user.isAdmin = false;
-    user.clubRequest = null;
+    let user = {
+      nickname: sUser.nickname,
+      pwd: await bcrypt.hash(sUser.pwd.toString(), saltOrRounds as number),
+    } as User
     const u = await this.userService.create(user);
 
     if (u) return await this.authService.login(u);

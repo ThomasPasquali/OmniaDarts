@@ -56,7 +56,7 @@ export class User extends Document {
   @ApiProperty()
   club: Club;
 
-  @Prop()
+  @Prop({ default: null })
   @ApiHideProperty()
   clubRequest: ClubRequest;
 
