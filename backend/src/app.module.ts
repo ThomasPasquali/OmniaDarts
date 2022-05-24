@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
@@ -17,7 +17,6 @@ import { SchemasModule } from './schemas/schemas.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ChatModule } from './modules/chat/chat.module';
-import { TextchatsModule } from './modules/textchats/textchats.module';
 import { EventsModule } from './modules/events/events.module';
 import { MatchesModule } from './modules/matches/matches.module';
 
@@ -66,7 +65,6 @@ import { MatchesModule } from './modules/matches/matches.module';
     ChatModule,
     SchemasModule,
     NotificationsModule,
-    TextchatsModule,
     PostsModule,
     EventsModule,
     MatchesModule,

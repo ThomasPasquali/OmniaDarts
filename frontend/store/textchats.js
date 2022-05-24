@@ -6,7 +6,7 @@ export const state = () => ({
 })
 
 export const actions = {
-  newMessage({state, commit}, {id, text}) {
+  newTextMessage({state, commit}, {id, text}) {
     if (text) {
       console.log('New message action', {id, text})
       let message = {

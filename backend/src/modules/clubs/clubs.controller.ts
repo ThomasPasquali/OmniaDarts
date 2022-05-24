@@ -7,7 +7,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
-  Param,
+  Param, Patch,
   Post,
   Query,
   Req,
@@ -257,7 +257,7 @@ export class ClubsController {
     return playerToRemove.id;
   }
 
-  @Get('joinRequest/:idPlayer')
+  @Patch('joinRequest/:idPlayer')
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) =>
     ability.can(Action.AcceptRejectRequests, Club),

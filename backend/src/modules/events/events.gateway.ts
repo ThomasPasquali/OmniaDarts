@@ -5,13 +5,13 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { EventsService } from './events.service';
 import { Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { ClubsService } from '../clubs/clubs.service';
 import { NotificationsProvider } from '../../interfaces/notifications';
 import { User } from '../../schemas/user.schema';
+import {ChatService} from "../chat/chat.service";
 
 @WebSocketGateway()
 export class EventsGateway
@@ -21,10 +21,10 @@ export class EventsGateway
   private static servers: any = {};
 
   constructor(
-    private readonly eventsService: EventsService,
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     protected readonly clubService: ClubsService,
+    protected readonly chatService: ChatService
   ) {
     this.notificationsProviders = [clubService];
   }
