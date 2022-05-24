@@ -10,6 +10,7 @@
     <van-button v-if="$auth.user.club" type="primary" size="large" to="club">Club</van-button>
     <van-button type="primary" size="large" to="findClub">Find club</van-button>
     <van-button type="primary" size="large" to="tournaments">Tornei</van-button>
+    <van-button type="primary" size="large" to="lobby">Lobbies</van-button>
     <van-button type="primary" size="large" to="dev">Dev</van-button>
 
 

@@ -9,7 +9,7 @@ export type MatchDocument = Match & Document;
 @Schema()
 export class Match extends Document {
 
-  @Prop()
+  @Prop({ default: new Date()})
   @ApiProperty()
   dateTime: Date;
 
@@ -17,7 +17,7 @@ export class Match extends Document {
   @ApiProperty()
   players: User[];
 
-  @Prop()
+  @Prop({ type: Lobby, default: null })
   lobby: Lobby;
 
 }

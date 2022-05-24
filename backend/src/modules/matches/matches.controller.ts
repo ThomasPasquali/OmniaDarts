@@ -1,9 +1,8 @@
 import {
-  Controller,
+  Controller, Get,
   HttpCode,
   HttpStatus,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -14,27 +13,33 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Club } from '../../schemas/club.schema';
-import ClubRequest from '../../classes/clubRequest';
 import { Match } from '../../schemas/match.schema';
 import Lobby from '../../classes/lobby';
+import {UsersService} from "../users/users.service";
+import {MatchesService} from "./matches.service";
 
 @Controller('matches')
 @ApiTags('matches')
 export class MatchesController {
+
+  constructor(
+      private readonly matchesService: MatchesService,
+      private readonly usersService: UsersService,
+  ) {}
 
   @Post('lobby/new')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Create new online game lobby' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'Lobby updated' })
-  async newLobby(@Req() req, @Query('idUser') idUser: string) {
-    const match = new Match();
+  @ApiCreatedResponse({ description: 'Lobby created' })
+  async newLobby(@Req() req) {
     const lobby = new Lobby();
-
-    match.lobby = lobby;
-
+    const match = {
+      lobby
+    } as Match
+    lobby.owner = req.user
+    await this.matchesService.newMatch(match)
     /*const currUser = await this.usersService.findById(req.user._id);
         const clubToApply = await this.clubsService.getClubById(idClub);
 
@@ -47,4 +52,14 @@ export class MatchesController {
         await this.usersService.update(currUser._id, currUser);
         return await this.clubsService.update(clubToApply._id, clubToApply);*/
   }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Get all matches' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  async getAll(@Req() req) {
+    return this.matchesService.findAll();
+  }
+
 }

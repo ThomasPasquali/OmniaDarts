@@ -3,9 +3,14 @@ import { MatchesService } from './matches.service';
 import { MatchesController } from './matches.controller';
 import {MongooseModule} from "@nestjs/mongoose";
 import {Match, MatchSchema} from "../../schemas/match.schema";
+import {UsersModule} from "../users/users.module";
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Match.name, schema: MatchSchema }])],
+  imports: [
+    MatchesModule,
+    UsersModule,
+    MongooseModule.forFeature([{ name: Match.name, schema: MatchSchema }])
+  ],
   providers: [MatchesService],
   controllers: [MatchesController],
   exports: [MongooseModule],
