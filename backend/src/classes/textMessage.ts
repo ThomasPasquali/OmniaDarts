@@ -10,4 +10,6 @@ export class TextMessage {
 
   @ApiProperty()
   text: string;
+
+  chatID: string;
 }

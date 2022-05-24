@@ -23,8 +23,7 @@ export class EventsGateway
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
-    protected readonly clubService: ClubsService,
-    protected readonly chatService: ChatService
+    protected readonly clubService: ClubsService
   ) {
     this.notificationsProviders = [clubService];
   }
@@ -37,7 +36,7 @@ export class EventsGateway
   }
 
   @WebSocketServer()
-  private server: Server;
+  protected server: Server;
   protected clients = [];
 
   afterInit(server: any): any {

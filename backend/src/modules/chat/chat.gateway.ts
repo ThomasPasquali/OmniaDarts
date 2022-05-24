@@ -14,33 +14,42 @@ import {BodyGuard} from './body.guard';
 
 @WebSocketGateway({
   namespace: 'textchats',
-
   cors: {
     origin: '*',
   },
 })
-export class TextchatsGateway extends EventsGateway {
+export class ChatGateway extends EventsGateway {
+
+  public newRoom(chat: Chat): void {
+    console.log(chat)
+
+  }
+
+
   async handleConnection(client: any): Promise<void> {
     await super.handleConnection(client);
-    //console.log(client)
+    const chatID = client.handshake.query.chatID;
+    if(chatID) {
+      client.join('chat_'+chatID)
+    }
   }
 
   @UseGuards(BodyGuard)
-  @SubscribeMessage('newTextMessage')
+  @SubscribeMessage('text_msg_new')
   async newNotification(
     @MessageBody() body: any,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     const msg = client['body'];
-    console.log();
-    const chat: Chat = await this.chatService.findById(msg.id);
-
+    //const chat: Chat = await this.chatService.findById(msg.id);
     const message: TextMessage = new TextMessage();
     message.text = msg.text;
     message.user = { _id: client['user']._id } as User;
     message.dateTime = new Date().getTime();
-    chat.messages.push(message);
-    await this.chatService.update(chat._id, chat);
-    // TODO send broadcast
+    message.chatID = msg.chatID;
+    //chat.messages.push(message);
+    //await this.chatService.update(chat._id, chat);
+    console.log(body)
+    this.server.to('chat_'+body.data.chatID).emit('text_msg_room_new', message)
   }
 }

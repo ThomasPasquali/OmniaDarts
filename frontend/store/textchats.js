@@ -29,7 +29,7 @@ export const mutations = {
       state.chats[id] = {messages: [], /*TODO more props*/}
     }
   },
-  newMessage(state, {message, isEvent = true}) {
+  newMessage(state, message) {
     console.log("New message ", message)
     let date = new Date(message.datetime)
     message.datetime = date.toLocaleDateString() + ' - ' + date.toLocaleTimeString()

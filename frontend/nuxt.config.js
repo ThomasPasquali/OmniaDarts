@@ -26,7 +26,7 @@ export default {
             mutations: [
               'notification_new --> notifications/addNew',
               'notification_update --> notifications/update',
-              'text_msg_new --> textchats/newMessage',
+              'text_msg_room_new --> textchats/newMessage',
             ],
             emitBacks: [
               'notification_update <-- notifications/lastNotification',

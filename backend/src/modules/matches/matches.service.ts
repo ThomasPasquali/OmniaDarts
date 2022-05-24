@@ -16,6 +16,10 @@ export class MatchesService {
     }
 
     async findAll(): Promise<Match[]> {
-        return this.matchModel.find().exec();
+        return this.matchModel.find().lean();
+    }
+
+    async find(matchID): Promise<Match> {
+        return this.matchModel.findById(matchID).lean();
     }
 }
