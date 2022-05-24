@@ -52,7 +52,7 @@ export class AuthController {
     description: 'Simple user',
     type: SimpleUser,
   })
-  async login(@Body() user: SimpleUser) {
+  async login(@Body() user: User) {
     const u: User = await this.authService.validateUser(
       user.nickname,
       user.pwd,
@@ -70,7 +70,7 @@ export class AuthController {
   }
 
   @Post('register')
-  @ApiOperation({ description: 'Register a user' })
+  @ApiOperation({ description: 'Register a user with nickname and password' })
   @ApiCreatedResponse({
     description: 'User register successfully',
     type: SimpleUser,
@@ -80,12 +80,9 @@ export class AuthController {
     description: 'Simple user',
     type: SimpleUser,
   })
-  async register(@Body() sUser: SimpleUser) {
+  async register(@Body() user: User) {
     const saltOrRounds: number = parseInt(this.config.get('SALTROUNDS'), 10);
-    let user = {
-      nickname: sUser.nickname,
-      pwd: await bcrypt.hash(sUser.pwd.toString(), saltOrRounds as number),
-    } as User
+    user.pwd = await bcrypt.hash(user.pwd.toString(), saltOrRounds as number);
     const u = await this.userService.create(user);
 
     if (u) return await this.authService.login(u);
