@@ -2,11 +2,14 @@
   <div class="club_player">
 
     <div class="info">
-      <p class="title">{{ notif.title }}</p>
-      <p class="message">{{ notif.message }}</p>
+      <p class="title">{{ $t(notification.title) }} {{ notification._id }}</p>
+      <p class="message">{{ $t(notification.message) }}</p>
+      <pre>{{ notification.payload }}</pre>
     </div>
-    <div class="buttons">
-      <van-button icon="success"></van-button>
+    <div v-if="notification.state !== 'ACCEPTED' && notification.state !== 'REJECTED'" class="buttons">
+      <van-button icon="success" @click="$emit('accept')"></van-button>
+      <van-button icon="cross" @click="$emit('reject')"></van-button>
+      <van-button icon="close" @click="$emit('dismiss')"></van-button>
     </div>
 
   </div>
@@ -15,7 +18,8 @@
 <script>
 export default {
   name: "Notification",
-  props: ['notif'],
+  props: ['notification'],
+  emits: ['accept', 'reject', 'dismiss']
 }
 </script>
 
@@ -25,7 +29,7 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  max-height: 72px;
+  /*max-height: 72px;*/
   padding: 8px 16px 8px 8px;
   margin-bottom: 16px;
   border-radius: 8px;

@@ -17,12 +17,12 @@ import {NotificationAction, NotificationState} from '../../enums/notifications';
   },
 })
 export class NotificationsGateway extends EventsGateway {
+
   async handleConnection(client: any): Promise<any> {
     await super.handleConnection(client);
-    for (const provider of this.notificationsProviders)
-      for (const c of this.clients)
-        for (const n of await provider.getNotifications(c.user))
-          c.emit('notification_new', n);
+    for (const provider of this.notificationsProviders) //for (const c of this.clients)
+      for (const n of await provider.getNotifications(client.user))
+        client.emit('notification_new', n);
   }
 
   @SubscribeMessage('notification_update')
@@ -30,19 +30,17 @@ export class NotificationsGateway extends EventsGateway {
     @MessageBody() body: any,
     @ConnectedSocket() client: Socket,
   ): void {
-    //console.log(body)
-    //const n = new SocketIOBodyUnwrapper<Notification>(body).get();
     const n = body.data.notification;
     switch (body.data.action) {
       case NotificationAction.ACCEPT:
         n.state = NotificationState.ACCEPTED;
+        //TODO logic
         break;
       case NotificationAction.REJECT:
         n.state = NotificationState.REJECTED;
+        //TODO logic
         break;
     }
-
-    //console.log('Notification check ', n);
     this.broadcast('notification_update', n);
   }
 }

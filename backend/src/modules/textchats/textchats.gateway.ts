@@ -16,13 +16,13 @@ import {Socket} from "net";
 })
 export class TextchatsGateway extends EventsGateway {
 
-    @SubscribeMessage('newTextMessage')
+    @SubscribeMessage('text_msg_new')
     async newNotification(@MessageBody() body: any, @ConnectedSocket() client: Socket): Promise<void> {
         const msg = body.data
         msg.sender = client['user'].nickname;
         msg.sent = true;
-        //console.log(msg)
-        setTimeout(_ => this.broadcast('newTextMessage', { chatID: 'dev', message: msg }), 2000);
+        console.log(msg)
+        setTimeout(_ => this.broadcast('text_msg_new', { message: msg }), 2000);
     }
 
 }

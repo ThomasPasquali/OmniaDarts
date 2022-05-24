@@ -7,24 +7,15 @@
       <Notification
         v-for="(n, i) in notifications"
         :key="i"
-        :notif="n"
+        :notification="n"
+        @accept="notificationUpdate(i, 'ACCEPT')"
+        @reject="notificationUpdate(i, 'REJECT')"
+        @dismiss="notificationDismiss(i)"
       />
     </div>
     <div v-else>
       <h2>{{ $t('user_has_no_notification') }}</h2>
     </div>
-
-    <!-- FIXME -->
-    <van-cell-group inset>
-      <van-cell
-        v-for="(n, i) in notifications"
-        :key="i"
-        :title="`${n.message} (${n._id}) ${n.state}`">
-        <button @click="notificationUpdate(i, 'ACCEPT')">OK</button>
-        <button @click="notificationUpdate(i, 'REJECT')">NO</button>
-        <button @click="notificationDismiss(i)">DISMISS</button>
-      </van-cell>
-    </van-cell-group>
 
     <h1>Last update</h1>
     <pre>{{ update }}</pre>

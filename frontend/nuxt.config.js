@@ -26,11 +26,11 @@ export default {
             mutations: [
               'notification_new --> notifications/addNew',
               'notification_update --> notifications/update',
-              'text_msg_new --> textchats/newTextMessage',
+              'text_msg_new --> textchats/newMessage',
             ],
             emitBacks: [
-              'notification_update <-- notifications/notificationUpdate',
-              'text_msg_new <-- textchats/lastMessageSent',
+              'notification_update <-- notifications/lastNotification',
+              'text_msg_new <-- textchats/lastMessage',
             ]
           },
           namespaces: {

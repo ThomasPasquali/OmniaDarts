@@ -3,7 +3,7 @@ import _ from 'lodash'
 
 export const state = () => ({
   notifications: [],
-  notificationUpdate: null,
+  lastNotification: null,
 })
 
 export const actions = {
@@ -20,7 +20,7 @@ export const mutations = {
     state.notifications.splice(i, 1)
   },
   sendUpdate(state, update) {
-    state.notificationUpdate = update
+    state.lastNotification = update
   },
   update(state, notification) {
     console.log(notification)

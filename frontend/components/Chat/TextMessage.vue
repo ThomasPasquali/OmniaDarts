@@ -4,8 +4,8 @@
       <p v-if="msg.sender !== ''">{{ msg.sender }}</p>
       <p>{{ msg.text }}</p>
       <div class="info">
-        <span> <!-- todo locale -->
-          {{ msg.datetime.toLocaleDateString('en-US') + ' - ' + msg.datetime.toLocaleTimeString('en-US') }}
+        <span>
+          {{ msg.datetime }}
         </span>
         <van-icon v-if="msg.sender === ''" class="status_icon" :name="msg.sent ? 'success' : 'clock-o'" />
       </div>

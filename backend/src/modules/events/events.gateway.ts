@@ -67,7 +67,10 @@ export class EventsGateway
   }
 
   public broadcast(event: string, payload: any) {
-    for (const c of this.clients) c.emit(event, payload);
+    for (const c of this.clients) {
+      console.log("BROADCAST to"+c.user.nickname)
+      c.emit(event, payload);
+    }
   }
 
   public broadcastTo(namespace: string, event: string, payload: any) {
