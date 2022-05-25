@@ -25,7 +25,7 @@ export const actions = {
 export const mutations = {
   newChat(state, id) {
     if (!state.chats[id]) {
-      console.log("Created chat " + id)
+      console.log("Created chats " + id)
       state.chats[id] = {messages: [], /*TODO more props*/}
     }
   },

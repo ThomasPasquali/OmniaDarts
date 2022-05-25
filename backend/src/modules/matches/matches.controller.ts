@@ -17,7 +17,7 @@ import { Match } from '../../schemas/match.schema';
 import Lobby from '../../classes/lobby';
 import {UsersService} from "../users/users.service";
 import {MatchesService} from "./matches.service";
-import {ChatsService} from "../chat/chats.service";
+import {ChatsService} from "../chats/chats.service";
 
 @Controller('matches')
 @ApiTags('matches')

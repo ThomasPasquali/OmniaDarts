@@ -4,7 +4,7 @@ import { MatchesController } from './matches.controller';
 import {MongooseModule} from "@nestjs/mongoose";
 import {Match, MatchSchema} from "../../schemas/match.schema";
 import {UsersModule} from "../users/users.module";
-import {ChatsModule} from "../chat/chats.module";
+import {ChatsModule} from "../chats/chats.module";
 
 @Module({
   imports: [

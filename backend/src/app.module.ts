@@ -16,7 +16,7 @@ import { Throw, ThrowSchema } from './schemas/throw.schema';
 import { SchemasModule } from './schemas/schemas.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { ChatsModule } from './modules/chat/chats.module';
+import { ChatsModule } from './modules/chats/chats.module';
 import { EventsModule } from './modules/events/events.module';
 import { MatchesModule } from './modules/matches/matches.module';
 

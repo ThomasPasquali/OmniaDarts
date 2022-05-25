@@ -8,6 +8,6 @@ export default {
   notification_club_request: 'Club join request',
   notification_club_request_message: 'An user asked to join your club',
 
-  // Text chat
+  // Text chats
   message_placeholder: 'Message'
 }

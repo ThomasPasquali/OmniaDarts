@@ -4,13 +4,11 @@ import {
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
-import { Req, UseGuards, UseInterceptors } from '@nestjs/common';
-import { EventsGateway } from '../events/events.gateway';
+import { EventsGateway } from './events.gateway';
 import { Socket } from 'net';
 import { Chat } from '../../schemas/chat.schema';
 import { TextMessage } from '../../classes/textMessage';
 import { User } from '../../schemas/user.schema';
-import { BodyGuard } from './body.guard';
 
 @WebSocketGateway({
   namespace: 'textchats',
@@ -28,7 +26,7 @@ export class ChatsGateway extends EventsGateway {
       const chat: Chat = await this.chatService.findById(chatID);
 
       // TODO Remove to enable permissions
-      //if (await this.checkPermissions(chat, client['user']._id)) {
+      //if (await this.checkPermissions(chats, client['user']._id)) {
       const roomName = this.PREFIX_ROOM_CHAT + chatID;
       client.join(roomName);
       console.log(client.user.nickname, 'is connecting to', roomName);
