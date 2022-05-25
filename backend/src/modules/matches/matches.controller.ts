@@ -21,7 +21,7 @@ import Lobby from '../../classes/lobby';
 import {UsersService} from "../users/users.service";
 import {MatchesService} from "./matches.service";
 import {ChatsService} from "../chats/chats.service";
-import {LobbiesService} from "./lobbies.service";
+import {LobbiesService} from "../lobbies/lobbies.service";
 
 @Controller('matches')
 @ApiTags('matches')

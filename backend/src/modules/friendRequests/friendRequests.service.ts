@@ -184,6 +184,7 @@ export class FriendRequestsService implements NotificationsProvider {
             'notification_friend_request_message',
             NotificationState.NEW,
             null,
+            null,
             r,
           ),
         );
