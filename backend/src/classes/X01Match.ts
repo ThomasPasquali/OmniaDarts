@@ -1,4 +1,4 @@
-import SpecificMatch from "../interfaces/match";
+import {SpecificMatch} from "../interfaces/match";
 import {Match} from "../schemas/match.schema";
 import { User } from '../schemas/user.schema';
 

@@ -13,7 +13,6 @@ import { Dart, DartSchema } from './schemas/dart.schema';
 import { Match, MatchSchema } from './schemas/match.schema';
 import { MatchThrows, MatchThrowsSchema } from './schemas/matchThrows.schema';
 import { Throw, ThrowSchema } from './schemas/throw.schema';
-import { SchemasModule } from './schemas/schemas.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ChatModule } from './modules/chat/chat.module';
@@ -63,7 +62,6 @@ import { MatchesModule } from './modules/matches/matches.module';
     CaslModule,
     AuthModule,
     ChatModule,
-    SchemasModule,
     NotificationsModule,
     PostsModule,
     EventsModule,

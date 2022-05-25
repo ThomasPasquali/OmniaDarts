@@ -12,6 +12,7 @@ import { ClubsService } from '../clubs/clubs.service';
 import { NotificationsProvider } from '../../interfaces/notifications';
 import { User } from '../../schemas/user.schema';
 import {ChatService} from "../chat/chat.service";
+import {MatchesService} from "../matches/matches.service";
 
 @WebSocketGateway()
 export class EventsGateway
@@ -23,7 +24,8 @@ export class EventsGateway
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
-    protected readonly clubService: ClubsService
+    protected readonly clubService: ClubsService,
+    protected readonly matchesService: MatchesService,
   ) {
     this.notificationsProviders = [clubService];
   }

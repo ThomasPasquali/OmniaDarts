@@ -19,7 +19,17 @@ export class MatchesService {
         return this.matchModel.find().lean();
     }
 
+    async findAllActiveLobbies(): Promise<Match[]> {
+        const matches = await this.findAll();
+        return matches.filter(m => !m.done && m.lobby != null)
+    }
+
     async find(matchID): Promise<Match> {
         return this.matchModel.findById(matchID).lean();
     }
+
+    async updateMatch(match: Match): Promise<Match> {
+        return this.matchModel.findByIdAndUpdate(match).lean();
+    }
+
 }

@@ -5,6 +5,7 @@ import {MongooseModule} from "@nestjs/mongoose";
 import {Match, MatchSchema} from "../../schemas/match.schema";
 import {UsersModule} from "../users/users.module";
 import {ChatModule} from "../chat/chat.module";
+import {LobbyGateway} from "./lobbies.gateway";
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import {ChatModule} from "../chat/chat.module";
     UsersModule,
     MongooseModule.forFeature([{ name: Match.name, schema: MatchSchema }])
   ],
-  providers: [MatchesService],
+  providers: [MatchesService, LobbyGateway],
   controllers: [MatchesController],
   exports: [MongooseModule],
 })
