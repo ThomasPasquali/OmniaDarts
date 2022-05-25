@@ -80,15 +80,14 @@ export class EventsGateway
   }
 
   public sentToUser(user: User, event: string, payload: any) {
-    for (const c of this.clients) if(c.user._id == user._id) c.emit(event, payload);
+    for (const c of this.clients) if(c.user._id.equals(user._id)) c.emit(event, payload);
   }
 
   public sentToClub(clubID: string, event: string, payload: any) {
-    for (const c of this.clients) if(c.user.club._id == clubID) c.emit(event, payload);
+    for (const c of this.clients) if(c.user.club._id.equals(clubID)) c.emit(event, payload);
   }
 
   public sentToClubAdmins(clubID: string, event: string, payload: any) {
-    for (const c of this.clients) if(c.user.club._id == clubID && c.user.isAdmin) c.emit(event, payload);
-  }
+    for (const c of this.clients) if(c.user.club._id.equals(clubID) && c.user.isAdmin) c.emit(event, payload);  }
 
 }

@@ -17,7 +17,7 @@ export class Match extends Document {
   @ApiProperty()
   dateTime: Date;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [] })
   @ApiProperty()
   players: User[];
 

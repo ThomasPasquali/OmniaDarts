@@ -21,6 +21,7 @@ import Lobby from '../../classes/lobby';
 import {UsersService} from "../users/users.service";
 import {MatchesService} from "./matches.service";
 import {ChatService} from "../chat/chat.service";
+import {LobbiesService} from "./lobbies.service";
 
 @Controller('matches')
 @ApiTags('matches')
@@ -30,6 +31,7 @@ export class MatchesController {
       private readonly matchesService: MatchesService,
       private readonly usersService: UsersService,
       private readonly chatService: ChatService,
+      private readonly lobbiesService: LobbiesService,
   ) {}
 
   @Post('lobby/new')
@@ -44,8 +46,10 @@ export class MatchesController {
     lobby.chatID = (await this.chatService.create())._id;
 
     match.lobby = lobby;
+    match.players = [lobby.owner];
 
-    //console.log(match)
+    if(await this.matchesService.findUserActiveLobby(req.user))
+      throw new BadRequestException(req.user, 'User already has an active lobby');
 
     await this.matchesService.newMatch(match)
   }
@@ -63,10 +67,11 @@ export class MatchesController {
     if(this.doesUserBelongToMatch(user, match))
       throw new BadRequestException(user, 'User already joined');
     if(this.hasUserJoinRequest(user, match))
-      throw new BadRequestException(user, 'User asked to join');
+      throw new BadRequestException(user, 'User already asked to join');
 
     match.lobby.joinRequests.push(req.user);
-    await this.matchesService.updateMatch(match)
+    await this.matchesService.updateMatchJoinRequests(match);
+    await this.lobbiesService.emitNewJoinRequest(user, match)
   }
 
   @Get()
@@ -89,14 +94,16 @@ export class MatchesController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ description: 'Get all matches' })
+  @ApiOperation({ description: 'Get a specific match' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   async getMatch(@Req() req, @Param('id') matchID) {
     const match = await this.matchesService.find(matchID);
     const user = req.user;
 
-    if((match.lobby && match.lobby.isPublic) || this.doesUserBelongToMatch(user, match))
+    if((match.lobby && match.lobby.isPublic)
+        || this.isUserLobbyOwner(user, match)
+        || this.doesUserBelongToMatch(user, match))
       return match;
 
     if(this.hasUserJoinRequest(user, match))
@@ -105,12 +112,16 @@ export class MatchesController {
     throw new ForbiddenException(user, 'User must send join request');
   }
 
-  doesUserBelongToMatch(user: User, match: Match): boolean {
-    return match.players.find(u => u._id === user._id) != null
+  private isUserLobbyOwner(user: User, match: Match): boolean {
+    return match.lobby && match.lobby.owner._id.equals(user._id)
   }
 
-  hasUserJoinRequest(user: User, match: Match): boolean {
-    return match.lobby && match.lobby.joinRequests.find(u => u._id === user._id) != null
+  private doesUserBelongToMatch(user: User, match: Match): boolean {
+    return match.players.find(u => u._id.equals(user._id)) != null
+  }
+
+  private hasUserJoinRequest(user: User, match: Match): boolean {
+    return match.lobby && match.lobby.joinRequests.find(u => u._id.equals(user._id)) != null
   }
 
 }

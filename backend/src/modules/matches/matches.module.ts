@@ -1,21 +1,26 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { MatchesController } from './matches.controller';
 import {MongooseModule} from "@nestjs/mongoose";
 import {Match, MatchSchema} from "../../schemas/match.schema";
 import {UsersModule} from "../users/users.module";
 import {ChatModule} from "../chat/chat.module";
-import {LobbyGateway} from "./lobbies.gateway";
+import {LobbiesService} from "./lobbies.service";
+import {LobbiesGateway} from "./lobbies.gateway";
+import {JwtService} from "@nestjs/jwt";
+import {AuthModule} from "../auth/auth.module";
+import {ClubsModule} from "../clubs/clubs.module";
 
 @Module({
   imports: [
-    ChatModule,
-    MatchesModule,
+    forwardRef(() => ChatModule),
     UsersModule,
+    AuthModule,
+    forwardRef(() =>ClubsModule),
     MongooseModule.forFeature([{ name: Match.name, schema: MatchSchema }])
   ],
-  providers: [MatchesService, LobbyGateway],
+  providers: [MatchesService, LobbiesService, LobbiesGateway],
   controllers: [MatchesController],
-  exports: [MongooseModule],
+  exports: [MongooseModule, MatchesService],
 })
 export class MatchesModule {}

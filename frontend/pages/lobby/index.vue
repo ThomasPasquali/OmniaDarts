@@ -1,8 +1,8 @@
 <template>
-  <div v-if="matches">
+  <div v-if="lobbies">
     <button @click="newLobby">New</button>
     <div
-      v-for="m in matches"
+      v-for="m in lobbies"
       :key="m._id">
       <van-button @click="joinLobby(m)">{{ m.lobby.isPublic ? 'Join' : 'Request' }}</van-button>
     </div>
@@ -35,21 +35,26 @@ export default {
           isPublic: false,
         },
       })
-      this.matches = await this.$axios.$get('matches/lobbies')
+      await this.$store.dispatch("lobbies/fetchLobbies")
     },
     async joinLobby(match) {
+      //FIXME if(!this.isCurrentUserLobbyOwner(match) || this.doesCurrentUserBelongToLobby(match))
       await this.$axios.$post('matches/lobby/joinRequest/'+match._id)
       window.location.href = `/lobby/${match._id}`
-    }
+    },
+    isCurrentUserLobbyOwner(match) {
+      return match.lobby.owner._id !== this.$auth.user._id
+    },
+    doesCurrentUserBelongToLobby(match) {
+      return match.players.find(u => u._id === this.$auth.user._id) != null
+    },
   },
-  data() {
-    return {
-      matches: null
-    }
+  mounted() {
+    this.$store.dispatch("lobbies/fetchLobbies")
   },
-  async asyncData(ctx) {
-    return { matches: await ctx.$axios.$get('matches') }
-  },
+  computed: {
+    lobbies() { return this.$store.getters["lobbies/lobbies"] }
+  }
 }
 </script>
 
