@@ -29,15 +29,18 @@ export const mutations = {
       state.chats[id] = {messages: [], /*TODO more props*/}
     }
   },
-  newMessage(state, message) {
-    console.log("New message ", message)
-    let date = new Date(message.datetime)
-    message.datetime = date.toLocaleDateString() + ' - ' + date.toLocaleTimeString()
+  newMessage(state, messages) {
+    console.log("New message ", messages)
+    for (let message of messages) {
+      let date = new Date(message.dateTime);
+      message.dateTime = date.toLocaleDateString() + ' - ' + date.toLocaleTimeString()
+    }
     //if (isEvent) {
       //let i = _.findIndex(state.chats[message.chatID].messages, {id: message.id})
       //if (i >= 0) state.chats[message.chatID] && (state.chats[message.chatID].messages[i].sent = true)
     //} else
-      state.chats[message.chatID] && state.chats[message.chatID].messages.push(message)
+    const chatID = messages[0].chatID;
+    state.chats[chatID] && state.chats[chatID].messages.push(...messages)
   },
   emitLastMessage(state, message) {
     state.lastMessage = message

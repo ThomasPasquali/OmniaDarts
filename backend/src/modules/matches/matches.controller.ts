@@ -17,7 +17,7 @@ import { Match } from '../../schemas/match.schema';
 import Lobby from '../../classes/lobby';
 import {UsersService} from "../users/users.service";
 import {MatchesService} from "./matches.service";
-import {ChatService} from "../chat/chat.service";
+import {ChatsService} from "../chat/chats.service";
 
 @Controller('matches')
 @ApiTags('matches')
@@ -26,7 +26,7 @@ export class MatchesController {
   constructor(
       private readonly matchesService: MatchesService,
       private readonly usersService: UsersService,
-      private readonly chatService: ChatService,
+      private readonly chatService: ChatsService,
   ) {}
 
   @Post('lobby/new')
@@ -41,10 +41,15 @@ export class MatchesController {
       lobby
     } as Match
     lobby.owner = req.user;
-    const chat = await this.chatService.create();
-    console.log(chat)
+    const chat = await this.chatService.create(
+        null,
+        false,
+        true
+    );
+    chat.playersIDs.push(req.user._id);
+    await this.chatService.update(chat._id, chat);
     lobby.chatID = chat._id;
-    await this.matchesService.newMatch(match)
+    await this.matchesService.newMatch(match);
   }
 
   @Get()
