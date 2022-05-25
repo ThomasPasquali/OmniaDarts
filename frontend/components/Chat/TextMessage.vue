@@ -5,7 +5,7 @@
       <p>{{ msg.text }}</p>
       <div class="info">
         <span>
-          {{ msg.datetime }}
+          {{ msg.dateTime }}
         </span>
         <van-icon v-if="msg.sender === ''" class="status_icon" :name="msg.sent ? 'success' : 'clock-o'" />
       </div>

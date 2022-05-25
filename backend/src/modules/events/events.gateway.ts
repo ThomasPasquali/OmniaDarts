@@ -11,7 +11,8 @@ import { UsersService } from '../users/users.service';
 import { ClubsService } from '../clubs/clubs.service';
 import { NotificationsProvider } from '../../interfaces/notifications';
 import { User } from '../../schemas/user.schema';
-import {ChatService} from "../chat/chat.service";
+import { ChatsService } from '../chats/chats.service';
+import { FriendRequestsService } from '../friendRequests/friendRequests.service';
 import {MatchesService} from "../matches/matches.service";
 
 @WebSocketGateway()
@@ -24,10 +25,12 @@ export class EventsGateway
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
+    private readonly friendReqService: FriendRequestsService,
     protected readonly clubService: ClubsService,
+    protected readonly chatService: ChatsService,
     protected readonly matchesService: MatchesService,
   ) {
-    this.notificationsProviders = [clubService];
+    this.notificationsProviders = [clubService, friendReqService];
   }
 
   private static registerNamespaceServer(server): boolean {
@@ -69,7 +72,7 @@ export class EventsGateway
 
   public broadcast(event: string, payload: any) {
     for (const c of this.clients) {
-      console.log("BROADCAST to"+c.user.nickname)
+      console.log('BROADCAST to ' + c.user.nickname);
       c.emit(event, payload);
     }
   }

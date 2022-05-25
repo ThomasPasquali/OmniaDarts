@@ -4,19 +4,19 @@ import { MatchesController } from './matches.controller';
 import {MongooseModule} from "@nestjs/mongoose";
 import {Match, MatchSchema} from "../../schemas/match.schema";
 import {UsersModule} from "../users/users.module";
-import {ChatModule} from "../chat/chat.module";
 import {LobbiesService} from "./lobbies.service";
 import {LobbiesGateway} from "./lobbies.gateway";
-import {JwtService} from "@nestjs/jwt";
 import {AuthModule} from "../auth/auth.module";
 import {ClubsModule} from "../clubs/clubs.module";
+import {ChatsModule} from "../chats/chats.module";
 
 @Module({
   imports: [
-    forwardRef(() => ChatModule),
+    MatchesModule,
     UsersModule,
     AuthModule,
-    forwardRef(() =>ClubsModule),
+    forwardRef(() => ClubsModule),
+    forwardRef(() => ChatsModule),
     MongooseModule.forFeature([{ name: Match.name, schema: MatchSchema }])
   ],
   providers: [MatchesService, LobbiesService, LobbiesGateway],

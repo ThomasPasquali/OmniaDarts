@@ -12,27 +12,26 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { TextMessage } from '../../classes/textMessage';
-import { User } from '../../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ChatService } from './chat.service';
+import { ChatsService } from './chats.service';
 
 @Controller('chat')
 @ApiTags('chat')
-export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+export class ChatsController {
+  constructor(private readonly chatService: ChatsService) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post()
-  @ApiOperation({ description: 'Create a new chat standalone' })
-  @ApiCreatedResponse({ description: 'Created a new chat', type: TextMessage })
+  @ApiOperation({ description: 'Create a new chats standalone' })
+  @ApiCreatedResponse({ description: 'Created a new chats', type: TextMessage })
   async create() {
-    return await this.chatService.create();
+    return await this.chatService.create(null, false, false);
   }
 
   @Get(':id')
-  @ApiOperation({ description: 'Find a chat' })
-  @ApiOkResponse({ description: 'Found the chat' })
+  @ApiOperation({ description: 'Find a chats' })
+  @ApiOkResponse({ description: 'Found the chats' })
   async findOne(@Param('id') id: string) {
     return await this.chatService.findById(id);
   }

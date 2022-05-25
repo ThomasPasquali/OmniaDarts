@@ -20,7 +20,7 @@ import { User } from '../../schemas/user.schema';
 import Lobby from '../../classes/lobby';
 import {UsersService} from "../users/users.service";
 import {MatchesService} from "./matches.service";
-import {ChatService} from "../chat/chat.service";
+import {ChatsService} from "../chats/chats.service";
 import {LobbiesService} from "./lobbies.service";
 
 @Controller('matches')
@@ -30,7 +30,7 @@ export class MatchesController {
   constructor(
       private readonly matchesService: MatchesService,
       private readonly usersService: UsersService,
-      private readonly chatService: ChatService,
+      private readonly chatService: ChatsService,
       private readonly lobbiesService: LobbiesService,
   ) {}
 
@@ -43,7 +43,14 @@ export class MatchesController {
   async newLobby(@Req() req, @Body() match: Match) {
     const lobby = new Lobby(match.lobby);
     lobby.owner = req.user;
-    lobby.chatID = (await this.chatService.create())._id;
+    const chat = await this.chatService.create(
+        null,
+        false,
+        true
+    );
+    chat.playersIDs.push(req.user._id);
+    await this.chatService.update(chat._id, chat);
+    lobby.chatID = chat._id;
 
     match.lobby = lobby;
     match.players = [lobby.owner];

@@ -11,6 +11,6 @@ export default {
   //Lobby
   lobby_waiting_to_join: 'Waiting for lobby owner to approve',
 
-  // Text chat
+  // Text chats
   message_placeholder: 'Message'
 }

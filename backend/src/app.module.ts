@@ -15,7 +15,7 @@ import { MatchThrows, MatchThrowsSchema } from './schemas/matchThrows.schema';
 import { Throw, ThrowSchema } from './schemas/throw.schema';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { ChatModule } from './modules/chat/chat.module';
+import { ChatsModule } from './modules/chats/chats.module';
 import { EventsModule } from './modules/events/events.module';
 import { MatchesModule } from './modules/matches/matches.module';
 
@@ -61,7 +61,7 @@ import { MatchesModule } from './modules/matches/matches.module';
     ClubsModule,
     CaslModule,
     AuthModule,
-    ChatModule,
+    ChatsModule,
     NotificationsModule,
     PostsModule,
     EventsModule,

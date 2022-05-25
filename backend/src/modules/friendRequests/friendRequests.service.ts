@@ -13,9 +13,12 @@ import {
 } from '../../schemas/friendRequest.schema';
 import { User } from '../../schemas/user.schema';
 import { UsersService } from '../users/users.service';
+import { NotificationsProvider } from '../../interfaces/notifications';
+import Notification from '../../classes/notification';
+import { NotificationState } from '../../enums/notifications';
 
 @Injectable()
-export class FriendRequestsService {
+export class FriendRequestsService implements NotificationsProvider {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
@@ -49,7 +52,7 @@ export class FriendRequestsService {
     return newCurrUser;
   }
 
-  async deleteFriend(currUser: User, idFriend: String): Promise<User> {
+  async deleteFriend(currUser: User, idFriend: string): Promise<User> {
     const friend: User = await this.userService.findById(idFriend);
     this.checkFriendExist(friend);
     this.shouldBeFriend(currUser, friend, true);
@@ -83,7 +86,7 @@ export class FriendRequestsService {
     currUser: User,
     idFriend: string,
   ): Promise<FriendRequest> {
-    let friend: User = await this.userService.findById(idFriend);
+    const friend: User = await this.userService.findById(idFriend);
     this.checkFriendExist(friend);
     this.shouldBeFriend(currUser, friend, true);
 
@@ -97,13 +100,13 @@ export class FriendRequestsService {
     });
 
     // Update request 1
-    let reqFriend = friend.friendRequests[indexReq1];
+    const reqFriend = friend.friendRequests[indexReq1];
     this.shouldBePending(reqFriend, true);
     reqFriend.pending = false;
     await this.update(reqFriend._id, reqFriend);
 
     // Update request 2
-    let reqCurrUser = currUser.friendRequests[indexReq2];
+    const reqCurrUser = currUser.friendRequests[indexReq2];
     this.shouldBePending(reqCurrUser, true);
     reqCurrUser.pending = false;
     return await this.update(reqCurrUser._id, reqCurrUser);
@@ -167,5 +170,24 @@ export class FriendRequestsService {
       },
       code,
     );
+  }
+
+  async getNotifications(user: User): Promise<Notification[]> {
+    const notifications: Notification[] = [];
+    const u: User = await this.userService.findById(user._id);
+    const requests = u.friendRequests;
+    for (const r of requests) {
+      if (r.pending == true && r.isSender == false)
+        notifications.push(
+          new Notification(
+            'notification_friend_request',
+            'notification_friend_request_message',
+            NotificationState.NEW,
+            null,
+            r,
+          ),
+        );
+    }
+    return notifications;
   }
 }

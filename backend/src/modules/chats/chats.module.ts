@@ -1,9 +1,9 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { ChatService } from './chat.service';
-import { ChatController } from './chat.controller';
+import { ChatsService } from './chats.service';
+import { ChatsController } from './chats.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Chat, ChatSchema } from '../../schemas/chat.schema';
-import { ChatGateway } from './chat.gateway';
+import { ChatsGateway } from '../events/chats.gateway';
 import { EventsModule } from '../events/events.module';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
@@ -18,8 +18,8 @@ import {MatchesModule} from "../matches/matches.module";
     forwardRef(() => ClubsModule),
     MongooseModule.forFeature([{ name: Chat.name, schema: ChatSchema }]),
   ],
-  controllers: [ChatController],
-  providers: [ChatService, ChatGateway],
-  exports: [ChatService],
+  controllers: [ChatsController],
+  providers: [ChatsService],
+  exports: [ChatsService],
 })
-export class ChatModule {}
+export class ChatsModule {}
