@@ -50,7 +50,7 @@ export class FriendRequestsController {
   @Delete(':idFriend')
   @ApiOperation({ description: 'Delete or reject a friend by id' })
   @ApiOkResponse({
-    description: 'A user has been deleted',
+    description: 'The user has been deleted',
     type: User,
   })
   @HttpCode(HttpStatus.OK)
@@ -76,7 +76,7 @@ export class FriendRequestsController {
   @Get()
   @ApiOperation({ description: 'Get the list of friends (pending and not)' })
   @ApiOkResponse({
-    description: 'The list of friend',
+    description: 'The list of friend (pending and not)',
     type: [FriendRequest],
   })
   @HttpCode(HttpStatus.OK)

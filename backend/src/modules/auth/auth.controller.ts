@@ -52,7 +52,7 @@ export class AuthController {
     description: 'Simple user',
     type: SimpleUser,
   })
-  async login(@Body() user: SimpleUser) {
+  async login(@Body() user: User) {
     const u: User = await this.authService.validateUser(
       user.nickname,
       user.pwd,
@@ -73,18 +73,16 @@ export class AuthController {
   @ApiOperation({ description: 'Register a user' })
   @ApiCreatedResponse({
     description: 'User register successfully',
-    type: SimpleUser,
+    type: User,
   })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiBody({
     description: 'Simple user',
     type: SimpleUser,
   })
-  async register(@Body() sUser: SimpleUser) {
-    let user: User;
-    user.nickname = sUser.nickname;
+  async register(@Body() user: User) {
     const saltOrRounds: number = parseInt(this.config.get('SALTROUNDS'), 10);
-    user.pwd = await bcrypt.hash(sUser.pwd.toString(), saltOrRounds as number);
+    user.pwd = await bcrypt.hash(user.pwd.toString(), saltOrRounds as number);
     user.club = null;
     user.isAdmin = false;
     user.clubRequest = null;

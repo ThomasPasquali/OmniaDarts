@@ -13,7 +13,7 @@ export class TournamentsService {
     private tournamentModel: Model<TournamentDocument>,
   ) {}
 
-  async create(tournament: Tournament): Promise<Tournament> {
+  async addTournament(tournament: Tournament): Promise<Tournament> {
     const t = new this.tournamentModel(tournament);
     return t.save();
   }

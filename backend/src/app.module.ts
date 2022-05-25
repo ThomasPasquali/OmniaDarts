@@ -20,6 +20,9 @@ import { ChatModule } from './modules/chat/chat.module';
 import { TextchatsModule } from './modules/textchats/textchats.module';
 import { EventsModule } from './modules/events/events.module';
 import { MatchesModule } from './modules/matches/matches.module';
+import { TournamentMatchesModule } from './modules/tournament-matches/tournament-matches.module';
+import { MachesModule } from './modules/maches/maches.module';
+import { TournamentMatchesModule } from './modules/tournament-matches/tournament-matches.module';
 
 @Module({
 
@@ -70,6 +73,8 @@ import { MatchesModule } from './modules/matches/matches.module';
     PostsModule,
     EventsModule,
     MatchesModule,
+    TournamentMatchesModule,
+    MachesModule,
   ],
   controllers: [],
   providers: [ConfigService],

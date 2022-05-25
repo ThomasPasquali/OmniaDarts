@@ -33,7 +33,8 @@ export class Tournament {
   @ApiProperty({
     enum: TournamentTypes,
     example: getEnumDescription(TournamentTypes),
-    required: true,
+    required: false,
+    default: true,
   })
   type: string;
 
