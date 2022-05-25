@@ -32,7 +32,7 @@ export default {
       this.$store.commit('notifications/dismiss', i)
     },
     notificationUpdate(i, action) {
-      this.$store.dispatch('notifications/sendUpdate', { i, action })
+      this.$store.dispatch('notifications/sendUpdate', { i, action, sender: this.$auth.user})
     },
     newWindow() {
       window.open(window.location)
