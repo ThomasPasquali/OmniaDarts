@@ -1,6 +1,6 @@
 <template>
   <div class="appbar_menu">
-    <van-badge class="badge" :content="notifications.length" />
+    <van-badge class="badge" :content="notifications.filter(n => {return ['NEW', 'PENDING'].includes(n.state)}).length" />
     <img src="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" height="24px">  <!-- fixme -->
     <van-dropdown-menu>
       <van-dropdown-item ref="item">

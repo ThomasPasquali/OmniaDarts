@@ -19,8 +19,8 @@ export const mutations = {
   dismiss(state, i) {
     state.notifications.splice(i, 1)
   },
-  sendUpdate(state, update) {
-    state.lastNotification = update
+  sendUpdate(state, action) {
+    state.lastNotification = action
   },
   update(state, notification) {
     console.log(notification)

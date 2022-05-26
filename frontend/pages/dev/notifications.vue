@@ -3,21 +3,36 @@
     <van-button @click="newWindow">New window</van-button>
     <h1>Notifications</h1>
 
-    <div v-if="notifications.length">
+    <h2>{{ $t('user_new_notifications') }}</h2>
+    <div v-if="notifications.filter(n => {return ['NEW', 'PENDING'].includes(n.state)}).length">
       <Notification
-        v-for="(n, i) in notifications"
+        v-for="(n, i) in notifications.filter(n => {return ['NEW', 'PENDING'].includes(n.state)})"
         :key="i"
         :notification="n"
+        :class_="['NEW', 'PENDING'].includes(n.state) ? 'new' : 'old'"
         @accept="notificationUpdate(i, 'ACCEPT')"
         @reject="notificationUpdate(i, 'REJECT')"
         @dismiss="notificationDismiss(i)"
       />
     </div>
     <div v-else>
-      <h2>{{ $t('user_has_no_notification') }}</h2>
+      <p>{{ $t('user_has_no_notification') }}</p>
     </div>
 
-    <h1>Last update</h1>
+    <div v-if="notifications.filter(n => {return !['NEW', 'PENDING'].includes(n.state)}).length">
+      <h2>{{ $t('user_read_notifications') }}</h2>
+      <Notification
+        v-for="(n, i) in notifications.filter(n => {return !['NEW', 'PENDING'].includes(n.state)})"
+        :key="i"
+        :notification="n"
+        :class_="['NEW', 'PENDING'].includes(n.state) ? 'new' : 'old'"
+        @accept="notificationUpdate(i, 'ACCEPT')"
+        @reject="notificationUpdate(i, 'REJECT')"
+        @dismiss="notificationDismiss(i)"
+      />
+    </div>
+
+    <code>Last update:</code>
     <pre>{{ update }}</pre>
   </div>
 </template>
