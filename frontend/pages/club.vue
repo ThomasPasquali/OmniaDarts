@@ -20,9 +20,9 @@
       <h3>Description</h3>
       <p>{{ club.description }}</p>
 
-      <div v-if="!edit">
+      <div>
         <h3>Members</h3>
-        <ClubPlayer
+        <Banner
           v-for="member in members.filter((m) => {return !m.request})"
           :admin="admin"
           :key="member.id"
@@ -30,7 +30,7 @@
         />
         <div v-if="admin">
           <h3>Requests</h3>
-          <ClubPlayer
+          <Banner
             v-for="member in members.filter((m) => {return m.request})"
             :admin="admin"
             :key="member.id"
@@ -53,12 +53,12 @@
 </template>
 
 <script>
-import ClubPlayer from '~/components/ClubPlayer';
+import Banner from '~/components/Banner';
 import EditClub from '~/components/EditClub';
 
 export default {
   name: 'club',
-  components: {ClubPlayer, EditClub},
+  components: {Banner, EditClub},
   data() {
     return {
       club: {
