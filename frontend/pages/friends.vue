@@ -69,6 +69,7 @@
             : friendRequests.filter(fr => {return fr.user._id === u._id && fr.pending && fr.isSender}).length ?
             [{
               icon: 'clock',
+              emit: '',
             }]
             : friendRequests.filter(fr => {return fr.user._id === u._id && fr.pending && !fr.isSender}).length ?
             [{
