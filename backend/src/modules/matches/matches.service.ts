@@ -34,14 +34,25 @@ export class MatchesService implements NotificationsProvider {
         return matches.filter(m => !m.done && m.lobby != null)
     }
 
-    async find(matchID): Promise<Match> {
+    async findById(matchID): Promise<Match> {
         return this.matchModel.findById(matchID).lean();
     }
 
-    async updateMatchJoinRequests(match: Match): Promise<Match> {
+    async findByIdFull(matchID): Promise<Match> {
+        return this.matchModel.findById(matchID).populate('players').lean();
+    }
+
+    async deleteById(matchID): Promise<Match> {
+        return this.matchModel.findByIdAndDelete(matchID).lean();
+    }
+
+    async updateMatchPlayersAndRequests(match: Match): Promise<Match> {
         return this.matchModel.findByIdAndUpdate(
             match._id, {
-                $set: { 'lobby.joinRequests': match.lobby.joinRequests }
+                $set: {
+                    players: match.players,
+                    'lobby.joinRequests': match.lobby.joinRequests
+                }
             });
     }
 

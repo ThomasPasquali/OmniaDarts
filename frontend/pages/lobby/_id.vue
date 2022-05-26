@@ -1,6 +1,6 @@
 <template>
   <div v-if="match !== null">
-    <div v-if="isCurrentUserLobbyOwner(match)">
+    <div v-if="isCurrentUserLobbyOwner">
       <h1>Join requests</h1>
       <div v-for="req in joinRequests" :key="req._id">
         <p>{{req.nickname}}</p>
@@ -10,9 +10,19 @@
     </div>
 
       <!-- <TextChat :id="match.lobby.chatID" @sendMessage="sendMessage"/> -->
-      <pre>
-        {{match}}
-      </pre>
+    <h1>Match</h1>
+    <h3>Players</h3>
+    <div v-for="p in match.players" :key="p._id">
+      <div v-if="!isUserLobbyOwner(p)">
+        <p>{{p.nickname}}</p>
+        <van-button @click="kick(p)">Kick</van-button>
+      </div>
+    </div>
+    <h3>Description</h3>
+    <pre>
+      {{match.winningMode}}
+      {{match.gamemode}}
+    </pre>
   </div>
   <div v-else>
     {{ $t('lobby_waiting_to_join') }}
@@ -30,7 +40,7 @@ export default {
     return { id }
   },
   computed: {
-    match() { return this.$store.getters["lobbies/lobby"] },
+    match() { return this.$store.getters['lobbies/lobby'] },
     joinRequests() { return this.$store.getters['lobbies/lobbyJoinRequests'] }
   },
   async mounted() {
@@ -39,27 +49,42 @@ export default {
       this.sockets = {
         lobby: this.$store.getters.newIo(this, 'lobbies?lobbyID=' + this.id)
       }
-      if (this.match)
-        this.sockets.chat = this.$store.getters.newIo(this, 'textchats?chatID=' + this.match.lobby.chatID)
     }
   },
   methods: {
-    sendMessage(text) {
-      this.$store.dispatch('textchats/newMessage', { chatID: this.match.lobby.chatID, text, sender: this.$auth.user.nickname })
-      //console.log(this.$store.getters["textchats/chat"](this.match.lobby.chatID))
-    },
     back() {
       window.history.go(-1)
     },
-    isCurrentUserLobbyOwner(match) {
-      return match.lobby.owner._id === this.$auth.user._id
+    isCurrentUserLobbyOwner() {
+      return this.match.lobby.owner._id === this.$auth.user._id
     },
-    acceptJoinRequest(req) {
-      console.log(req)
+    isUserLobbyOwner(u) {
+      return this.match.lobby.owner._id === u._id
     },
-    rejectJoinRequest(req) {
-      console.log(req)
-    }
+    async acceptJoinRequest(req) {
+      try {
+        await this.$axios.$patch(`matches/lobby/joinRequest/${req._id}`)
+        await this.$store.dispatch("lobbies/fetchLobby", this.match._id)
+      }catch {
+        alert('Cannot accept join request')
+      }
+    },
+    async rejectJoinRequest(req) {
+      try {
+        await this.$axios.$delete(`matches/lobby/joinRequest/${req._id}`)
+        await this.$store.dispatch("lobbies/fetchLobby", this.match._id)
+      }catch {
+        alert('Cannot reject join request')
+      }
+    },
+    async kick(player) {
+      try {
+        await this.$axios.$delete(`matches/lobby/player/${player._id}`)
+        await this.$store.dispatch("lobbies/fetchLobby", this.match._id)
+      }catch {
+        alert('Cannot kick player')
+      }
+    },
   }
 }
 </script>

@@ -1,9 +1,9 @@
 import {
   BadRequestException,
   Body,
-  Controller, ForbiddenException, Get,
+  Controller, Delete, ForbiddenException, Get,
   HttpCode,
-  HttpStatus, Param,
+  HttpStatus, Param, Patch,
   Post,
   Req,
   UseGuards,
@@ -68,7 +68,7 @@ export class MatchesController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Request created' })
   async newLobbyJoinRequest(@Req() req, @Param('idMatch') idMatch: string) {
-    const match = await this.matchesService.find(idMatch);
+    const match = await this.matchesService.findById(idMatch);
     const user = req.user;
 
     if(this.doesUserBelongToMatch(user, match))
@@ -77,7 +77,7 @@ export class MatchesController {
       throw new BadRequestException(user, 'User already asked to join');
 
     match.lobby.joinRequests.push(req.user);
-    await this.matchesService.updateMatchJoinRequests(match);
+    await this.matchesService.updateMatchPlayersAndRequests(match);
     await this.lobbiesService.emitNewJoinRequest(user, match)
   }
 
@@ -87,7 +87,7 @@ export class MatchesController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   async getAll(@Req() req) {
-    return this.matchesService.findAll();
+    return await this.matchesService.findAll();
   }
 
   @Get('lobbies')
@@ -96,20 +96,20 @@ export class MatchesController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   async getAllActiveLobbies(@Req() req) {
-    return this.matchesService.findAllActiveLobbies();
+    return await this.matchesService.findAllActiveLobbies();
   }
 
-  @Get(':id')
+  @Get(':idMatch')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Get a specific match' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  async getMatch(@Req() req, @Param('id') matchID) {
-    const match = await this.matchesService.find(matchID);
+  async getMatch(@Req() req, @Param('idMatch') matchID: string) {
+    const match = await this.matchesService.findByIdFull(matchID);
     const user = req.user;
 
     if((match.lobby && match.lobby.isPublic)
-        || this.isUserLobbyOwner(user, match)
+        || MatchesController.isUserLobbyOwner(user, match)
         || this.doesUserBelongToMatch(user, match))
       return match;
 
@@ -119,16 +119,110 @@ export class MatchesController {
     throw new ForbiddenException(user, 'User must send join request');
   }
 
-  private isUserLobbyOwner(user: User, match: Match): boolean {
+  @Patch('lobby/joinRequest/:idUser')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Accept join request' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Request accepted' })
+  async acceptLobbyJoinRequest(
+      @Req() req,
+      @Param('idUser') idUser: string
+  ) {
+    //TODO with Guards
+    const match = await this.matchesService.findUserActiveLobby(req.user);
+
+    if(!match)
+      throw new BadRequestException(match, 'Player does not own a lobby');
+
+    const reqI = this.getJoinRequestIndex(match, idUser);
+
+    match.lobby.joinRequests.splice(reqI, 1);
+    match.players.push(await this.usersService.findById(idUser));
+    await this.matchesService.updateMatchPlayersAndRequests(match);
+  }
+
+  @Delete('lobby/joinRequest/:idUser')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Reject join request' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Request rejected' })
+  async rejectLobbyJoinRequest(
+      @Req() req,
+      @Param('idUser') idUser: string
+  ) {
+    //TODO with Guards
+    const match = await this.matchesService.findUserActiveLobby(req.user);
+
+    if(!match)
+      throw new BadRequestException(match, 'Player does not own a lobby');
+
+    const reqI = this.getJoinRequestIndex(match, idUser);
+
+    match.lobby.joinRequests.splice(reqI, 1);
+    await this.matchesService.updateMatchPlayersAndRequests(match);
+  }
+
+  @Delete('lobby/player/:idUser')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Reject join request' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Request rejected' })
+  async removeLobbyPlayer (
+      @Req() req,
+      @Param('idUser') idUser: string
+  ) {
+    //TODO with Guards
+    const match = await this.matchesService.findUserActiveLobby(req.user);
+
+    if(!match)
+      throw new BadRequestException(match, 'Player does not own a lobby');
+
+    const playerIndex = this.getLobbyPlayerIndex(match, idUser);
+    match.players.splice(playerIndex, 1);
+    await this.matchesService.updateMatchPlayersAndRequests(match);
+  }
+
+  @Delete(':idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Delete a specific match' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  async deleteMatch(@Req() req, @Param('idMatch') matchID: string) {
+    return await this.matchesService.deleteById(matchID);
+  }
+
+  private getLobbyPlayerIndex(match: Match, userID: string): number {
+      const i = match.players.findIndex(u => u._id.equals(userID));
+      if(i < 0)
+        throw new BadRequestException(userID, 'Player does not belong to match');
+      return i;
+  }
+
+  private getJoinRequestIndex(match: Match, userID: string): number {
+    if(!match.lobby)
+      throw new BadRequestException(match, 'This match is not a lobby');
+
+    const reqI = match.lobby.joinRequests.findIndex(u => u._id.equals(userID));
+
+    if(reqI < 0)
+      throw new BadRequestException(userID, 'Request does not exist');
+
+    return reqI;
+  }
+
+  private static isUserLobbyOwner(user: User, match: Match): boolean {
     return match.lobby && match.lobby.owner._id.equals(user._id)
   }
 
   private doesUserBelongToMatch(user: User, match: Match): boolean {
-    return match.players.find(u => u._id.equals(user._id)) != null
+    return match.players.find(u => (u._id || u).equals(user._id)) != null
   }
 
   private hasUserJoinRequest(user: User, match: Match): boolean {
-    return match.lobby && match.lobby.joinRequests.find(u => u._id.equals(user._id)) != null
+    return match.lobby && match.lobby.joinRequests.find(u => (u._id || u).equals(user._id)) != null
   }
 
 }

@@ -19,12 +19,9 @@ export class LobbiesGateway extends EventsGateway {
         if(lobbyID) {
             client.join('lobby_'+lobbyID)
             const match = await this.matchesService.findUserActiveLobby(client.user)
-            console.log("ACTIVE ", match)
             if(match && match.lobby)
-                for(const req of match.lobby.joinRequests) {
-                    console.log("REQ",req)
+                for(const req of match.lobby.joinRequests)
                     client.emit('lobby_new_join_request', req)
-                }
         }
     }
 
