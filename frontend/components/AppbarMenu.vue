@@ -1,7 +1,7 @@
 <template>
   <div class="appbar_menu">
     <van-badge class="badge" :content="notifications.filter(n => {return ['NEW', 'PENDING'].includes(n.state)}).length" />
-    <img src="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" height="24px">  <!-- fixme -->
+    <img :src="this.$auth.user.imageUrl" height="24px">  <!-- fixme -->
     <van-dropdown-menu>
       <van-dropdown-item ref="item">
         <van-cell
@@ -27,6 +27,12 @@ export default {
         {
           title: 'Profile',
           to: 'profile',
+          show: true,
+          onClick: this.onConfirm
+        },
+        {
+          title: 'Friends',
+          to: 'friends',
           show: true,
           onClick: this.onConfirm
         },
