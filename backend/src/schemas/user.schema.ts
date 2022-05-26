@@ -23,6 +23,24 @@ export class User extends Document {
   })
   nickname: string;
 
+  @Prop({
+    default: '',
+  })
+  @ApiPropertyOptional()
+  firstname: string;
+
+  @Prop({
+    default: '',
+  })
+  @ApiPropertyOptional()
+  lastname: string;
+
+  @Prop({
+    default: '',
+  })
+  @ApiPropertyOptional()
+  country: string;
+
   @Prop()
   @ApiPropertyOptional()
   googleToken: string;
@@ -33,7 +51,7 @@ export class User extends Document {
   })
   pwd: string;
 
-  @Prop({ default: null })
+  @Prop({ default: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png' })
   @ApiPropertyOptional()
   @ApiHideProperty()
   imageUrl: string;
