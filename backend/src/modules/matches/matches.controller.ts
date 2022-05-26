@@ -136,10 +136,11 @@ export class MatchesController {
       throw new BadRequestException(match, 'Player does not own a lobby');
 
     const reqI = this.getJoinRequestIndex(match, idUser);
-
+    const userID =match.lobby.joinRequests[reqI]._id;
     match.lobby.joinRequests.splice(reqI, 1);
     match.players.push(await this.usersService.findById(idUser));
     await this.matchesService.updateMatchPlayersAndRequests(match);
+    await this.lobbiesService.emitJoinRequestAccepted(userID, match);
   }
 
   @Delete('lobby/joinRequest/:idUser')
@@ -159,9 +160,10 @@ export class MatchesController {
       throw new BadRequestException(match, 'Player does not own a lobby');
 
     const reqI = this.getJoinRequestIndex(match, idUser);
-
+    const userID =match.lobby.joinRequests[reqI]._id;
     match.lobby.joinRequests.splice(reqI, 1);
     await this.matchesService.updateMatchPlayersAndRequests(match);
+    await this.lobbiesService.emitJoinRequestRejected(userID, match);
   }
 
   @Delete('lobby/player/:idUser')
@@ -181,8 +183,10 @@ export class MatchesController {
       throw new BadRequestException(match, 'Player does not own a lobby');
 
     const playerIndex = this.getLobbyPlayerIndex(match, idUser);
+    const userID = match.players[playerIndex]._id;
     match.players.splice(playerIndex, 1);
     await this.matchesService.updateMatchPlayersAndRequests(match);
+    await this.lobbiesService.emitKick(userID, match);
   }
 
   @Delete(':idMatch')

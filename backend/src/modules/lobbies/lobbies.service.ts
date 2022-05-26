@@ -14,4 +14,19 @@ export class LobbiesService {
         if(user && match && match.lobby)
             await this.lobbiesGateway.emitNewJoinRequest(user, match)
     }
+
+    async emitKick(userID: string, match: Match) {
+        if(userID && match && match.lobby)
+            await this.lobbiesGateway.emitKick(userID, match)
+    }
+
+    async emitJoinRequestAccepted(userID: string, match: Match) {
+        if(userID && match && match.lobby)
+            await this.lobbiesGateway.emitJoinRequestAccepted(userID, match)
+    }
+
+    async emitJoinRequestRejected(userID: string, match: Match) {
+        if(userID && match && match.lobby)
+            await this.lobbiesGateway.emitJoinRequestRejected(userID, match)
+    }
 }
