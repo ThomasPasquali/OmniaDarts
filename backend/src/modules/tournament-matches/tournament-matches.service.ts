@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTournamentMatchDto } from './dto/create-tournament-match.dto';
-import { UpdateTournamentMatchDto } from './dto/update-tournament-match.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import {
+  TournamentMatch,
+  TournamentMatchDocument,
+} from 'src/schemas/tournamentMatch.schema';
 
 @Injectable()
 export class TournamentMatchesService {
-  create(createTournamentMatchDto: CreateTournamentMatchDto) {
-    return 'This action adds a new tournamentMatch';
+  constructor(
+    @InjectModel(TournamentMatch.name)
+    private readonly tournamentMatchModel: Model<TournamentMatchDocument>,
+  ) {}
+
+  async addTournamentMatch(
+    tournamentMatch: TournamentMatch,
+  ): Promise<TournamentMatch> {
+    const createdTournamentMatch = new this.tournamentMatchModel(
+      tournamentMatch,
+    );
+    return createdTournamentMatch.save();
   }
 
-  findAll() {
-    return `This action returns all tournamentMatches`;
+  async findAll(): Promise<TournamentMatch[]> {
+    return this.tournamentMatchModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tournamentMatch`;
+  async getTournamentMatchById(id: string): Promise<TournamentMatch> {
+    return this.tournamentMatchModel
+      .findById(id)
+      .populate('tournamentRef')
+      .lean();
   }
 
-  update(id: number, updateTournamentMatchDto: UpdateTournamentMatchDto) {
-    return `This action updates a #${id} tournamentMatch`;
+  async update(
+    id: string,
+    tournamentMatch: TournamentMatch,
+  ): Promise<TournamentMatch> {
+    return this.tournamentMatchModel
+      .findByIdAndUpdate(id, tournamentMatch, { new: true })
+      .populate('tournamentRef')
+      .lean();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tournamentMatch`;
+  async delete(id: string): Promise<TournamentMatch> {
+    return await this.tournamentMatchModel.findByIdAndDelete(id).exec();
   }
 }

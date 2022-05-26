@@ -1,34 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
+import { Tournament } from 'src/schemas/tournaments.schema';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TournamentMatchesService } from './tournament-matches.service';
-import { CreateTournamentMatchDto } from './dto/create-tournament-match.dto';
-import { UpdateTournamentMatchDto } from './dto/update-tournament-match.dto';
 
 @Controller('tournament-matches')
+@ApiTags('tournament-matches')
 export class TournamentMatchesController {
-  constructor(private readonly tournamentMatchesService: TournamentMatchesService) {}
+  tournamentService: any;
+  constructor(
+    private readonly tournamentMatchesService: TournamentMatchesService,
+  ) {}
 
-  @Post()
-  create(@Body() createTournamentMatchDto: CreateTournamentMatchDto) {
-    return this.tournamentMatchesService.create(createTournamentMatchDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.tournamentMatchesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tournamentMatchesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTournamentMatchDto: UpdateTournamentMatchDto) {
-    return this.tournamentMatchesService.update(+id, updateTournamentMatchDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tournamentMatchesService.remove(+id);
+  @Post(':idTournament')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Create a tournament match' })
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'A new club has been created',
+    type: TournamentMatch,
+  })
+  async create(
+    @Body() tournamentMatch: TournamentMatch,
+    @Param('idTournament') idTournament: string,
+  ) {
+    const newTournamentMatch =
+      await this.tournamentMatchesService.addTournamentMatch(tournamentMatch);
+    const tournament: Tournament = await this.tournamentService.findById(
+      idTournament,
+    );
+    newTournamentMatch.tournamentRef = tournament;
+    return newTournamentMatch;
   }
 }

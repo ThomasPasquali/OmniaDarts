@@ -21,7 +21,7 @@ export class Tournament {
 
   @Prop()
   @ApiPropertyOptional()
-  timestamp: Date;
+  creation_date: Date;
 
   @Prop()
   @ApiProperty({
@@ -78,6 +78,12 @@ export class Tournament {
     default: false,
   })
   finished: boolean;
+
+  @Prop()
+  @ApiProperty({
+    required: true,
+  })
+  creator: User;
 }
 
 export const TournamentsSchema = SchemaFactory.createForClass(Tournament);

@@ -8,7 +8,7 @@ export default class SimpleTournament {
   @ApiProperty({
     description: "Tournaments's name",
     required: false,
-    default: null,
+    default: 'Best tournament',
   })
   name: string;
   @ApiProperty({
@@ -35,12 +35,14 @@ export default class SimpleTournament {
   winningMode: WinningMode;
   @ApiProperty({
     isArray: true,
-    required: true,
+    // required: true, TODO change
     minLength: 4,
     maxLength: 100,
-    example: '',
+    default: [],
   })
   idPlayers: string[];
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    default: null,
+  })
   idClub: string;
 }
