@@ -1,4 +1,10 @@
+require('dotenv').config()
+
 export default {
+  server: {
+    host: '0.0.0.0'
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: "Omnia Darts",
@@ -12,10 +18,11 @@ export default {
       { name: "format-detection", content: "telephone=no" },
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+    script: [{ src: '/android.js' }],
   },
 
   publicRuntimeConfig: {
-    API_BASE_URL: process.env.BASE_URL || 'http://localhost:4000/',
+    API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:4000/',
     io: {
       sockets: [
         {
@@ -49,7 +56,7 @@ export default {
   },
 
   privateRuntimeConfig: {
-    API_BASE_URL: process.env.BASE_URL || 'http://localhost:4000/'
+    API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:4000/'
     //apiSecret: process.env.API_SECRET
   },
 
@@ -57,7 +64,7 @@ export default {
   css: ["vant/lib/index.css", "assets/css/main.css"],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ["@/plugins/vant"],
+  plugins: ['@/plugins/vant', '@/plugins/android'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -96,8 +103,8 @@ export default {
         codeChallengeMethod: "",
         responseType: "code",
         endpoints: {
-          token: `http://localhost:4000/auth/google`,
-          userInfo: `http://localhost:4000/auth/google/user`,
+          token: process.env.API_BASE_URL+`auth/google`,
+          userInfo: process.env.API_BASE_URL+`auth/google/user`,
         },
       },
     },
