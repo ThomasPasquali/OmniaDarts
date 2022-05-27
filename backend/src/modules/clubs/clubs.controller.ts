@@ -106,6 +106,7 @@ export class ClubsController {
       req.user._id.toString(),
     );
     user.isAdmin = true;
+    newClub.admin.push(user);
     newClub.players.push(user);
     const clubUpdated = await this.clubsService.update(newClub._id, newClub);
     user.club = clubUpdated;
@@ -168,7 +169,7 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Remove a user from a club' })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: 'A player has just been removed from the club',
     type: Club,
   })
@@ -221,6 +222,10 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Revoke privileges to a user' })
+  @ApiOkResponse({
+    description: 'The privileges has been removed',
+    type: String,
+  })
   async revokePrivileges(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -238,7 +243,11 @@ export class ClubsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ description: '' })
+  @ApiOperation({ description: 'Delete the current club' })
+  @ApiOkResponse({
+    description: 'The club has been deleted',
+    type: Club,
+  })
   async exitFromMyOwnClub(@Req() req) {
     const club: Club = req.user.club;
     checkNull(club, "You don't belong to a club");

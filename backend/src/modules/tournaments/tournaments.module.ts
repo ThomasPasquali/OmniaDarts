@@ -15,8 +15,6 @@ import { TournamentsService } from './tournaments.service';
     UsersModule,
     ClubsModule,
     TournamentMatchesModule,
-    // forwardRef(() => TournamentMatchesModule),
-    // https://stackoverflow.com/questions/65437975/the-module-at-index-1-is-of-type-undefined-check-your-import-statements-and
     MongooseModule.forFeature([
       { name: Tournament.name, schema: TournamentsSchema },
     ]),

@@ -9,13 +9,14 @@ import ClubRequest from '../classes/clubRequest';
 import { Club } from './club.schema';
 import { FriendRequest } from './friendRequest.schema';
 import { Match } from './match.schema';
+import { Tournament } from './tournaments.schema';
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User extends Document {
   @Prop({
-    default: '',
+    default: 'nick',
   })
   @ApiProperty({
     description: 'The nickname of the user',
@@ -61,10 +62,19 @@ export class User extends Document {
   clubRequest: ClubRequest;
 
   @Prop({
-    default: false
+    default: false,
   })
   @ApiHideProperty()
   isAdmin: boolean;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tournament' }],
+  })
+  @ApiProperty({
+    required: false,
+    default: [],
+  })
+  tournaments: Tournament[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

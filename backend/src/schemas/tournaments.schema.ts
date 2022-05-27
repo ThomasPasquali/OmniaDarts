@@ -12,7 +12,7 @@ import { User } from './user.schema';
 export type TournamentDocument = Tournament & Document;
 
 @Schema()
-export class Tournament {
+export class Tournament extends Document {
   @Prop()
   @ApiProperty({
     required: true,
@@ -79,7 +79,7 @@ export class Tournament {
   })
   finished: boolean;
 
-  @Prop()
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   @ApiProperty({
     required: true,
   })

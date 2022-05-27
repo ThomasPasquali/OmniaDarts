@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   Post,
@@ -22,6 +21,7 @@ import {
 import SimpleTournament from 'src/classes/SimpleTournament';
 import { Club } from 'src/schemas/club.schema';
 import { User } from 'src/schemas/user.schema';
+import { checkNull, throwHttpExc } from 'src/utils/utils';
 import { Tournament } from '../../schemas/tournaments.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ClubsService } from '../clubs/clubs.service';
@@ -70,21 +70,23 @@ export class TournamentsController {
       creator: currUser,
     } as Tournament;
 
-    // Add friends
-    simpleTournament.idPlayers.forEach(async (idPlayer) => {
-      const player: User = await this.usersService.findById(idPlayer);
-      tournament.players.push(player);
-    });
-    console.log(tournament.players);
-    tournament.players.push();
+    let club: Club;
 
     // Add club
     if (simpleTournament.idClub != null) {
-      const club: Club = await this.clubService.getClubById(
-        simpleTournament.idClub,
-      );
+      club = await this.clubService.getClubById(simpleTournament.idClub);
+      checkNull(club, 'The club does not exist');
+      this.checkIsAdminClub(club, currUser._id);
+      this.checkPlayersClubComponents(club, simpleTournament.idPlayers);
       tournament.clubRef = club;
     } else tournament.clubRef = null;
+
+    // Add players
+    simpleTournament.idPlayers.forEach(async (idPlayer) => {
+      const player: User = await this.usersService.findById(idPlayer);
+      checkNull(player, 'One component of the tournament does not exist');
+      tournament.players.push(player);
+    });
 
     // --- Tournament setup ---
     // Test tournament match
@@ -92,6 +94,17 @@ export class TournamentsController {
     // tournament.matches.push(
     //   await this.tournamentMatchesService.addTournamentMatch(tournamentMatch),
     // );
+
+    // --- Add references ---
+
+    if (club != null) {
+      club.tournaments.push(tournament);
+      await this.clubService.update(club._id, club);
+    }
+    tournament.players.forEach(async (p) => {
+      p.tournaments.push(tournament);
+      await this.usersService.update(p._id, p);
+    });
 
     return await this.tournamentService.addTournament(tournament);
   }
@@ -132,13 +145,18 @@ export class TournamentsController {
     return await this.tournamentService.getTournamentById(idTournament);
   }
 
-  private throwHttpExc(message: string, code) {
-    throw new HttpException(
-      {
-        status: code,
-        error: message,
-      },
-      code,
-    );
+  private checkIsAdminClub(club: Club, idAdmin: string) {
+    if (club.admin.findIndex((u) => u._id == idAdmin) == -1)
+      throwHttpExc('You are not the admin of the club', HttpStatus.BAD_REQUEST);
+  }
+
+  private checkPlayersClubComponents(club: Club, idPlayers: string[]) {
+    idPlayers.forEach((id) => {
+      if (club.players.findIndex((u) => u._id == id) == -1)
+        throwHttpExc(
+          'One or more players are not part of the club',
+          HttpStatus.BAD_REQUEST,
+        );
+    });
   }
 }

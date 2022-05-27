@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
 import Post from '../classes/post';
 import { Chat } from './chat.schema';
+import { Tournament } from './tournaments.schema';
 import { User } from './user.schema';
 
 export type ClubDocument = Club & Document;
@@ -60,13 +61,23 @@ export class Club extends mongoose.Document {
   })
   description: string;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: Chat.name }] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }] })
   @ApiProperty({
     description: 'Chat inside the club',
     required: false,
     default: null,
   })
   chat: Chat;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tournament' }],
+  })
+  @ApiProperty({
+    description: 'Tournaments of the club',
+    required: false,
+    default: [],
+  })
+  tournaments: Tournament[];
 }
 
 export const ClubSchema = SchemaFactory.createForClass(Club);
