@@ -32,7 +32,7 @@ export default {
       if(window && window.android && window.android.login) {
       	  window.localStorage.setItem('user', user)
       	  window.android.login(window.localStorage.getItem('auth._token.local'), JSON.stringify(user))
-        }else alert('NOPE')
+        }//else alert('NOPE')
      }
   },
   mounted() {
