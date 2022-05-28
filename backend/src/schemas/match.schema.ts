@@ -3,10 +3,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
 import { User } from './user.schema';
 import Lobby from "../classes/lobby";
-import {FirstBest, GamemodeName, SetsLegs} from "../enums/matches";
-import {MatchSettings} from "../interfaces/match";
-import TournamentTypes from "../enums/tournamentTypes";
-import {getEnumDescription} from "../utils/utils";
+import PlayerThrows from "../classes/playerThrows";
+import Throw from "../classes/throw";
 
 export type MatchDocument = Match & Document;
 
@@ -42,6 +40,15 @@ export class Match extends Document {
   @ApiProperty()
   winningMode: Record<string, any>;
 
+  //public final HashMap<String, Stack<CompleteThrow>> playerThrows;
+  @Prop({ type: raw({}), default: {} })
+  gameThrows: Record<string, PlayerThrows>;
+
+  public addThrow(user: User, setLeg: string, newThrow: Throw) {
+    const uID = user._id.toString();
+    !this.gameThrows[uID] && (this.gameThrows[uID] = new PlayerThrows(uID));
+    this.gameThrows[uID].addThrow(setLeg, newThrow);
+  }
 }
 
 export const MatchSchema = SchemaFactory.createForClass(Match);

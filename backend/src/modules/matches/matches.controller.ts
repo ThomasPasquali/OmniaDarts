@@ -28,6 +28,7 @@ import { UsersService } from '../users/users.service';
 import { MatchesService } from './matches.service';
 import { ChatsService } from '../chats/chats.service';
 import { LobbiesService } from '../lobbies/lobbies.service';
+import Throw from "../../classes/throw";
 
 @Controller('matches')
 @ApiTags('matches')
@@ -83,6 +84,28 @@ export class MatchesController {
     match.lobby.joinRequests.push(req.user);
     await this.matchesService.updateMatchPlayersAndRequests(match);
     await this.lobbiesService.emitNewJoinRequest(user, match);
+  }
+
+  @Post('lobby/throw/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Submit throw' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Request created' })
+  async newThrow(
+      @Req() req,
+      @Param('idMatch') idMatch: string,
+      @Body() { setLeg, newThrow }
+  ) {
+    const match = await this.matchesService.findById(idMatch);
+    const user = req.user;
+
+    if (this.doesUserBelongToMatch(user, match))
+      throw new BadRequestException(user, 'User already joined');
+
+    match.addThrow(user, setLeg, newThrow as Throw);
+    await this.matchesService.updateMatchThrows(match);
+    await this.matchesService.emitNewThrow(user._id.toString(), idMatch, newThrow);
   }
 
   @Get()

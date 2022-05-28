@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import {Club, ClubDocument} from "../../schemas/club.schema";
 import {Match} from "../../schemas/match.schema";
 import {InjectModel} from "@nestjs/mongoose";
@@ -7,12 +7,16 @@ import {NotificationsProvider} from "../../interfaces/notifications";
 import {User} from "../../schemas/user.schema";
 import Notification from "../../classes/notification";
 import {NotificationState} from "../../enums/notifications";
+import Throw from "../../classes/throw";
+import {MatchesGateway} from "./matches.gateway";
 
 @Injectable()
 export class MatchesService implements NotificationsProvider {
 
     constructor(
         @InjectModel(Match.name) private readonly matchModel: Model<Match>,
+        @Inject(forwardRef(() => MatchesGateway))
+        private readonly matchesGateway: MatchesGateway
     ) {}
 
     async findUserActiveLobby(user: User) {
@@ -54,6 +58,17 @@ export class MatchesService implements NotificationsProvider {
                     'lobby.joinRequests': match.lobby.joinRequests
                 }
             });
+    }
+
+    async updateMatchThrows(match: Match): Promise<Match> {
+        return this.matchModel.findByIdAndUpdate(
+            match._id, {
+                $set: { gameThrows: match.gameThrows }
+            });
+    }
+
+    async emitNewThrow(userID: string, matchID: string, newThrow: Throw) {
+        await this.matchesGateway.emitNewThrow(userID, matchID, newThrow);
     }
 
     async getNotifications(user: User): Promise<Notification[]> {
