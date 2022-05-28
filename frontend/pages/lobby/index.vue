@@ -1,36 +1,74 @@
 <template>
   <van-tabs v-model:active="active">
 
-    <van-tab :title="$t('my_lobby')">
-      <h1>{{ $t('my_lobby') }}</h1>
-      <div v-if="currentUserLobby()">
-        <Lobby :lobbyID="currentUserLobby()._id" />
-      </div>
-      <div v-else>
-        <van-button @click="newLobby">New</van-button>
-      </div>
-      <pre>{{ currentUserLobby() }}</pre>
-    </van-tab>
-
     <van-tab :title="$t('all_lobbies')">
       <h1>{{ $t('all_lobbies') }}</h1>
       <div v-if="lobbies">
         <div>
           <Banner
             v-for="m in lobbies"
-            v-if="m._id != isCurrentUserLobbyOwner(m)._id"
+            v-if="!doesCurrentUserBelongToLobby(m)"
             :key="m._id"
-            :title="(m.lobby.isPublic ? 'Join' : 'Request') + ' - ' + m.lobby.owner.nickname"
+            :title="m.lobby.owner.nickname"
             :user="m.lobby.owner"
-            @click="joinLobby(m)"
-          >
-            {{
-
-            }}
-          </Banner>
+            :buttons="[{
+              icon: 'login',
+              text: m.lobby.isPublic ? 'Join' : 'Request',
+              emit: 'joinLobby',
+              disabled: !!currentUserLobby(),
+            }]"
+            @joinLobby="joinLobby(m)"
+          />
         </div>
       </div>
       <div v-else>Loading...</div>
+    </van-tab>
+
+    <van-tab :title="$t('live_matches')">
+      <h1>{{ $t('live_matches') }}</h1>
+    </van-tab>
+
+    <van-tab :title="$t('my_lobby')">
+      <h1>{{ $t('my_lobby') }}</h1>
+      <div v-if="!!currentUserLobby()">
+        <Lobby :lobbyID="currentUserLobby()._id" />
+      </div>
+      <div v-else>
+        <p>{{ $t('user_has_no_lobby') }}</p>
+
+        <van-form @submit="newLobby">
+          <div class="radio-row" v-for="(f, i) in fields">
+            <p v-if="f.title !== 'Sets/Legs'">{{ f.title }}</p>
+            <van-field :name="f.title">
+              <template #input>
+                <van-radio-group class="radio-group" v-model="checked[i]">
+                  <van-grid :column-num="f.values.length">
+                    <van-grid-item v-for="v in f.values">
+                      {{ v === 'custom' ? '' : v }}
+                      <van-stepper v-if="v === 'custom'" v-model="customStartPoint" />
+                      <van-radio :name="v" />
+                    </van-grid-item>
+                  </van-grid>
+                </van-radio-group>
+              </template>
+            </van-field>
+          </div>
+
+          <van-field name="goal" label="Goal">
+            <template #input>
+              <van-stepper v-model="goal" />
+            </template>
+          </van-field>
+
+          <van-field name="private" label="Private">
+            <template #input>
+              <van-switch v-model="isPrivate" size="20" />
+            </template>
+          </van-field>
+
+          <van-button round block>Create</van-button>
+        </van-form>
+      </div>
     </van-tab>
 
     <!--    <van-tab title="Search">-->
@@ -64,30 +102,66 @@ export default {
   name: "LobbiesPage",
   components: {Banner, Lobby},
   data() {
+    let fields_ = [
+      {
+        title: 'Start point',
+        values: [301, 501, 'custom'],
+        defaultIndex: 0,
+      },
+      {
+        title: 'Check in',
+        values: ['Straight', 'Double', 'Triple', 'Master'],
+        defaultIndex: 0,
+      },
+      {
+        title: 'Check out',
+        values: ['Straight', 'Double', 'Triple', 'Master'],
+        defaultIndex: 0,
+      },
+      {
+        title: 'Winning mode',
+        values: ['First of', 'Best of'],
+        defaultIndex: 0,
+      },
+      {
+        title: 'Sets/Legs',
+        values: ['Sets', 'Legs'],
+        defaultIndex: 0,
+      },
+    ];
+    let defaultValues = [];
+    for (let f in fields_) {
+      defaultValues.push(fields_[f].values[fields_[f].defaultIndex]);
+    }
     return {
       active: 0,
-      search: '',
+      fields: fields_,
+      customStartPoint: 11,
+      goal: 3,
+      checked: defaultValues,
+      isPrivate: true,
     };
   },
   methods: {
-    async newLobby() {
+    async newLobby(values) {
+      // alert(JSON.stringify(values, null, 4))
       try {
         await this.$axios.$post('matches/lobby/new', {
           gamemode: {
             name: GamemodeName.X01,
             settings: new X01Settings(
-              501,
-              CheckInOut.Straight,
-              CheckInOut.Double,
+              values['Start point'] === 'custom' ? this.customStartPoint : values['Start point'],
+              values['Check in'].toLowerCase(),   // fixme lower ?
+              values['Check out'].toLowerCase(),  // fixme lower ?
             ),
           },
           winningMode: {
-            goal: 3,
-            firstBest: FirstBest.First,
-            setsLegs: SetsLegs.Legs,
+            goal: this.goal,
+            firstBest: values['Winning mode'],
+            setsLegs: values['Sets/Legs'],
           },
           lobby: {
-            isPublic: false,
+            isPublic: !this.isPrivate,
           },
         })
         await this.$store.dispatch("lobbies/fetchLobbies")
@@ -95,16 +169,17 @@ export default {
         alert('Cannot create lobby')
       }
     },
-    async joinLobby(match) {  // fixme redirect ? [dv]
-      if (!this.isCurrentUserLobbyOwner(match) || !this.doesCurrentUserBelongToLobby(match))
+    async joinLobby(match) {
+      if (!this.isCurrentUserLobbyOwner(match) || !this.doesCurrentUserBelongToLobby(match)) {
         try {
           await this.$axios.$post('matches/lobby/joinRequest/' + match._id)
         } catch {
         }
-      window.location.href = `/lobby/${match._id}`
+      }
+      window.location.href = `/lobby/${match._id}`  // fixme redirect ? [dv]
     },
     isCurrentUserLobbyOwner(match) {
-      return match && match.lobby.owner._id === this.$auth.user._id;
+      return match ? match.lobby.owner._id === this.$auth.user._id : false;
     },
     doesCurrentUserBelongToLobby(match) {
       return match.players.includes(this.$auth.user._id)
@@ -117,20 +192,31 @@ export default {
           return m;
         }
       }
-      return false;
-    }
+      return null;
+    },
   },
   mounted() {
     this.$store.dispatch("lobbies/fetchLobbies")
+    // this.$nextTick(() => {
+    //   document.querySelector(".van-picker__columns").style.maxHeight = "4rem";
+    // })
   },
   computed: {
     lobbies() {
       return this.$store.getters["lobbies/lobbies"]
     },
-  }
+  },
 }
 </script>
 
 <style scoped>
+.radio-group {
+  width: 100%;
+}
+
+.radio-row > p {
+  margin-top: .4rem;
+  margin-bottom: .1rem;
+}
 
 </style>

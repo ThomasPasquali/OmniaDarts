@@ -13,7 +13,7 @@
             :subtitle="f.user.firstname + ' ' + f.user.lastname"
             :buttons="[
               {
-                icon: 'delete',
+                icon: 'person_remove',
                 emit: 'deleteFriend',
               },
             ]"
@@ -34,11 +34,11 @@
             :subtitle="f.user.firstname + ' ' + f.user.lastname"
             :buttons="[
               {
-                icon: 'success',
+                icon: 'done',
                 emit: 'acceptFriend',
               },
               {
-                icon: 'cross',
+                icon: 'close',
                 emit: 'deleteFriend',
               },
             ]"
@@ -71,25 +71,25 @@
           :buttons="
             friendRequests.filter(fr => {return fr.user._id === u._id && !fr.pending}).length ?
             [{
-              icon: 'delete',
+              icon: 'person_remove',
               emit: 'deleteFriend',
             }]
             : friendRequests.filter(fr => {return fr.user._id === u._id && fr.pending && fr.isSender}).length ?
             [{
-              icon: 'clock',
+              icon: 'schedule',
               emit: '',
             }]
             : friendRequests.filter(fr => {return fr.user._id === u._id && fr.pending && !fr.isSender}).length ?
             [{
-              icon: 'success',
+              icon: 'done',
               emit: 'acceptFriend',
             }, {
-              icon: 'cross',
+              icon: 'close',
               emit: 'deleteFriend',
             }]
             :
             [{
-              icon: 'friends-o',
+              icon: 'person_add',
               emit: 'sendRequest',
             }]
           "
@@ -124,7 +124,7 @@ export default {
       await this.$axios.$delete('friends/' + userID);
     },
     async acceptFriend(userID) {
-      await this.$axios.$put('friends/' + userID);
+      await this.$axios.$patch('friends/' + userID);
     },
   },
   mounted() {
