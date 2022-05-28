@@ -5,11 +5,12 @@ import { CaslModule } from '../casl/casl.module';
 import { UsersModule } from '../users/users.module';
 import { ClubsController } from './clubs.controller';
 import { ClubsService } from './clubs.service';
-import { ChatModule } from '../chat/chat.module';
+import { ChatsModule } from '../chats/chats.module';
+import {MatchesModule} from "../matches/matches.module";
 
 @Module({
   imports: [
-    ChatModule,
+    ChatsModule,
     CaslModule,
     UsersModule,
     MongooseModule.forFeature([{ name: Club.name, schema: ClubSchema }]),

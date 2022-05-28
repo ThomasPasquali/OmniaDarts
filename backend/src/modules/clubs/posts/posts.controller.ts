@@ -1,6 +1,7 @@
 import {
   Body,
-  Controller, Get,
+  Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -12,6 +13,8 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiOperation,
   ApiTags,
@@ -31,7 +34,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import ClubPost from '../../../classes/post';
 import { User } from '../../../schemas/user.schema';
-import {join} from "path";
+import { join } from 'path';
+import SimpleUser from '../../../classes/SimpleUser';
 
 @Controller('posts')
 @ApiTags('posts')
@@ -50,6 +54,11 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postImage'))
   @ApiOperation({ description: 'Create a post for user s club' })
   @ApiCreatedResponse({ description: 'Post', type: Club })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Post',
+    type: ClubPost
+  })
   async createPost(
     @Req() req,
     @UploadedFile() file: Express.Multer.File,
@@ -64,7 +73,9 @@ export class PostsController {
     post.message = message;
     console.log(file.filename);
     post.fileRelativeUri = join(
-      this.configService.get<string>('FOLDER_POST_IMAGES').replace('./static', ''),
+      this.configService
+        .get<string>('FOLDER_POST_IMAGES')
+        .replace('./static', ''),
       file.filename,
     );
 
@@ -86,7 +97,7 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postImage'))
   @ApiOperation({ description: 'Request all post in a club' })
   @ApiCreatedResponse({ description: 'Post', type: [Post] })
-  async getAllPostsOfMyClub(@Req() req){
+  async getAllPostsOfMyClub(@Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     return club.posts;
   }

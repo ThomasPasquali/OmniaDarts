@@ -21,16 +21,14 @@ export const mutations = {
 
 export const getters = {
   newIo: state => (app, channel) => {
-    //if(!state.sockets[channel])state.sockets[channel] =
     return app.$nuxtSocket({
       channel,
       forceNew: false,
-      persist: 'channel',
+      persist: channel,
       extraHeaders: {
         Authorization: app.$auth.strategy.token.get()
       },
     })
-    //return state.sockets[channel]
   },
   club(state) { return state.club }
 }

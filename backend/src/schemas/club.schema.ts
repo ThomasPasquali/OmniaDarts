@@ -18,16 +18,6 @@ export class Club extends mongoose.Document {
   })
   name: string;
 
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  })
-  @ApiProperty({
-    description: 'Admins of the club',
-    required: false,
-    default: [],
-  })
-  admin: User[];
-
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   @ApiProperty({
     description: 'List of the members of the club',

@@ -1,11 +1,11 @@
-import { getModelToken } from '@nestjs/mongoose';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../app.module';
-import { User } from '../../schemas/user.schema';
-import { UsersModule } from '../users/users.module';
-import { UsersService } from '../users/users.service';
-import { FriendRequestsController } from './friendRequests.controller';
-import { FriendRequestsService } from './friendRequests.service';
+import {getModelToken} from '@nestjs/mongoose';
+import {Test, TestingModule} from '@nestjs/testing';
+import {AppModule} from '../../app.module';
+import {User} from '../../schemas/user.schema';
+import {UsersModule} from '../users/users.module';
+import {UsersService} from '../users/users.service';
+import {FriendRequestsController} from './friendRequests.controller';
+import {FriendRequestsService} from './friendRequests.service';
 
 describe('FriendsController', () => {
   function mockUserModel(dto: any) {

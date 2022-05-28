@@ -70,10 +70,10 @@ export class AuthController {
   }
 
   @Post('register')
-  @ApiOperation({ description: 'Register a user' })
+  @ApiOperation({ description: 'Register a user with nickname and password' })
   @ApiCreatedResponse({
     description: 'User register successfully',
-    type: User,
+    type: SimpleUser,
   })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiBody({
@@ -83,9 +83,6 @@ export class AuthController {
   async register(@Body() user: User) {
     const saltOrRounds: number = parseInt(this.config.get('SALTROUNDS'), 10);
     user.pwd = await bcrypt.hash(user.pwd.toString(), saltOrRounds as number);
-    user.club = null;
-    user.isAdmin = false;
-    user.clubRequest = null;
     const u = await this.userService.create(user);
 
     if (u) return await this.authService.login(u);

@@ -1,16 +1,5 @@
 <template>
   <div class="container">
-
-    <van-nav-bar
-      title="Omnia Darts"
-      left-arrow
-      @click-left="back">
-      <template #right>
-        <van-icon name="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" />
-        <span>Username</span>
-      </template>
-    </van-nav-bar>
-
     <h1>{{ edit ? 'Edit profile' : 'Profile' }}</h1>
 
     <form v-if="edit" @submit.prevent="submit">
