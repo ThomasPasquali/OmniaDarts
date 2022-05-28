@@ -25,6 +25,7 @@ export default {
   my_lobby: 'My lobby',
   all_lobbies: 'All lobbies',
   lobby_waiting_to_join: 'Waiting for lobby owner to approve',
+  delete_lobby: 'Delete lobby',
 
 
   // Text chats
