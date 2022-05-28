@@ -12,6 +12,9 @@ export default {
   // notification_club_request_message: 'An user asked to join your club',
 
   // Friends
+  friends: 'Friends',
+  requests: 'Requests',
+  search: 'Search',
   user_has_no_friends: 'You don\'t have any friends yet',
   user_has_no_friend_requests: 'You don\'t have any friend requests',
   search_user: 'Search for a user',
@@ -19,7 +22,10 @@ export default {
   requests_sent: 'Requests sent',
 
   //Lobby
+  my_lobby: 'My lobby',
+  all_lobbies: 'All lobbies',
   lobby_waiting_to_join: 'Waiting for lobby owner to approve',
+
 
   // Text chats
   message_placeholder: 'Message'
