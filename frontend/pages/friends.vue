@@ -2,13 +2,15 @@
   <div class="container">
     <van-tabs v-model:active="active">
 
-      <van-tab title="Friends">
-        <h1>Friends</h1>
+      <van-tab :title="$t('friends')">
+        <h1>{{ $t('friends') }}</h1>
         <div v-if="friendRequests.filter(fr => {return !fr.pending}).length">
           <Banner
             v-for="f in friendRequests.filter(fr => {return !fr.pending})"
             :key="f._id"
             :user="f.user"
+            :title="f.user.nickname"
+            :subtitle="f.user.firstname + ' ' + f.user.lastname"
             :buttons="[
               {
                 icon: 'delete',
@@ -21,13 +23,15 @@
         <p v-else>{{ $t('user_has_no_friends') }}</p>
       </van-tab>
 
-      <van-tab title="Requests">
+      <van-tab :title="$t('requests')">
         <h1>{{ $t('requests_received') }}</h1>
         <div v-if="friendRequests.filter(fr => {return fr.pending && !fr.isSender}).length">
           <Banner
             v-for="f in friendRequests.filter(fr => {return fr.pending && !fr.isSender})"
             :key="f._id"
             :user="f.user"
+            :title="f.user.nickname"
+            :subtitle="f.user.firstname + ' ' + f.user.lastname"
             :buttons="[
               {
                 icon: 'success',
@@ -49,17 +53,21 @@
             v-for="f in friendRequests.filter(fr => {return fr.pending && fr.isSender})"
             :key="f._id"
             :user="f.user"
+            :title="f.user.nickname"
+            :subtitle="f.user.firstname + ' ' + f.user.lastname"
           />
         </div>
         <p v-else>{{ $t('user_has_no_friend_requests') }}</p>
       </van-tab>
 
-      <van-tab title="Search">
+      <van-tab :title="$t('search')">
         <van-search v-model="search" :placeholder="$t('search_user')" />
         <Banner
           v-for="u in users.filter(us => {return us.nickname.includes(search) && us._id !== authUser._id})"
           :key="u._id"
           :user="u"
+          :title="u.nickname"
+          :subtitle="u.firstname + ' ' + u.lastname"
           :buttons="
             friendRequests.filter(fr => {return fr.user._id === u._id && !fr.pending}).length ?
             [{
