@@ -14,6 +14,8 @@ import { User } from '../../schemas/user.schema';
 import { ChatsService } from '../chats/chats.service';
 import { FriendRequestsService } from '../friendRequests/friendRequests.service';
 import {MatchesService} from "../matches/matches.service";
+import {MatchesGateway} from "../matches/matches.gateway";
+import {forwardRef, Inject} from "@nestjs/common";
 
 @WebSocketGateway()
 export class EventsGateway
@@ -28,7 +30,7 @@ export class EventsGateway
     private readonly friendReqService: FriendRequestsService,
     protected readonly clubService: ClubsService,
     protected readonly chatService: ChatsService,
-    protected readonly matchesService: MatchesService,
+    @Inject(forwardRef(() => MatchesService)) protected readonly matchesService: MatchesService,
   ) {
     this.notificationsProviders = [clubService, friendReqService];
   }
