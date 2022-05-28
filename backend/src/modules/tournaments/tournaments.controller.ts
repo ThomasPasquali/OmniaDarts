@@ -146,7 +146,7 @@ export class TournamentsController {
   }
 
   private checkIsAdminClub(club: Club, idAdmin: string) {
-    if (club.admin.findIndex((u) => u._id == idAdmin) == -1)
+    if (club.players.findIndex((u) => u._id == idAdmin && u.isAdmin) == -1)
       throwHttpExc('You are not the admin of the club', HttpStatus.BAD_REQUEST);
   }
 

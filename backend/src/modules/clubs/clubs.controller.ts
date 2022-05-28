@@ -106,7 +106,6 @@ export class ClubsController {
       req.user._id.toString(),
     );
     user.isAdmin = true;
-    newClub.admin.push(user);
     newClub.players.push(user);
     const clubUpdated = await this.clubsService.update(newClub._id, newClub);
     user.club = clubUpdated;
