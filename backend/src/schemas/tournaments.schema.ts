@@ -4,7 +4,7 @@ import mongoose, { Document } from 'mongoose';
 import WinningMode from '../classes/winningmode';
 import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
-import { getEnumDescription } from '../utils/utils';
+import { getEnumDescription } from '../utils/utilFunctions';
 import { Club } from './club.schema';
 import { TournamentMatch } from './tournamentMatch.schema';
 import { User } from './user.schema';

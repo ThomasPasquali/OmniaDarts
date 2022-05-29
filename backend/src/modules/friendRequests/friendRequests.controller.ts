@@ -17,7 +17,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { checkNull, throwHttpExc } from 'src/utils/utils';
+import { checkNull, throwHttpExc } from '../../utils/utilFunctions';
 import { FriendRequest } from '../../schemas/friendRequest.schema';
 import { User } from '../../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';

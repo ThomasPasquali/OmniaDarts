@@ -5,20 +5,20 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param, Patch,
+  Param,
+  Patch,
   Post,
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiOperation,
-  ApiTags,
+  ApiOperation, ApiTags,
 } from '@nestjs/swagger';
-import { checkNotNull, checkNull, throwHttpExc } from 'src/utils/utils';
 import ClubRequest from '../../classes/clubRequest';
 import { Club } from '../../schemas/club.schema';
 import { User } from '../../schemas/user.schema';
@@ -28,6 +28,7 @@ import { AppAbility } from '../casl/casl-ability.factory';
 import { CheckPolicies, PoliciesGuard } from '../casl/policies-guard.service';
 import { UsersService } from '../users/users.service';
 import { ClubsService } from './clubs.service';
+import { checkNotNull, checkNull, throwHttpExc } from '../../utils/utilFunctions';
 
 @Controller('clubs')
 @ApiTags('clubs')
@@ -40,7 +41,7 @@ export class ClubsController {
   @Post('joinRequest')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Send request to join a club' })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Club updated', type: Club })
   async sendRequest(
@@ -65,12 +66,7 @@ export class ClubsController {
     } as User);
 
     currUser.clubRequest = clubRequest;
-    console.log('hei');
-    await this.usersService.update(
-      currUser._id,
-      JSON.parse(JSON.stringify(currUser)),
-    );
-    console.log('ciao');
+    await this.usersService.update(currUser._id, currUser);
     return await this.clubsService.update(clubToApply._id, clubToApply);
   }
 
@@ -106,7 +102,10 @@ export class ClubsController {
       req.user._id.toString(),
     );
     user.isAdmin = true;
-    newClub.players.push(user);
+    newClub.players.push({
+      _id: user._id,
+    } as User);
+
     const clubUpdated = await this.clubsService.update(newClub._id, newClub);
     user.club = clubUpdated;
     await this.usersService.update(user._id, user);
@@ -259,7 +258,7 @@ export class ClubsController {
     else await this.clubsService.update(club._id, club);
     playerToRemove.club = null;
     await this.usersService.update(playerToRemove._id, playerToRemove);
-    return playerToRemove.id;
+    return club;
   }
 
   @Patch('joinRequest/:idPlayer')

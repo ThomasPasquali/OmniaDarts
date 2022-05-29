@@ -14,8 +14,8 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
-import { Tournament } from 'src/schemas/tournaments.schema';
+import { TournamentMatch } from '../../schemas/tournamentMatch.schema';
+import { Tournament } from '../../schemas/tournaments.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TournamentMatchesService } from './tournament-matches.service';
 

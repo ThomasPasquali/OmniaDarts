@@ -18,10 +18,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import SimpleTournament from 'src/classes/SimpleTournament';
-import { Club } from 'src/schemas/club.schema';
-import { User } from 'src/schemas/user.schema';
-import { checkNull, throwHttpExc } from 'src/utils/utils';
+import SimpleTournament from '../../classes/SimpleTournament';
+import { Club } from '../../schemas/club.schema';
+import { User } from '../../schemas/user.schema';
+import { checkNull, throwHttpExc } from '../../utils/utilFunctions';
 import { Tournament } from '../../schemas/tournaments.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ClubsService } from '../clubs/clubs.service';

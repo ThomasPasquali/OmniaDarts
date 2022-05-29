@@ -1,5 +1,5 @@
 import {
-  Body,
+  Body, ConflictException,
   Controller,
   Get,
   HttpStatus,
@@ -86,7 +86,7 @@ export class AuthController {
     const u = await this.userService.create(user);
 
     if (u) return await this.authService.login(u);
-    else throw new InternalServerErrorException();
+    else throw new ConflictException();
   }
 
   @Post('google')

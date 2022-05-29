@@ -6,7 +6,7 @@ import Lobby from "../classes/lobby";
 import {FirstBest, GamemodeName, SetsLegs} from "../enums/matches";
 import {MatchSettings} from "../interfaces/match";
 import TournamentTypes from "../enums/tournamentTypes";
-import {getEnumDescription} from "../utils/utils";
+import {getEnumDescription} from "../utils/utilFunctions";
 
 export type MatchDocument = Match & Document;
 

@@ -41,7 +41,7 @@ export class Club extends mongoose.Document {
     required: false,
     default: [],
   })
-  posts: Post[];
+  posts?: Post[];
 
   @Prop()
   @ApiProperty({

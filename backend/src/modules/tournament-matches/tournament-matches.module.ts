@@ -3,8 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   TournamentMatch,
   TournamentMatchSchema,
-} from 'src/schemas/tournamentMatch.schema';
-import { TournamentsModule } from '../tournaments/tournaments.module';
+} from '../../schemas/tournamentMatch.schema';
 import { TournamentMatchesController } from './tournament-matches.controller';
 import { TournamentMatchesService } from './tournament-matches.service';
 
