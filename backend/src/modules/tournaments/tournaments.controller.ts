@@ -58,7 +58,7 @@ export class TournamentsController {
 
     const currUser: User = await this.usersService.findById(req.user._id);
 
-    let tournament = {
+    const tournament = {
       name: simpleTournament.name,
       randomOrder: simpleTournament.randomOrder,
       type: simpleTournament.type,

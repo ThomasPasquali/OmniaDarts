@@ -30,7 +30,7 @@ export class UsersService {
   }
 
   async findById(id): Promise<User> {
-    return await this.userModel
+    return this.userModel
       .findOne({ _id: id })
       .populate('club')
       .populate('friendRequests')
@@ -45,10 +45,17 @@ export class UsersService {
   }
 
   async update(id, user: User): Promise<User> {
-    return await this.userModel
+    return this.userModel
       .findOneAndUpdate({ _id: id }, user, { new: true })
       .populate('club')
       .populate('friendRequests')
+      .populate({
+        path: 'friendRequests',
+        populate: {
+          path: 'user',
+          model: 'User',
+        },
+      })
       .lean();
   }
 

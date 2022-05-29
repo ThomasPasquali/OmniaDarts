@@ -42,14 +42,15 @@ export class FriendRequestsController {
   })
   @HttpCode(HttpStatus.CREATED)
   async addFriend(@Req() req, @Param('idFriend') idFriend: string) {
+
     const currUser = await this.userService.findById(req.user._id);
     const friend: User = await this.userService.findById(idFriend);
 
     checkNull(friend, 'The friend does not exist');
     this.shouldBeFriend(currUser, friend, false);
 
-    this.addRequest(friend, currUser, false);
-    return this.addRequest(currUser, friend, true);
+    await this.addRequest(friend, currUser, false);
+    return await this.addRequest(currUser, friend, true);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -67,7 +68,7 @@ export class FriendRequestsController {
     checkNull(friend, 'The friend does not exist');
     this.shouldBeFriend(currUser, friend, true);
 
-    this.deleteRequest(friend, currUser);
+    await this.deleteRequest(friend, currUser);
     return this.deleteRequest(currUser, friend);
   }
 
@@ -86,7 +87,7 @@ export class FriendRequestsController {
     checkNull(friend, 'The friend does not exist');
     this.shouldBeFriend(currUser, friend, true);
 
-    this.acceptRequest(friend, currUser);
+    await this.acceptRequest(friend, currUser);
     return this.acceptRequest(currUser, friend);
   }
 
@@ -157,7 +158,7 @@ export class FriendRequestsController {
     const requestReceiver = {
       isSender: isSender,
       pending: true,
-      user: user2,
+      user: { _id: user2._id } as User,
     } as FriendRequest;
     const reqSender = await this.friendsService.createRequest(requestReceiver);
     user1.friendRequests.push(reqSender);
