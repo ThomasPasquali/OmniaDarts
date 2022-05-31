@@ -34,3 +34,4 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "omniadarts"
           heroku_email: "davideberga0@gmail.com"
+          buildpack: "heroku/nodejs"
