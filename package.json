@@ -6,9 +6,9 @@
   "scripts": {
     "install": "npm run depInstall:backend & npm run depInstall:frontend",
     "depInstall:backend": "cd backend && npm install",
-    "depInstall:frontend": "cd frontend && npm install",
+    "depInstall:frontend": "cd frontend && npm install && npm run build",
     "serviceStart:backend": "cd backend && npm run prebuild && npm run build && npm run start:prod",
-    "serviceStart:frontend": "cd frontend && npm run build && npm run start",
+    "serviceStart:frontend": "cd frontend && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
