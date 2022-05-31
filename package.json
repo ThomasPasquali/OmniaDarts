@@ -1,0 +1,20 @@
+{
+  "name": "omniadarts",
+  "version": "1.0.0",
+  "description": "Web app, a social for darts game",
+  "main": "index.js",
+  "scripts": {
+    "start": " cd backend && npm run start:prod & cd ../frontend && npm run build && npm run start &",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThomasPasquali/OmniaDarts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThomasPasquali/OmniaDarts/issues"
+  },
+  "homepage": "https://github.com/ThomasPasquali/OmniaDarts#readme"
+}
