@@ -25,7 +25,6 @@ async function bootstrap() {
     .addTag('tournament-matches')
     .setVersion('1.0')
     .addBearerAuth()
-      .setBasePath('v1')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
