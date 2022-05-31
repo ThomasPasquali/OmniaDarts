@@ -2,8 +2,8 @@
   <div class="container">
     <div class="wrapper">
       <TournamentNode
-        :players="rounds.players"
-        :children="rounds.children"
+        :match="matchTree"
+        :participants="participants"
         :root="true"
       />
     </div>
@@ -19,16 +19,16 @@ export default {
   name: "tournament",
   components: {TournamentNode},
   data() {
-    const players_ = [
-      {id: '1', name: 'Alice'},
-      {id: '2', name: 'Bob'},
+    const players = [
+      {id: '1', name: 'Anneliese'},
+      {id: '2', name: 'Blanzieri'},
       {id: '3', name: 'Charlie'},
       {id: '4', name: 'Dave'},
       {id: '5', name: 'Eve'},
       {id: '6', name: 'Frank'},
       {id: '7', name: 'Gaspar'},
       {id: '8', name: 'Hilary'},
-      {id: '9', name: 'Ilary'},
+      {id: '9', name: 'Iuppa'},
       {id: '10', name: 'Jennifer69'},
       {id: '11', name: 'Kuper'},
       {id: '12', name: 'Leonard'},
@@ -45,16 +45,16 @@ export default {
       {id: '23', name: 'Walter'},
       {id: '24', name: 'Xavier'},
       {id: '25', name: 'Yepsilon'},
-      {id: '25', name: 'Zzz'},
+      {id: '26', name: 'Zocca'},
     ];
 
     const playersPerGroup = 3;
     // const groupsInFirstLayer = max(2, players_.length / playersPerGroup);
 
     let layers = [[]];
-    let order_ = shuffle(players_.map(a => a.id));
+    let order_ = shuffle(players.map(a => a.id));
 
-    const rounds_ = {
+    const rounds = {
       players: [],
       children: [
         {
@@ -63,17 +63,53 @@ export default {
             {
               players: [],
               children: [
-                {players: ['1', '2']},
-                {players: ['3', '4']},
+                {
+                  players: [
+                    {id: '1', points: 5},
+                    {id: '2', points: 10},
+                  ],
+                  winner: '1'
+                },
+                {
+                  players: [
+                    {id: '3', points: 5},
+                    {id: '4', points: 10},
+                  ],
+                  winner: '3'
+                },
               ],
             },
             {
               players: [],
               children: [
-                {players: ['5', '6']},
-                {players: ['7', '8']},
-                {players: ['9', '10']},
-                {players: ['11', '12']},
+                {
+                  players: [
+                    {id: '5', points: 5},
+                    {id: '6', points: 10},
+                  ],
+                  winner: '6'
+                },
+                {
+                  players: [
+                    {id: '7', points: 5},
+                    {id: '8', points: 10},
+                  ],
+                  winner: '8'
+                },
+                {
+                  players: [
+                    {id: '9', points: 5},
+                    {id: '10', points: 10},
+                  ],
+                  winner: '9'
+                },
+                {
+                  players: [
+                    {id: '11', points: 5},
+                    {id: '12', points: 10},
+                  ],
+                  winner: '11'
+                },
               ],
             },
           ]
@@ -82,21 +118,67 @@ export default {
           players: [],
           children: [
             {
-              players: [],
+              players: [
+                {id: '14', points: 10},
+                {id: '16', points: 8},
+                {id: '18', points: 3},
+              ],
+              winner: '16',
               children: [
-                {players: ['13', '14']},
-                {players: ['15', '16']},
-                {players: ['17', '18']},
+                {
+                  players: [
+                    {id: '13', points: 5},
+                    {id: '14', points: 10},
+                  ],
+                  winner: '13'
+                },
+                {
+                  players: [
+                    {id: '15', points: 5},
+                    {id: '16', points: 10},
+                  ],
+                  winner: '15'
+                },
+                {
+                  players: [
+                    {id: '17', points: 5},
+                    {id: '18', points: 10},
+                  ],
+                  winner: '18'
+                },
               ],
             },
             {
               players: [],
               children: [
-                {players: ['19', '20']},
-                {players: ['21', '22']},
-                {players: ['21', '22']},
-                {players: ['23', '24']},
-                {players: ['25', '26']},
+                {
+                  players: [
+                    {id: '19', points: 5},
+                    {id: '20', points: 10},
+                  ],
+                  winner: '19'
+                },
+                {
+                  players: [
+                    {id: '21', points: 5},
+                    {id: '22', points: 10},
+                  ],
+                  winner: '22'
+                },
+                {
+                  players: [
+                    {id: '23', points: 5},
+                    {id: '24', points: 10},
+                  ],
+                  winner: '23'
+                },
+                {
+                  players: [
+                    {id: '25', points: 5},
+                    {id: '26', points: 10},
+                  ],
+                  winner: '26'
+                },
               ],
             },
           ],
@@ -105,9 +187,8 @@ export default {
     }
 
     return {
-      players: players_,
-      rounds: rounds_,
-      order: order_,
+      participants: players,
+      matchTree: rounds,
     }
   }
 }
@@ -128,10 +209,12 @@ export default {
 
 .wrapper {
   /*display: flex;*/
-  height: 600px;
-  overflow: scroll;
+  /*max-height: 600px;*/
+  overflow-y: scroll;
+  overflow-x: hidden;
   /*justify-content: center;*/
   background: antiquewhite;
+
 }
 
 </style>

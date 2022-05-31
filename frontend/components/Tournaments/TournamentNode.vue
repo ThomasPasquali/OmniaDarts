@@ -1,30 +1,38 @@
 <template>
 
-  <div v-if="!!children" :class="'item' + (root ? ' root' : '')">
+  <div v-if="!!match.children" :class="'item' + (root ? ' root' : '')">
     <div class="item-parent">
-      <p>{{ players }}</p>
+      <TournamentPlayers :match="match" :participants="participants" />
     </div>
     <div class="item-children">
       <div
-        v-for="(child, i) in children"
+        v-for="(child, i) in match.children"
         :key="i"
         :class="'item-child' + (!child.children ? ' leaf' : '')">
-        <TournamentNode
-          :players="child.players"
-          :children="child.children" />
+        <TournamentNode :match="child" :participants="participants" />
       </div>
     </div>
   </div>
 
   <div v-else>
-    <p>{{ players }}</p>
+    <TournamentPlayers :match="match" :participants="participants" />
   </div>
+
 </template>
 
 <script>
+import TournamentPlayers from "~/components/Tournaments/TournamentPlayers";
+
 export default {
   name: "TournamentNode",
-  props: ['players', 'children', 'root']
+  props: ['match', 'participants', 'root'],
+  components: {TournamentPlayers},
+  mounted: function () {
+    this.$nextTick(() => {
+      let root = document.querySelector(".root");
+      root.scrollLeft = -root.scrollWidth;
+    })
+  },
 }
 </script>
 
@@ -33,7 +41,7 @@ $side-margin: 50px;
 $vertical-margin: 10px;
 
 .root {
-  overflow: scroll;
+  overflow-x: scroll;
   padding-right: 20px;
 }
 
@@ -41,12 +49,12 @@ $vertical-margin: 10px;
   display: flex;
   flex-direction: row-reverse;
 
-  p {
-    padding: 20px;
-    margin: 0;
-    background-color: Beige;
-    width: 200px;
-  }
+  //p {
+  //  padding: 20px;
+  //  margin: 0;
+  //  background-color: Beige;
+  //  width: 200px;
+  //}
 
   &-parent {
     position: relative;
@@ -61,7 +69,7 @@ $vertical-margin: 10px;
       height: 2px;
       left: 0;
       top: 50%;
-      background-color: orange;
+      background-color: navy;
       transform: translateX(-100%);
     }
   }
@@ -84,7 +92,7 @@ $vertical-margin: 10px;
     &:before {
       content: '';
       position: absolute;
-      background-color: orange;
+      background-color: navy;
       right: 0;
       top: 50%;
       transform: translateX(100%);
@@ -95,9 +103,9 @@ $vertical-margin: 10px;
     &:after {
       content: '';
       position: absolute;
-      background-color: blue;
+      background-color: navy;
       right: calc(-#{$side-margin} / 2);
-      height: calc(50% + 2 * #{$vertical-margin});
+      height: calc(51% + 2 * #{$vertical-margin});
       top: calc(50%);
       width: 2px;
     }
@@ -119,18 +127,16 @@ $vertical-margin: 10px;
       display: none;
     }
 
-    .leaf {
-      p {
-        min-width: 200px;
-        max-width: 200px;
+    .leaf > div {
+      //min-width: 200px;
+      //max-width: 200px;
 
-        &:before {
-          content: '';
-          width: 20px;
-          position: absolute;
-          left: -60px;
-          height: 1px;
-        }
+      &:before {
+        content: '';
+        width: 20px;
+        left: -20px;
+        position: absolute;
+        height: 1px;
       }
     }
   }
