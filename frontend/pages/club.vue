@@ -28,7 +28,8 @@
           :title="member.nickname"
           :subtitle="member.firstname + ' ' + member.lastname"
           :buttons="[
-            {icon: 'grade'}
+            {icon: 'grade', outlined: !isAdmin},
+            {icon: 'person_remove'},
           ]"
           :user="member"
         />

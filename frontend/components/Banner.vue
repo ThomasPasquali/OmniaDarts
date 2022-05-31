@@ -8,23 +8,22 @@
       <p class="subtitle">{{ subtitle }}</p>
     </div>
 
-    <!--        :icon="b.icon"-->
-    <div v-if="!user.request" class="buttons">
+    <div class="buttons">
       <van-button
         v-for="b in buttons"
         @click="$emit(b.emit)"
         :disabled="b.disabled"
       >
-        <span class="material-icons">{{ b.icon }}</span>
+        <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>
         {{ b.text }}
       </van-button>
       <!--      <van-button icon="star"></van-button>-->
       <!--      <van-button icon="delete" v-if="admin"></van-button>-->
     </div>
-    <div v-else class="buttons">
-      <!--      <van-button icon="success"></van-button>-->
-      <!--      <van-button icon="cross"></van-button>-->
-    </div>
+    <!--    <div v-else class="buttons">-->
+    <!--      <van-button icon="success"></van-button>-->
+    <!--      <van-button icon="cross"></van-button>-->
+    <!--    </div>-->
 
 
   </div>
@@ -86,4 +85,11 @@ export default {
   gap: 8px;
 }
 
+.material-symbols-sharp {
+  font-variation-settings: 'FILL' 1;
+}
+
+.material-symbols-sharp.outlined {
+  font-variation-settings: 'FILL' 0 !important;
+}
 </style>
