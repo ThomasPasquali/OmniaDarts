@@ -1,15 +1,15 @@
 <template>
-  <div v-if="$auth.user.club" class="container">
+  <div v-if="!!myClub" class="container">
 
     <img id="club_photo" src="https://pickywallpapers.com/img/2018/10/dart-board-game-desktop-wallpaper-1306-1311-hd-wallpapers.jpg">
 
     <div v-if="!edit" class="content">
 
-      <h1>{{ club.name }}</h1>
+      <h1>{{ myClub.name }}</h1>
 
       <div id="buttons">
         <van-button
-          v-for="(btn, i) in buttons.filter((b) => {return b.admin === false || b.admin === admin})"
+          v-for="(btn, i) in buttons.filter((b) => {return b.admin === false || isAdmin})"
           :key="i"
           :icon="btn.icon"
           @click="btn.onClick()"
@@ -18,21 +18,25 @@
       </div>
 
       <h3>Description</h3>
-      <p>{{ club.description }}</p>
+      <p>{{ myClub.description }}</p>
 
       <div>
         <h3>Members</h3>
         <Banner
-          v-for="member in members.filter((m) => {return !m.request})"
-          :admin="admin"
+          v-for="member in myClub.players.filter((m) => {return !m.request})"
           :key="member.id"
+          :title="member.nickname"
+          :subtitle="member.firstname + ' ' + member.lastname"
+          :buttons="[
+            {}
+          ]"
           :user="member"
         />
-        <div v-if="admin">
+        <div v-if="isAdmin">
           <h3>Requests</h3>
           <Banner
-            v-for="member in members.filter((m) => {return m.request})"
-            :admin="admin"
+            v-for="member in myClub.players.filter((m) => {return m.request})"
+            :admin="isAdmin"
             :key="member.id"
             :user="member"
           />
@@ -40,15 +44,19 @@
         </div>
       </div>
 
+      <pre>myClub {{ myClub }}</pre>
+
     </div>
 
     <div v-else class="content">
-      <EditClub :club="club" @submitClub="submit"/>
+      <EditClub :club="myClub" @submitClub="submit" />
     </div>
 
   </div>
+
   <div v-else class="content">
     <h1>{{ $t('user_has_no_club') }}</h1>
+    <pre>{{ myClub }}</pre>
   </div>
 </template>
 
@@ -61,53 +69,49 @@ export default {
   components: {Banner, EditClub},
   data() {
     return {
-      club: {
-        name: 'Abbiamo vinto!',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris convallis nisi sed mi cursus maximus eget ac enim.'
-      },
-      admin: true,
+      // club: {
+      //       name: 'Abbiamo vinto!',
+      //       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris convallis nisi sed mi cursus maximus eget ac enim.'
+      //     },
       edit: false,
       buttons: [
         {label: 'Edit club', icon: 'edit', admin: true, onClick: () => this.edit = true},
         {label: 'Leave club', icon: 'cross', admin: false, onClick: () => 0},
         {label: 'Delete club', icon: 'delete', admin: true, onClick: () => 0},
       ],
-      members: [
-        {
-          id: '1',
-          name: 'John Snow',
-          photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
-          stats: '1000',
-          request: false,
-        },
-        {
-          id: '2',
-          name: 'Ned Stark',
-          photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
-          stats: '2100',
-          request: true,
-        },
-        {
-          id: '3',
-          name: 'Ned Stark',
-          photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
-          stats: '2100',
-          request: true,
-        },
-        {
-          id: '4',
-          name: 'John Snow',
-          photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
-          stats: '1000',
-          request: false,
-        },
-      ]
+      // members: [
+      //   {
+      //     id: '1',
+      //     name: 'John Snow',
+      //     photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
+      //     stats: '1000',
+      //     request: false,
+      //   },
+      //   {
+      //     id: '2',
+      //     name: 'Ned Stark',
+      //     photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
+      //     stats: '2100',
+      //     request: true,
+      //   },
+      //   {
+      //     id: '3',
+      //     name: 'Ned Stark',
+      //     photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
+      //     stats: '2100',
+      //     request: true,
+      //   },
+      //   {
+      //     id: '4',
+      //     name: 'John Snow',
+      //     photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
+      //     stats: '1000',
+      //     request: false,
+      //   },
+      // ]
     }
   },
   methods: {
-    back() {
-      window.history.back()
-    },
     submit() {
       this.edit = false;
       // this.$axios
@@ -122,9 +126,27 @@ export default {
       //     this.$router.push("/");
       //   })
       //   .catch((_) => (this.failedLogin = true));
+    },
+    // async sendRequest(userID) {
+    //   await this.$axios.$post('friends/' + userID);
+    // },
+  },
+  mounted() {
+    this.$store.dispatch("clubs/fetchClub");
+    this.$store.dispatch("clubs/fetchMyClubs");
+  },
+  computed: {
+    clubs() {
+      return this.$store.getters['clubs/club'];
+    },
+    myClub() {
+      return this.$store.getters['clubs/myClub'];
+    },
+    isAdmin() {  // FIXME ?
+      return this.myClub.players.find(p => p._id === this.$auth.user._id).isAdmin;
     }
   },
-};
+}
 
 </script>
 
@@ -149,5 +171,9 @@ export default {
 
 #add_btn {
   width: 100%;
+}
+
+pre {
+  overflow: scroll;
 }
 </style>
