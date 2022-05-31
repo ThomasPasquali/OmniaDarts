@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run serviceStart:backend & npm run serviceStart:frontend",
-    "serviceStart:backend": "cd backend && npm install && npm run start:prod",
-    "serviceStart:frontend": "cd frontend && npm install && npm run build && npm run start",
+    "install": "npm run depInstall:backend & npm run depInstall:frontend",
+    "depInstall:backend": "cd backend && npm install",
+    "depInstall:frontend": "cd frontend && npm install",
+    "serviceStart:backend": "cd backend && npm run start:prod",
+    "serviceStart:frontend": "cd frontend && npm run build && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
