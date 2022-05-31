@@ -26,7 +26,7 @@ export class ClubsService implements NotificationsProvider {
     return this.clubModel.findById(id).populate('players').lean();
   }
 
-  async update(id, club: Club): Promise<Club> {
+  async update(id: string, club: Club): Promise<Club> {
     return this.clubModel
       .findByIdAndUpdate(id, club, { new: true })
       .populate('players')
@@ -49,6 +49,7 @@ export class ClubsService implements NotificationsProvider {
               'notification_club_request',
               'notification_club_request_message',
               NotificationState.NEW,
+              null,
               null,
               r,
             ),

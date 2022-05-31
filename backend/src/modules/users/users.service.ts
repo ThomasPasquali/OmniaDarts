@@ -33,13 +33,6 @@ export class UsersService {
     return await this.userModel
       .findOne({ _id: id })
       .populate('club')
-      .populate({
-        path: 'club',
-        populate: {
-          path: 'admin',
-          model: 'User',
-        },
-      })
       .populate('friendRequests')
       .populate({
         path: 'friendRequests',

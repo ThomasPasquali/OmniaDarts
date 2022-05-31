@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
@@ -13,13 +13,12 @@ import { Dart, DartSchema } from './schemas/dart.schema';
 import { Match, MatchSchema } from './schemas/match.schema';
 import { MatchThrows, MatchThrowsSchema } from './schemas/matchThrows.schema';
 import { Throw, ThrowSchema } from './schemas/throw.schema';
-import { SchemasModule } from './schemas/schemas.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { ChatModule } from './modules/chat/chat.module';
-import { TextchatsModule } from './modules/textchats/textchats.module';
+import { ChatsModule } from './modules/chats/chats.module';
 import { EventsModule } from './modules/events/events.module';
 import { MatchesModule } from './modules/matches/matches.module';
+import { TournamentMatchesModule } from './modules/tournament-matches/tournament-matches.module';
 
 @Module({
 
@@ -63,13 +62,12 @@ import { MatchesModule } from './modules/matches/matches.module';
     ClubsModule,
     CaslModule,
     AuthModule,
-    ChatModule,
-    SchemasModule,
+    ChatsModule,
     NotificationsModule,
-    TextchatsModule,
     PostsModule,
     EventsModule,
     MatchesModule,
+    TournamentMatchesModule,
   ],
   controllers: [],
   providers: [ConfigService],

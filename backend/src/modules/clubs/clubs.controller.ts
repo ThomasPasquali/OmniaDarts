@@ -1,17 +1,14 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
-  Param,
+  Param, Patch,
   Post,
   Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -19,12 +16,12 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { checkNotNull, checkNull, throwHttpExc } from 'src/utils/utils';
 import ClubRequest from '../../classes/clubRequest';
-import { User } from '../../schemas/user.schema';
 import { Club } from '../../schemas/club.schema';
+import { User } from '../../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Action } from '../casl/actions';
 import { AppAbility } from '../casl/casl-ability.factory';
@@ -57,23 +54,23 @@ export class ClubsController {
     const currUser = await this.usersService.findById(req.user._id);
     const clubToApply = await this.clubsService.getClubById(idClub);
 
-    this.checkNull(clubToApply, 'Club not exits');
+    checkNull(clubToApply, 'Club not exits');
 
     clubRequest.club = {
       _id: clubToApply._id,
-      name: clubToApply.name
+      name: clubToApply.name,
     } as Club;
     clubToApply.players.push({
-      _id: currUser._id
+      _id: currUser._id,
     } as User);
 
     currUser.clubRequest = clubRequest;
-    console.log('hei')
+    console.log('hei');
     await this.usersService.update(
       currUser._id,
       JSON.parse(JSON.stringify(currUser)),
     );
-    console.log('ciao')
+    console.log('ciao');
     return await this.clubsService.update(clubToApply._id, clubToApply);
   }
 
@@ -84,9 +81,9 @@ export class ClubsController {
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'My club', type: Club })
   async getMyClub(@Req() req): Promise<Club> {
-    this.checkNull(req.user.club, "You don't belong to a club");
+    checkNull(req.user.club, "You don't belong to a club");
     const club = await this.clubsService.getClubById(req.user.club._id);
-    this.checkNull(club, "You don't belong to a club");
+    checkNull(club, "You don't belong to a club");
     return club;
   }
 
@@ -100,7 +97,7 @@ export class ClubsController {
     type: Club,
   })
   async addClub(@Body() club: Club, @Req() req) {
-    this.checkCurrentClubNull(
+    checkNotNull(
       req.user.club,
       'You must exit your current club, before creating a new one',
     );
@@ -154,7 +151,7 @@ export class ClubsController {
     this.checkPlayerAlreadyPresent(
       club,
       idPlayer,
-      'The player is alreaady present',
+      'The player is already present',
     );
     const playerToAdd: User = await this.usersService.findById(idPlayer);
     club.players.push(playerToAdd);
@@ -171,7 +168,7 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Remove a user from a club' })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: 'A player has just been removed from the club',
     type: Club,
   })
@@ -224,6 +221,10 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Revoke privileges to a user' })
+  @ApiOkResponse({
+    description: 'The privileges has been removed',
+    type: String,
+  })
   async revokePrivileges(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -241,10 +242,14 @@ export class ClubsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ description: '' })
+  @ApiOperation({ description: 'Delete the current club' })
+  @ApiOkResponse({
+    description: 'The club has been deleted',
+    type: Club,
+  })
   async exitFromMyOwnClub(@Req() req) {
     const club: Club = req.user.club;
-    this.checkNull(club, "You don't belong to a club");
+    checkNull(club, "You don't belong to a club");
     const playerToRemove: User = await this.usersService.findById(req.user._id);
     playerToRemove.isAdmin = false;
     club.players = club.players.filter(
@@ -257,7 +262,7 @@ export class ClubsController {
     return playerToRemove.id;
   }
 
-  @Get('joinRequest/:idPlayer')
+  @Patch('joinRequest/:idPlayer')
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) =>
     ability.can(Action.AcceptRejectRequests, Club),
@@ -306,21 +311,13 @@ export class ClubsController {
     return await this.clubsService.update(club._id, club);
   }
 
-  private checkNull(obj: any, message: string) {
-    if (obj == null) this.throwHttpExc(message, HttpStatus.BAD_REQUEST);
-  }
-
-  private checkCurrentClubNull(obj: any, message: string) {
-    if (obj != null) this.throwHttpExc(message, HttpStatus.CONFLICT);
-  }
-
   private checkPlayerAlreadyPresent(
     club: Club,
     idPlayer: string,
     message: string,
   ) {
     if (club.players.findIndex((u) => u._id == idPlayer) != -1)
-      this.throwHttpExc(message, HttpStatus.BAD_REQUEST);
+      throwHttpExc(message, HttpStatus.BAD_REQUEST);
   }
 
   private checkPlayerNotAlreadyPresent(
@@ -329,17 +326,7 @@ export class ClubsController {
     message: string,
   ) {
     if (club.players.findIndex((u) => u._id == idPlayer) == -1)
-      this.throwHttpExc(message, HttpStatus.BAD_REQUEST);
-  }
-
-  private throwHttpExc(message: string, code) {
-    throw new HttpException(
-      {
-        status: code,
-        error: message,
-      },
-      code,
-    );
+      throwHttpExc(message, HttpStatus.BAD_REQUEST);
   }
 }
 

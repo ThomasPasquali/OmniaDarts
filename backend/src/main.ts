@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: '*',
   });
 
   /**
@@ -20,7 +20,9 @@ async function bootstrap() {
     .addTag('friends')
     .addTag('clubs')
     .addTag('posts')
-    .addTag('tournaments').addTag('chat')
+    .addTag('tournaments')
+    .addTag('chat')
+    .addTag('tournament-matches')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

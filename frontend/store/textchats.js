@@ -2,22 +2,22 @@ import _ from 'lodash'
 
 export const state = () => ({
   chats: {},
-  lastMessageSent: null,
+  lastMessage: null,
 })
 
 export const actions = {
-  newMessage({state, commit}, {id, text}) {
-    if (text) {
-      console.log('New message action', {id, text})
+  newMessage({state, commit}, { chatID, text }) {
+    if(text) {
       let message = {
         id: Math.floor(Math.random() * 10),
+        chatID,
         text,
         datetime: new Date(),
-        sender: Math.random() > .5 ? '' : 'CAIO',//FIXME
+        sender: this.$auth.user.nickname,
         sent: false
       }
       commit('emitLastMessage', message)
-      commit('newMessage', {chatID: id, message, isEvent: false})
+      //commit('newMessage', {chatID, message, isEvent: false})
     }
   }
 }
@@ -25,20 +25,25 @@ export const actions = {
 export const mutations = {
   newChat(state, id) {
     if (!state.chats[id]) {
-      console.log("Created chat " + id)
+      console.log("Created chats " + id)
       state.chats[id] = {messages: [], /*TODO more props*/}
     }
   },
-  newMessage(state, {chatID, message, isEvent = true}) {
-    if (message.datetime instanceof String) message.datetime = new Date(message.datetime) //FIXME
-    if (isEvent) {
-      let i = _.findIndex(state.chats[chatID].messages, {id: message.id})
-      if (i >= 0) state.chats[chatID] && (state.chats[chatID].messages[i].sent = true)
-    } else
-      state.chats[chatID] && state.chats[chatID].messages.push(message)
+  newMessage(state, messages) {
+    console.log("New message ", messages)
+    for (let message of messages) {
+      let date = new Date(message.dateTime);
+      message.dateTime = date.toLocaleDateString() + ' - ' + date.toLocaleTimeString()
+    }
+    //if (isEvent) {
+      //let i = _.findIndex(state.chats[message.chatID].messages, {id: message.id})
+      //if (i >= 0) state.chats[message.chatID] && (state.chats[message.chatID].messages[i].sent = true)
+    //} else
+    const chatID = messages[0].chatID;
+    state.chats[chatID] && state.chats[chatID].messages.push(...messages)
   },
   emitLastMessage(state, message) {
-    state.lastMessageSent = message
+    state.lastMessage = message
   }
 }
 
@@ -46,7 +51,7 @@ export const getters = {
   chat: state => id => {
     return state.chats[id]
   },
-  lastMessageSent(state) {
-    return state.lastMessageSent
+  lastMessage(state) {
+    return state.lastMessage
   },
 }

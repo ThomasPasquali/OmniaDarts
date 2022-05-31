@@ -1,6 +1,7 @@
 <template>
   <div class="appbar_menu">
-    <img src="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" height="24px">  <!-- fixme -->
+    <van-badge class="badge" :content="notifications.filter(n => {return ['NEW', 'PENDING'].includes(n.state)}).length" />
+    <img :src="this.$auth.user.imageUrl" height="24px">  <!-- fixme -->
     <van-dropdown-menu>
       <van-dropdown-item ref="item">
         <van-cell
@@ -23,6 +24,18 @@ export default {
   data() {
     return {
       options: [  // fixme full path
+        {
+          title: 'Profile',
+          to: 'profile',
+          show: true,
+          onClick: this.onConfirm
+        },
+        {
+          title: 'Friends',
+          to: 'friends',
+          show: true,
+          onClick: this.onConfirm
+        },
         {
           title: 'Club',
           to: 'club',
@@ -48,6 +61,12 @@ export default {
           onClick: this.onConfirm
         },
         {
+          title: 'Notifications',
+          to: 'notifications',
+          show: true,
+          onClick: this.onConfirm
+        },
+        {
           title: 'Logout',
           to: '',
           show: true,
@@ -62,24 +81,39 @@ export default {
     },
     onConfirm() {
       this.$refs.item.toggle();
-    }
+    },
+  },
+  computed: {
+    notifications() {
+      return this.$store.getters["notifications/notifications"]
+    },
   },
   mounted: function () {
     this.$nextTick(() => {
       document.querySelector(".van-dropdown-menu__bar").style.opacity = "0";
     })
-  }
+  },
 
 }
 </script>
 
 <style scoped>
 .appbar_menu {
+  display: flex;
+  flex-direction: row;
 }
 
 img {
   position: fixed;
   right: 12px; /* fixme */
   top: 12px; /* fixme */
+}
+
+.badge {
+  min-width: 20px;
+  max-height: 20px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 8px;
 }
 </style>

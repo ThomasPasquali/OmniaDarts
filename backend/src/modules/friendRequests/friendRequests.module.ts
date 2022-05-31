@@ -7,6 +7,7 @@ import {
 import { UsersModule } from '../users/users.module';
 import { FriendRequestsController } from './friendRequests.controller';
 import { FriendRequestsService } from './friendRequests.service';
+import {UsersService} from "../users/users.service";
 
 @Module({
   imports: [

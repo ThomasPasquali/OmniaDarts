@@ -10,10 +10,8 @@
     <van-button v-if="$auth.user.club" type="primary" size="large" to="club">Club</van-button>
     <van-button type="primary" size="large" to="findClub">Find club</van-button>
     <van-button type="primary" size="large" to="tournaments">Tornei</van-button>
+    <van-button type="primary" size="large" to="lobby">Lobbies</van-button>
     <van-button type="primary" size="large" to="dev">Dev</van-button>
-
-
-
   </div>
 </template>
 
@@ -26,10 +24,24 @@ export default {
       return this.$i18n.locales
     },
   },
-  //Could be created
+  data() {
+    return { user: null }
+  },
+  watch: {
+    user(user) {
+      if(window && window.android && window.android.login) {
+      	  window.localStorage.setItem('user', user)
+      	  window.android.login(window.localStorage.getItem('auth._token.local'), JSON.stringify(user))
+        }//else alert('NOPE')
+     }
+  },
   mounted() {
+    this.user = this.$auth.user
+  },
+  created() {
     this.$store.dispatch('fetchClub')
     this.$store.dispatch('friends/fetchFriends')
-  }
+
+  },
 }
 </script>

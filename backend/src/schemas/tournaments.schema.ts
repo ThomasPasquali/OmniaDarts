@@ -12,7 +12,7 @@ import { User } from './user.schema';
 export type TournamentDocument = Tournament & Document;
 
 @Schema()
-export class Tournament {
+export class Tournament extends Document {
   @Prop()
   @ApiProperty({
     required: true,
@@ -21,7 +21,7 @@ export class Tournament {
 
   @Prop()
   @ApiPropertyOptional()
-  timestamp: Date;
+  creation_date: Date;
 
   @Prop()
   @ApiProperty({
@@ -33,7 +33,8 @@ export class Tournament {
   @ApiProperty({
     enum: TournamentTypes,
     example: getEnumDescription(TournamentTypes),
-    required: true,
+    required: false,
+    default: true,
   })
   type: string;
 
@@ -77,6 +78,12 @@ export class Tournament {
     default: false,
   })
   finished: boolean;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @ApiProperty({
+    required: true,
+  })
+  creator: User;
 }
 
 export const TournamentsSchema = SchemaFactory.createForClass(Tournament);

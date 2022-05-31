@@ -9,19 +9,38 @@ import ClubRequest from '../classes/clubRequest';
 import { Club } from './club.schema';
 import { FriendRequest } from './friendRequest.schema';
 import { Match } from './match.schema';
+import { Tournament } from './tournaments.schema';
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User extends Document {
   @Prop({
-    default: '',
+    default: 'nick',
   })
   @ApiProperty({
     description: 'The nickname of the user',
     required: true,
   })
   nickname: string;
+
+  @Prop({
+    default: '',
+  })
+  @ApiPropertyOptional()
+  firstname: string;
+
+  @Prop({
+    default: '',
+  })
+  @ApiPropertyOptional()
+  lastname: string;
+
+  @Prop({
+    default: '',
+  })
+  @ApiPropertyOptional()
+  country: string;
 
   @Prop()
   @ApiPropertyOptional()
@@ -33,7 +52,7 @@ export class User extends Document {
   })
   pwd: string;
 
-  @Prop({ default: null })
+  @Prop({ default: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png' })
   @ApiPropertyOptional()
   @ApiHideProperty()
   imageUrl: string;
@@ -56,15 +75,24 @@ export class User extends Document {
   @ApiProperty()
   club: Club;
 
-  @Prop()
+  @Prop({ default: null })
   @ApiHideProperty()
   clubRequest: ClubRequest;
 
   @Prop({
-    default: false
+    default: false,
   })
   @ApiHideProperty()
   isAdmin: boolean;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tournament' }],
+  })
+  @ApiProperty({
+    required: false,
+    default: [],
+  })
+  tournaments: Tournament[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
