@@ -6,9 +6,8 @@ import { VersioningType } from '@nestjs/common';
 import { NestFactoryStatic } from '@nestjs/core/nest-factory';
 
 async function bootstrap() {
-  const apiFactory = new NestFactoryStatic();
-  const app = await apiFactory.create(AppModule);
-
+  const app = await NestFactory.create(AppModule);
+  const configService = app.get<ConfigService>(ConfigService)
   /**
    * Swagger configuration
    */
@@ -30,10 +29,11 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  const configService = app.get<ConfigService>(ConfigService);
+  ;
   app.enableCors({
     origin: configService.get('ALLOWED_ORIGIN'),
   });
+  console.log(configService.get('ALLOWED_ORIGIN'));
   await app.listen(configService.get('PORT'));
 }
 

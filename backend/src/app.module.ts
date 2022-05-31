@@ -23,8 +23,8 @@ import { TournamentMatchesModule } from './modules/tournament-matches/tournament
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
-      ignoreEnvFile: process.env.NODE_ENV == 'production',
+      isGlobal: true, //ignoreEnvFile: process.env.NODE_ENV == 'production',
+      ignoreEnvFile: false,
       envFilePath: 'dev.env',
     }),
 
@@ -38,10 +38,6 @@ import { TournamentMatchesModule } from './modules/tournament-matches/tournament
         uri: `${configService.get<string>('DATABASE_CONN')}`,
         dbName: `${configService.get<string>('DATABASE_NAME')}`,
         autoIndex: false,
-        connectionFactory: (connection) => {
-          connection.plugin(require('mongoose-autopopulate'));
-          return connection;
-        },
       }),
       inject: [ConfigService],
     }),
