@@ -1,6 +1,5 @@
 <template>
   <div class="banner">
-
     <div>
       <img class="pic" :src="user.imageUrl != null ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
     </div>
@@ -9,12 +8,14 @@
       <p class="subtitle">{{ subtitle }}</p>
     </div>
 
+    <!--        :icon="b.icon"-->
     <div v-if="!user.request" class="buttons">
       <van-button
         v-for="b in buttons"
-        :icon="b.icon"
         @click="$emit(b.emit)"
+        :disabled="b.disabled"
       >
+        <span class="material-icons">{{ b.icon }}</span>
         {{ b.text }}
       </van-button>
       <!--      <van-button icon="star"></van-button>-->
@@ -33,7 +34,7 @@
 
 export default {
   name: "Banner",
-  props: ['title', 'subtitle', 'user', 'buttons', 'admin'],
+  props: ['title', 'subtitle', 'user', 'buttons', 'admin', 'disabled'],
 }
 </script>
 

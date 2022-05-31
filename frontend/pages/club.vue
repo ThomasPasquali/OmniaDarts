@@ -28,7 +28,7 @@
           :title="member.nickname"
           :subtitle="member.firstname + ' ' + member.lastname"
           :buttons="[
-            {}
+            {icon: 'grade'}
           ]"
           :user="member"
         />
