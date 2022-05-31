@@ -1,7 +1,7 @@
 <template>
   <div class="banner">
     <div>
-      <img class="pic" :src="user.imageUrl != null ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
+      <img class="pic" :src="(!!user && user.imageUrl != null) ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
     </div>
     <div class="info">
       <p class="title">{{ title }}</p>
@@ -10,7 +10,7 @@
 
     <div class="buttons">
       <van-button
-        v-for="b in buttons"
+        v-for="b in buttons.filter(b_ => !!b_)"
         @click="$emit(b.emit)"
         :disabled="b.disabled"
       >

@@ -8,7 +8,7 @@ export const actions = {
   async fetchClubs({ state, commit }) {
     commit('setClubs', await this.$axios.$get('clubs'))//FIXME
   },
-  async fetchMyClubs({ state, commit }) {
+  async fetchMyClub({ state, commit }) {
     commit('setMyClub', await this.$axios.$get('clubs/myClub'))
   },
   async createNew({ state, commit }, club) {

@@ -23,28 +23,39 @@
       <div>
         <h3>Members</h3>
         <Banner
-          v-for="member in myClub.players.filter((m) => {return !m.request})"
-          :key="member.id"
+          v-for="member in myClub.players.filter(m => !!m.club)"
+          :key="member._id"
+          :user="member"
           :title="member.nickname"
           :subtitle="member.firstname + ' ' + member.lastname"
           :buttons="[
-            {icon: 'grade', outlined: !isAdmin},
-            {icon: 'person_remove'},
+            {icon: 'grade', emit: 'setAdminprivileges', outlined: !member.isAdmin, disabled: !isAdmin || member._id === $auth.user._id},
+            isAdmin ? {icon: 'person_remove', emit: 'removeUser', disabled: member._id === $auth.user._id} : '',
           ]"
-          :user="member"
+          @setAdminprivileges="setAdminprivileges(member)"
+          @removeUser="removeUser(member._id)"
         />
         <div v-if="isAdmin">
           <h3>Requests</h3>
           <Banner
-            v-for="member in myClub.players.filter((m) => {return m.request})"
-            :admin="isAdmin"
-            :key="member.id"
+            v-for="member in myClub.players.filter(m => !m.club)"
+            :key="member._id"
             :user="member"
+            :title="member.nickname"
+            :subtitle="member.firstname + ' ' + member.lastname"
+            :buttons="[
+              {icon: 'done', emit: 'acceptRequest'},
+              {icon: 'close', emit: 'rejectRequest'},
+            ]"
+            @acceptRequest="acceptRequest(member._id)"
+            @rejectRequest="rejectRequest(member._id)"
           />
+          <p v-if="!myClub.players.filter(m => !m.club).length">There are no pending requests</p>
           <!-- <van-button id="add_btn" icon="add">Invite player</van-button> -->
         </div>
       </div>
 
+      <br> <br>
       <pre>myClub {{ myClub }}</pre>
 
     </div>
@@ -55,19 +66,23 @@
 
   </div>
 
-  <div v-else class="content">
+  <div v-else>
     <h1>{{ $t('user_has_no_club') }}</h1>
-    <pre>{{ myClub }}</pre>
+<!--    <pre>{{myClub}}</pre>-->
+    <FindClub />
+    <van-button icon="add" to="club/newClub">{{ $t('new_club') }}</van-button>
   </div>
+
 </template>
 
 <script>
 import Banner from '~/components/Banner';
-import EditClub from '~/components/EditClub';
+import EditClub from '~/components/Club/EditClub';
+import FindClub from '~/components/Club/FindClub';
 
 export default {
   name: 'club',
-  components: {Banner, EditClub},
+  components: {Banner, EditClub, FindClub},
   data() {
     return {
       // club: {
@@ -76,43 +91,36 @@ export default {
       //     },
       edit: false,
       buttons: [
+        {label: 'Find club', icon: 'search', admin: false, onClick: () => this.$router.push('/club/findClub')},
         {label: 'Edit club', icon: 'edit', admin: true, onClick: () => this.edit = true},
-        {label: 'Leave club', icon: 'cross', admin: false, onClick: () => 0},
-        {label: 'Delete club', icon: 'delete', admin: true, onClick: () => 0},
+        {label: 'Leave club', icon: 'cross', admin: false, onClick: () => this.deleteClub()},
+        {label: 'Delete club', icon: 'delete', admin: true, onClick: () => this.deleteClub()},
       ],
-      // members: [
-      //   {
-      //     id: '1',
-      //     name: 'John Snow',
-      //     photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
-      //     stats: '1000',
-      //     request: false,
-      //   },
-      //   {
-      //     id: '2',
-      //     name: 'Ned Stark',
-      //     photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
-      //     stats: '2100',
-      //     request: true,
-      //   },
-      //   {
-      //     id: '3',
-      //     name: 'Ned Stark',
-      //     photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
-      //     stats: '2100',
-      //     request: true,
-      //   },
-      //   {
-      //     id: '4',
-      //     name: 'John Snow',
-      //     photo: 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png',
-      //     stats: '1000',
-      //     request: false,
-      //   },
-      // ]
     }
   },
   methods: {
+    async setAdminprivileges(user) {
+      if (user.isAdmin) {
+        await this.$axios.$delete('clubs/adminPrivileges/' + user._id);
+      } else {
+        await this.$axios.$post('clubs/adminPrivileges/' + user._id);
+      }
+    },
+    async removeUser(userID) {
+      await this.$axios.$delete('clubs/players/' + userID);
+    },
+    async acceptRequest(userID) {
+      await this.$axios.$patch('clubs/joinRequest/' + userID);
+    },
+    async rejectRequest(userID) {
+      await this.$axios.$delete('clubs/joinRequest/' + userID);
+    },
+    async joinRequest(clubID) { // TODO add message
+      await this.$axios.$post('clubs/joinRequest?message=_&idClub=' + clubID);
+    },
+    async deleteClub() { // TODO add message
+      await this.$axios.$delete('clubs/emergencyExit');
+    },
     submit() {
       this.edit = false;
       // this.$axios
@@ -128,17 +136,14 @@ export default {
       //   })
       //   .catch((_) => (this.failedLogin = true));
     },
-    // async sendRequest(userID) {
-    //   await this.$axios.$post('friends/' + userID);
-    // },
   },
   mounted() {
-    this.$store.dispatch("clubs/fetchClub");
-    this.$store.dispatch("clubs/fetchMyClubs");
+    this.$store.dispatch("clubs/fetchClubs");
+    this.$store.dispatch("clubs/fetchMyClub");
   },
   computed: {
     clubs() {
-      return this.$store.getters['clubs/club'];
+      return this.$store.getters['clubs/clubs'];
     },
     myClub() {
       return this.$store.getters['clubs/myClub'];
