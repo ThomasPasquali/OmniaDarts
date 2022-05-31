@@ -8,11 +8,6 @@ import { NestFactoryStatic } from '@nestjs/core/nest-factory';
 async function bootstrap() {
   const apiFactory = new NestFactoryStatic();
   const app = await apiFactory.create(AppModule);
-  app.enableCors({
-    origin: '*',
-  });
-
-  app.setGlobalPrefix('/api/v1/');
 
   /**
    * Swagger configuration
@@ -37,6 +32,9 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   const configService = app.get<ConfigService>(ConfigService);
+  app.enableCors({
+    origin: configService.get('ALLOWED_ORIGIN'),
+  });
   await app.listen(configService.get('PORT'));
 }
 
