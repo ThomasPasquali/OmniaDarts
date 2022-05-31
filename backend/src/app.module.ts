@@ -36,10 +36,7 @@ import { TournamentMatchesModule } from './modules/tournament-matches/tournament
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri:
-          `mongodb://${configService.get<string>('DATABASE_USER')}` +
-          `:${configService.get<string>('DATABASE_PWD')}` +
-          `@${configService.get<string>('DATABASE_HOST')}`,
+        uri: `${configService.get<string>('DATABASE_CONN')}`,
         dbName: `${configService.get<string>('DATABASE_NAME')}`,
         autoIndex: false,
         connectionFactory: (connection) => {
