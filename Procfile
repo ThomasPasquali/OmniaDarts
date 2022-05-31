@@ -1,1 +1,1 @@
-web: npm run serviceStart:frontend
+web: npm run serviceStart:backend & npm run serviceStart:frontend

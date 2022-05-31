@@ -25,7 +25,7 @@ import { TournamentMatchesModule } from './modules/tournament-matches/tournament
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      ignoreEnvFile: false,
+      ignoreEnvFile: process.env.NODE_ENV == 'production',
       envFilePath: 'dev.env',
     }),
 

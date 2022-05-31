@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "install": "npm run depInstall:backend & npm run depInstall:frontend",
-    "depInstall:backend": "cd backend && npm install",
+    "depInstall:backend": "cd backend && npm install && npm run build",
     "depInstall:frontend": "cd frontend && npm install && npm run build",
-    "serviceStart:backend": "cd backend && npm run prebuild && npm run build && npm run start:prod",
+    "serviceStart:backend": "cd backend && npm run start:prod",
     "serviceStart:frontend": "cd frontend && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
