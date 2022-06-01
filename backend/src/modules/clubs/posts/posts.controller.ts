@@ -22,7 +22,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { join } from 'path';
-import ModResponse from 'src/classes/modResponse';
 import ClubPost from '../../../classes/post';
 import { Club } from '../../../schemas/club.schema';
 import { User } from '../../../schemas/user.schema';
@@ -35,6 +34,7 @@ import {
 } from '../../casl/policies-guard.service';
 import { UsersService } from '../../users/users.service';
 import { ClubsService } from '../clubs.service';
+import ModResponse from "../../../classes/modResponse";
 
 @Controller('posts')
 @ApiTags('posts')

@@ -19,10 +19,10 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiResponse,
-  ApiOperation, ApiTags,
+  ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
-import ModResponse from 'src/classes/modResponse';
-import { checkNotNull, checkNull } from '../../utils/utils';
+import ModResponse from '../../classes/modResponse';
 import ClubRequest from '../../classes/clubRequest';
 import { Club } from '../../schemas/club.schema';
 import { User } from '../../schemas/user.schema';
@@ -32,6 +32,7 @@ import { AppAbility } from '../casl/casl-ability.factory';
 import { CheckPolicies, PoliciesGuard } from '../casl/policies-guard.service';
 import { UsersService } from '../users/users.service';
 import { ClubsService } from './clubs.service';
+import { checkNotNull, checkNull } from '../../utils/utilFunctions';
 @Controller('clubs')
 @ApiTags('clubs')
 export class ClubsController {

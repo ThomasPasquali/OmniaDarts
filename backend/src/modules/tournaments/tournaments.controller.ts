@@ -23,13 +23,13 @@ import {
 import SimpleTournament from '../../classes/SimpleTournament';
 import { Club } from '../../schemas/club.schema';
 import { User } from '../../schemas/user.schema';
-import { checkNull, throwHttpExc } from '../../utils/utilFunctions';
 import { Tournament } from '../../schemas/tournaments.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ClubsService } from '../clubs/clubs.service';
 import { TournamentMatchesService } from '../tournament-matches/tournament-matches.service';
 import { UsersService } from '../users/users.service';
 import { TournamentsService } from './tournaments.service';
+import {checkNull} from "../../utils/utilFunctions";
 
 @Controller('tournaments')
 @ApiTags('tournaments')

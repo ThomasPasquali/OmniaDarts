@@ -19,13 +19,13 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import ModResponse from 'src/classes/modResponse';
-import { checkNull } from 'src/utils/utils';
+import ModResponse from '../../classes/modResponse';
 import { FriendRequest } from '../../schemas/friendRequest.schema';
 import { User } from '../../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from '../users/users.service';
 import { FriendRequestsService } from './friendRequests.service';
+import { checkNull } from '../../utils/utilFunctions';
 
 @Controller('friends')
 @ApiTags('friends')
@@ -46,7 +46,6 @@ export class FriendRequestsController {
   @ApiResponse({ description: 'Error response structure', type: ModResponse })
   @HttpCode(HttpStatus.CREATED)
   async addFriend(@Req() req, @Param('idFriend') idFriend: string) {
-
     const currUser = await this.userService.findById(req.user._id);
     const friend = await this.userService.findById(idFriend);
 
@@ -217,7 +216,7 @@ export class FriendRequestsController {
     });
 
     // Update request
-    let req = user1.friendRequests[indexReq];
+    const req = user1.friendRequests[indexReq];
     this.shouldBePending(req, true);
     req.pending = false;
     return await this.friendsService.updateRequest(req._id, req);

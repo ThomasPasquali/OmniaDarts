@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, UseFilters } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { HttpExceptionFilter } from 'src/http-exception.filter';
+import { HttpExceptionFilter } from '../../http-exception.filter';
 import { User, UserDocument } from '../../schemas/user.schema';
 
 @Injectable()

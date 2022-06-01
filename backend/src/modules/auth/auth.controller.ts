@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Body,
-  Body, ConflictException,
+  ConflictException,
   Controller,
   Get,
   HttpStatus,
@@ -24,7 +24,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
-import ModResponse from 'src/classes/modResponse';
+import ModResponse from '../../classes/modResponse';
 import SimpleUser from '../../classes/SimpleUser';
 import { User } from '../../schemas/user.schema';
 import { UsersService } from '../users/users.service';
@@ -95,10 +95,7 @@ export class AuthController {
     const u = await this.userService.create(user);
 
     if (u) return await this.authService.login(u);
-    else
-      throw new ConflictException(
-        'An error occurred in the backend',
-      );
+    else throw new ConflictException();
   }
 
   @Post('google')

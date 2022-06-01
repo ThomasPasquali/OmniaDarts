@@ -2,14 +2,14 @@ import { Match } from 'src/schemas/match.schema';
 import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
 import { Tournament } from 'src/schemas/tournaments.schema';
 import { User } from 'src/schemas/user.schema';
-import { shuffleArray } from 'src/utils/utils';
 import { TournamentPlayer } from './tournamentPlayer';
+import { shuffleArray } from '../utils/utilFunctions';
 
 export default function setupTournament(tournament: Tournament): Tournament {
   const players = tournament.players;
 
-  let rounds = chooseNumberGroups(players.length);
-  let numRounds = rounds[0] + rounds[1];
+  const rounds = chooseNumberGroups(players.length);
+  const numRounds = rounds[0] + rounds[1];
   let round = 1;
   if (tournament.randomOrder) shuffleArray(players);
 
@@ -60,13 +60,13 @@ function createTournamentMatch(
   group: number,
   players: User[],
 ) {
-  let results = players.map((p) => {
+  const results = players.map((p) => {
     return {
       userId: p._id.toString(),
       result: 0,
     } as TournamentPlayer;
   });
-  let match = {
+  const match = {
     dateTime: new Date(),
     players: players,
     done: false,
@@ -74,7 +74,7 @@ function createTournamentMatch(
     // gamemode: tournament.gamemode,
     // winningMode: tournament.winningMode,
   } as Match;
-  let tournamentMatch = {
+  const tournamentMatch = {
     tournamentRef: tournament,
     round: round,
     group: group,
