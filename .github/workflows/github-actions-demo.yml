@@ -1,0 +1,51 @@
+name: Omnia Testing
+on:
+  push:
+    branches:
+      - master
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: setup node
+        uses: actions/setup-node@master
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          npm install
+          npm ci 
+
+      - name: build
+        working-directory: ./backend
+        run: |
+          npm run build
+          npm run test
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "omniadarts"
+          heroku_email: "davideberga0@gmail.com"
+          appdir: "frontend"
+  deploy-api:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "omniadarts-api"
+          heroku_email: "davideberga0@gmail.com"
+          appdir: "backend"

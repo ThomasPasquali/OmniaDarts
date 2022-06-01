@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import Gamemodes from 'src/enums/gamemodes';
-import TournamentTypes from 'src/enums/tournamentTypes';
-import { getEnumDescription } from 'src/utils/utils';
+import Gamemodes from '../enums/gamemodes';
+import TournamentTypes from '../enums/tournamentTypes';
+import { getEnumDescription } from '../utils/utilFunctions';
 import WinningMode from './winningmode';
 
 export default class SimpleTournament {

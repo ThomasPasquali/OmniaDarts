@@ -20,10 +20,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import SimpleTournament from 'src/classes/SimpleTournament';
-import { Club } from 'src/schemas/club.schema';
-import { User } from 'src/schemas/user.schema';
-import { checkNull } from 'src/utils/utils';
+import SimpleTournament from '../../classes/SimpleTournament';
+import { Club } from '../../schemas/club.schema';
+import { User } from '../../schemas/user.schema';
+import { checkNull, throwHttpExc } from '../../utils/utilFunctions';
 import { Tournament } from '../../schemas/tournaments.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ClubsService } from '../clubs/clubs.service';
@@ -63,7 +63,7 @@ export class TournamentsController {
 
     const currUser: User = await this.usersService.findById(req.user._id);
 
-    let tournament = {
+    const tournament = {
       name: simpleTournament.name,
       randomOrder: simpleTournament.randomOrder,
       type: simpleTournament.type,
@@ -74,6 +74,7 @@ export class TournamentsController {
       finished: false,
       creator: currUser,
     } as Tournament;
+
     let club: Club;
 
     // Add club

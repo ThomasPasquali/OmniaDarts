@@ -1,4 +1,4 @@
-import {forwardRef, Module} from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
@@ -21,10 +21,9 @@ import { MatchesModule } from './modules/matches/matches.module';
 import { TournamentMatchesModule } from './modules/tournament-matches/tournament-matches.module';
 
 @Module({
-
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true, //ignoreEnvFile: process.env.NODE_ENV == 'production',
       ignoreEnvFile: false,
       envFilePath: 'dev.env',
     }),
@@ -36,16 +35,9 @@ import { TournamentMatchesModule } from './modules/tournament-matches/tournament
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri:
-          `mongodb://${configService.get<string>('DATABASE_USER')}` +
-          `:${configService.get<string>('DATABASE_PWD')}` +
-          `@${configService.get<string>('DATABASE_HOST')}`,
+        uri: `${configService.get<string>('DATABASE_CONN')}`,
         dbName: `${configService.get<string>('DATABASE_NAME')}`,
         autoIndex: false,
-        connectionFactory: (connection) => {
-          connection.plugin(require('mongoose-autopopulate'));
-          return connection;
-        },
       }),
       inject: [ConfigService],
     }),

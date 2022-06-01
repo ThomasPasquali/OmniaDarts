@@ -121,7 +121,6 @@ export class MatchesController {
 
     if (this.hasUserJoinRequest(user, match))
       throw new ForbiddenException(user, 'User join request pending');
-
     throw new ForbiddenException(user, 'User must send join request');
   }
 

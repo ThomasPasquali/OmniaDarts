@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Body,
+  Body, ConflictException,
   Controller,
   Get,
   HttpStatus,
@@ -16,6 +17,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
@@ -94,7 +96,7 @@ export class AuthController {
 
     if (u) return await this.authService.login(u);
     else
-      throw new InternalServerErrorException(
+      throw new ConflictException(
         'An error occurred in the backend',
       );
   }

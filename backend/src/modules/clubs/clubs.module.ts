@@ -6,7 +6,6 @@ import { UsersModule } from '../users/users.module';
 import { ClubsController } from './clubs.controller';
 import { ClubsService } from './clubs.service';
 import { ChatsModule } from '../chats/chats.module';
-import {MatchesModule} from "../matches/matches.module";
 
 @Module({
   imports: [

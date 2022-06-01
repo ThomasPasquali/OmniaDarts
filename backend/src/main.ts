@@ -7,11 +7,7 @@ import { HttpExceptionFilter } from './http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
-  // app.useGlobalInterceptors(new ResponseInterceptor());
-  app.enableCors({
-    origin: '*',
-  });
-
+  const configService = app.get<ConfigService>(ConfigService)
   /**
    * Swagger configuration
    */
@@ -26,7 +22,6 @@ async function bootstrap() {
     .addTag('tournaments')
     .addTag('chat')
     .addTag('tournament-matches')
-    .addTag('posts')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -34,8 +29,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  const configService = app.get<ConfigService>(ConfigService);
-  await app.listen(configService.get('SERVICE_PORT'));
+  ;
+  app.enableCors({
+    origin: configService.get('ALLOWED_ORIGIN'),
+  });
+  console.log(configService.get('ALLOWED_ORIGIN'));
+  await app.listen(configService.get('PORT'));
 }
 
 bootstrap();
