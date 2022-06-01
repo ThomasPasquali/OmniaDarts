@@ -21,7 +21,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import SimpleTournament from 'src/classes/SimpleTournament';
-import setupTournament from 'src/classes/tournamentSetup';
 import { Club } from 'src/schemas/club.schema';
 import { User } from 'src/schemas/user.schema';
 import { checkNull } from 'src/utils/utils';
@@ -98,7 +97,7 @@ export class TournamentsController {
     }
 
     // Tournament setup
-    tournament = setupTournament(tournament);
+    // tournament = setupTournament(tournament);
     // Add references
     /* if (club != null) {
       club.tournaments.push(tournament);

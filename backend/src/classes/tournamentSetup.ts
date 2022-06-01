@@ -1,6 +1,9 @@
+import { Match } from 'src/schemas/match.schema';
+import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
 import { Tournament } from 'src/schemas/tournaments.schema';
 import { User } from 'src/schemas/user.schema';
 import { shuffleArray } from 'src/utils/utils';
+import { TournamentPlayer } from './tournamentPlayer';
 
 export default function setupTournament(tournament: Tournament): Tournament {
   const players = tournament.players;
@@ -10,6 +13,7 @@ export default function setupTournament(tournament: Tournament): Tournament {
   let round = 1;
   if (tournament.randomOrder) shuffleArray(players);
 
+  console.log('Setupping tournament');
   // First round
   generateRounds(tournament, rounds[0], rounds[1], round++, players);
 
@@ -47,31 +51,35 @@ function generateRounds(
 ) {
   let group = 1;
   // for (let i = 0; i < numTriplets; i++) {
-  createRound(tournament, round, group++, players.splice(0, 3));
+  createTournamentMatch(tournament, round, group++, players.splice(0, 3));
   // }
 }
-function createRound(
+function createTournamentMatch(
   tournament: Tournament,
   round: number,
   group: number,
   players: User[],
 ) {
   let results = players.map((p) => {
-    p._id, 0;
+    return {
+      userId: p._id.toString(),
+      result: 0,
+    } as TournamentPlayer;
   });
-  console.log(results);
-  /* let match = {
-		dateTime: new Date(),
-		players: players,
-		done: false,
-		gamemode: tournament.gamemode,
-		winningMode: tournament.winningMode,
-	} as Match; */
-  /* let tournamentMatch = {
+  let match = {
+    dateTime: new Date(),
+    players: players,
+    done: false,
+    results: results,
+    // gamemode: tournament.gamemode,
+    // winningMode: tournament.winningMode,
+  } as Match;
+  let tournamentMatch = {
     tournamentRef: tournament,
     round: round,
     group: group,
     numPlayers: players.length,
-    match: null,
-  } as TournamentMatch; */
+    match: match,
+  } as TournamentMatch;
+  console.log(tournamentMatch);
 }
