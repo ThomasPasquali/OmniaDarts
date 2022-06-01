@@ -51,7 +51,9 @@ export class FriendRequestsController {
 
     checkNull(friend, 'The friend does not exist');
     this.shouldBeFriend(currUser, friend, false);
-    if (currUser._id == friend._id)
+
+    // Same user request
+    if (currUser._id.toString() == friend._id.toString())
       throw new ConflictException('Cannot auto send the friend request');
 
     this.addRequest(friend, currUser, false);
@@ -102,10 +104,8 @@ export class FriendRequestsController {
   @ApiBearerAuth()
   @Get()
   @ApiOperation({
-    description:
-      'Get the list of friendsRequests (pending and not) without the user sending the request',
+    description: 'Get the list of friendsRequests (pending and not)',
   })
-  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   @ApiOkResponse({
     description: 'The list of friend (pending and not)',
     type: [FriendRequest],
@@ -123,7 +123,6 @@ export class FriendRequestsController {
     description:
       "Get the list of users that contain the nickname inside their's",
   })
-  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   @ApiOkResponse({
     description: "The list of users that contain the nickname inside their's",
     type: [User],
