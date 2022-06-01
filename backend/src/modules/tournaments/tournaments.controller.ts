@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpCode,
@@ -20,6 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import SimpleTournament from 'src/classes/SimpleTournament';
+import setupTournament from 'src/classes/tournamentSetup';
 import { Club } from 'src/schemas/club.schema';
 import { User } from 'src/schemas/user.schema';
 import { checkNull } from 'src/utils/utils';
@@ -43,7 +45,10 @@ export class TournamentsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ description: 'Create a new tournament' })
+  @ApiOperation({
+    description:
+      'Create a new tournament given the id list of the OTHER players',
+  })
   @ApiCreatedResponse({
     description: 'A new tournament has been created',
     type: Tournament,
@@ -70,7 +75,6 @@ export class TournamentsController {
       finished: false,
       creator: currUser,
     } as Tournament;
-
     let club: Club;
 
     // Add club
@@ -83,29 +87,27 @@ export class TournamentsController {
     } else tournament.clubRef = null;
 
     // Add players
-    simpleTournament.idPlayers.forEach(async (idPlayer) => {
+    if (simpleTournament.idPlayers.includes(currUser._id.toString()))
+      throw new ConflictException(
+        'Do not insert the id of the user creating the tournament inside the list of players',
+      );
+    for (const idPlayer of simpleTournament.idPlayers) {
       const player: User = await this.usersService.findById(idPlayer);
-      checkNull(player, 'One component of the tournament does not exist');
+      checkNull(player, 'One player id does not exist');
       tournament.players.push(player);
-    });
+    }
 
-    // --- Tournament setup ---
-    // Test tournament match
-    // const tournamentMatch = new TournamentMatch();
-    // tournament.matches.push(
-    //   await this.tournamentMatchesService.addTournamentMatch(tournamentMatch),
-    // );
-
-    // --- Add references ---
-
-    if (club != null) {
+    // Tournament setup
+    tournament = setupTournament(tournament);
+    // Add references
+    /* if (club != null) {
       club.tournaments.push(tournament);
       await this.clubService.update(club._id, club);
     }
     tournament.players.forEach(async (p) => {
       p.tournaments.push(tournament);
       await this.usersService.update(p._id, p);
-    });
+    }); */
 
     return await this.tournamentService.addTournament(tournament);
   }

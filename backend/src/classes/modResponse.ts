@@ -3,7 +3,7 @@ import ResponseContent from './responseContent';
 
 export default class ModResponse {
   @ApiProperty({
-    default: 400,
+    default: 123,
   })
   statusCode: number;
   @ApiProperty({
