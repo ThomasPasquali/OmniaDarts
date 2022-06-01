@@ -13,13 +13,16 @@ export default {
       lang: "en",
     },
     meta: [
-      { charset: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { hid: "description", name: "description", content: "" },
-      { name: "format-detection", content: "telephone=no" },
+      {charset: "utf-8"},
+      {name: "viewport", content: "width=device-width, initial-scale=1"},
+      {hid: "description", name: "description", content: ""},
+      {name: "format-detection", content: "telephone=no"},
     ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
-    script: [{ src: '/android.js' }],
+    link: [
+      {rel: "icon", type: "image/x-icon", href: "/favicon.ico"},
+      {rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:FILL@0..1'}
+    ],
+    script: [{src: '/android.js'}],
   },
 
   publicRuntimeConfig: {
@@ -94,9 +97,9 @@ export default {
           property: false,
         },
         endpoints: {
-          login: { url: process.env.API_BASE_URL+'auth', method: 'post' },
-          logout: { url: process.env.API_BASE_URL+'auth/logout', method: 'post' },
-          user: { url: process.env.API_BASE_URL+'auth/user', method: 'get' }
+          login: {url: process.env.API_BASE_URL + 'auth', method: 'post'},
+          logout: {url: process.env.API_BASE_URL + 'auth/logout', method: 'post'},
+          user: {url: process.env.API_BASE_URL + 'auth/user', method: 'get'}
         }
       },
       google: {
@@ -104,8 +107,8 @@ export default {
         codeChallengeMethod: "",
         responseType: "code",
         endpoints: {
-          token: process.env.API_BASE_URL+`auth/google`,
-          userInfo: process.env.API_BASE_URL+`auth/google/user`,
+          token: process.env.API_BASE_URL + `auth/google`,
+          userInfo: process.env.API_BASE_URL + `auth/google/user`,
         },
       },
     },
@@ -117,8 +120,8 @@ export default {
 
   i18n: {
     locales: [
-      { code: "en", iso: "en-US", file: "en.js", name: "English" },
-      { code: "it", iso: "it-IT", file: "it.js", name: "Italiano" },
+      {code: "en", iso: "en-US", file: "en.js", name: "English"},
+      {code: "it", iso: "it-IT", file: "it.js", name: "Italiano"},
     ],
     langDir: "locales",
     defaultLocale: "en",
@@ -132,7 +135,6 @@ export default {
   },
 
 
-
 // Build Configuration: https://go.nuxtjs.dev/config-build
-build: { }
+  build: {}
 };
