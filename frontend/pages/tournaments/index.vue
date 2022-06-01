@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h1>Tournaments</h1>
-    <TournamentPreview v-for="(t, i) in tournaments" key="i" :tournament="t" />
+    <TournamentPreview v-for="(t, i) in tournaments" :key="i" :tournament="t" />
 
     <h1>New tournament</h1>
     <van-form @submit.prevent="submitNewTournament">
@@ -29,8 +29,11 @@
 </template>
 
 <script>
+import TournamentPreview from "~/components/Tournaments/TournamentPreview";
+
 export default {
   name: "tournaments",
+  components: {TournamentPreview},
   data() {
     return {
       tournament: {

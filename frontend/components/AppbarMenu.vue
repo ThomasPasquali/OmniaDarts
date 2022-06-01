@@ -50,7 +50,7 @@ export default {
         },
         {
           title: 'Tournaments',
-          to: 'tournaments',
+          to: 'index.vue',
           show: true,
           onClick: this.onConfirm
         },
