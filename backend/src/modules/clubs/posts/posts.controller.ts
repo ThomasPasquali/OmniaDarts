@@ -5,37 +5,36 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Query,
   Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ClubsService } from '../clubs.service';
-import { UsersService } from '../../users/users.service';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { join } from 'path';
+import ModResponse from 'src/classes/modResponse';
+import ClubPost from '../../../classes/post';
 import { Club } from '../../../schemas/club.schema';
-import ClubRequest from '../../../classes/clubRequest';
+import { User } from '../../../schemas/user.schema';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { Action } from '../../casl/actions';
+import { AppAbility } from '../../casl/casl-ability.factory';
 import {
   CheckPolicies,
   PoliciesGuard,
 } from '../../casl/policies-guard.service';
-import { AppAbility } from '../../casl/casl-ability.factory';
-import { Action } from '../../casl/actions';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
-import ClubPost from '../../../classes/post';
-import { User } from '../../../schemas/user.schema';
-import { join } from 'path';
-import SimpleUser from '../../../classes/SimpleUser';
+import { UsersService } from '../../users/users.service';
+import { ClubsService } from '../clubs.service';
 
 @Controller('posts')
 @ApiTags('posts')
@@ -57,8 +56,9 @@ export class PostsController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Post',
-    type: ClubPost
+    type: ClubPost,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async createPost(
     @Req() req,
     @UploadedFile() file: Express.Multer.File,

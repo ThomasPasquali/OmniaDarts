@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -15,9 +16,11 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { checkNull, throwHttpExc } from 'src/utils/utils';
+import ModResponse from 'src/classes/modResponse';
+import { checkNull } from 'src/utils/utils';
 import { FriendRequest } from '../../schemas/friendRequest.schema';
 import { User } from '../../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -40,13 +43,18 @@ export class FriendRequestsController {
     description: 'A new request friend has been created',
     type: User,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   @HttpCode(HttpStatus.CREATED)
   async addFriend(@Req() req, @Param('idFriend') idFriend: string) {
     const currUser = await this.userService.findById(req.user._id);
-    const friend: User = await this.userService.findById(idFriend);
+    const friend = await this.userService.findById(idFriend);
 
     checkNull(friend, 'The friend does not exist');
     this.shouldBeFriend(currUser, friend, false);
+
+    // Same user request
+    if (currUser._id.toString() == friend._id.toString())
+      throw new ConflictException('Cannot auto send the friend request');
 
     this.addRequest(friend, currUser, false);
     return this.addRequest(currUser, friend, true);
@@ -60,6 +68,7 @@ export class FriendRequestsController {
     description: 'The user has been deleted',
     type: User,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   @HttpCode(HttpStatus.OK)
   async deleteFriend(@Req() req, @Param('idFriend') idFriend: string) {
     const currUser: User = await this.userService.findById(req.user._id);
@@ -79,6 +88,7 @@ export class FriendRequestsController {
     description: 'A friend request has been accepted',
     type: FriendRequest,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   @HttpCode(HttpStatus.ACCEPTED)
   async acceptFriend(@Req() req, @Param('idFriend') idFriend: string) {
     const currUser: User = await this.userService.findById(req.user._id);
@@ -94,8 +104,7 @@ export class FriendRequestsController {
   @ApiBearerAuth()
   @Get()
   @ApiOperation({
-    description:
-      'Get the list of friendsRequests (pending and not) without the user sending the request',
+    description: 'Get the list of friendsRequests (pending and not)',
   })
   @ApiOkResponse({
     description: 'The list of friend (pending and not)',
@@ -137,16 +146,33 @@ export class FriendRequestsController {
       if (fr.user._id.toString() == friend._id.toString()) isFriend = true;
     });
     if (isFriend != shouldBeFriend) {
-      if (isFriend) throwHttpExc('Already a friend', HttpStatus.CONFLICT);
-      else throwHttpExc('Not a friend yet', HttpStatus.CONFLICT);
+      if (isFriend)
+        throw new ConflictException({
+          title: 'Already_a_friend',
+          description: 'You_already_have_a_request_with_this_user',
+          payload: friend,
+          message: 'Already a friend',
+        });
+      else
+        throw new ConflictException({
+          title: 'Not_yet_a_friend',
+          description: 'You_are_not_yet_his_or_her_friend',
+          payload: friend,
+          message: 'Not yet a friend',
+        });
     }
   }
 
   private shouldBePending(friendReq: FriendRequest, shouldBePending: boolean) {
     if (friendReq.pending != shouldBePending)
       if (friendReq.pending)
-        throwHttpExc("The request shouldn't be pending", HttpStatus.CONFLICT);
-      else throwHttpExc('The request should be pending', HttpStatus.CONFLICT);
+        throw new ConflictException({
+          message: "The request shouldn't be pending",
+        });
+      else
+        throw new ConflictException({
+          message: 'The request should be pending',
+        });
   }
 
   private async addRequest(

@@ -8,7 +8,7 @@ export default class SimpleTournament {
   @ApiProperty({
     description: "Tournaments's name",
     required: false,
-    default: 'Best tournament',
+    default: 'tournament_name',
   })
   name: string;
   @ApiProperty({
