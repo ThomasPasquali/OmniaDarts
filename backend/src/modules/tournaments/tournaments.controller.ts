@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -21,7 +22,7 @@ import {
 import SimpleTournament from 'src/classes/SimpleTournament';
 import { Club } from 'src/schemas/club.schema';
 import { User } from 'src/schemas/user.schema';
-import { checkNull, throwHttpExc } from 'src/utils/utils';
+import { checkNull } from 'src/utils/utils';
 import { Tournament } from '../../schemas/tournaments.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ClubsService } from '../clubs/clubs.service';
@@ -147,15 +148,14 @@ export class TournamentsController {
 
   private checkIsAdminClub(club: Club, idAdmin: string) {
     if (club.players.findIndex((u) => u._id == idAdmin && u.isAdmin) == -1)
-      throwHttpExc('You are not the admin of the club', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('You are not the admin of the club');
   }
 
   private checkPlayersClubComponents(club: Club, idPlayers: string[]) {
     idPlayers.forEach((id) => {
       if (club.players.findIndex((u) => u._id == id) == -1)
-        throwHttpExc(
+        throw new BadRequestException(
           'One or more players are not part of the club',
-          HttpStatus.BAD_REQUEST,
         );
     });
   }

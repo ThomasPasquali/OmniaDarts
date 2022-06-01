@@ -1,24 +1,28 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
-  Param, Patch,
+  Param,
+  Patch,
   Post,
   Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { checkNotNull, checkNull, throwHttpExc } from 'src/utils/utils';
+import ModResponse from 'src/classes/modResponse';
+import { checkNotNull, checkNull } from 'src/utils/utils';
 import ClubRequest from '../../classes/clubRequest';
 import { Club } from '../../schemas/club.schema';
 import { User } from '../../schemas/user.schema';
@@ -43,6 +47,7 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Club updated', type: Club })
+  @ApiBadRequestResponse({ type: ModResponse })
   async sendRequest(
     @Req() req,
     @Query('message') message: string,
@@ -78,6 +83,7 @@ export class ClubsController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Get my club' })
   @HttpCode(HttpStatus.OK)
+  @ApiBadRequestResponse({ type: ModResponse })
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'My club', type: Club })
   async getMyClub(@Req() req): Promise<Club> {
@@ -317,7 +323,7 @@ export class ClubsController {
     message: string,
   ) {
     if (club.players.findIndex((u) => u._id == idPlayer) != -1)
-      throwHttpExc(message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(message);
   }
 
   private checkPlayerNotAlreadyPresent(
@@ -326,7 +332,7 @@ export class ClubsController {
     message: string,
   ) {
     if (club.players.findIndex((u) => u._id == idPlayer) == -1)
-      throwHttpExc(message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(message);
   }
 }
 
