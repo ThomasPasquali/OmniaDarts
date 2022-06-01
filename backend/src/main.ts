@@ -27,6 +27,7 @@ async function bootstrap() {
     .addTag('tournaments')
     .addTag('chat')
     .addTag('tournament-matches')
+    .addTag('posts')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

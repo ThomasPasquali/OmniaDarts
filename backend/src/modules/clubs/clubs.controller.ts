@@ -14,11 +14,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import ModResponse from 'src/classes/modResponse';
@@ -47,7 +47,7 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Club updated', type: Club })
-  @ApiBadRequestResponse({ type: ModResponse })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async sendRequest(
     @Req() req,
     @Query('message') message: string,
@@ -55,7 +55,6 @@ export class ClubsController {
   ) {
     const clubRequest = new ClubRequest();
     clubRequest.message = message;
-
     const currUser = await this.usersService.findById(req.user._id);
     const clubToApply = await this.clubsService.getClubById(idClub);
 
@@ -83,7 +82,7 @@ export class ClubsController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Get my club' })
   @HttpCode(HttpStatus.OK)
-  @ApiBadRequestResponse({ type: ModResponse })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'My club', type: Club })
   async getMyClub(@Req() req): Promise<Club> {
@@ -102,6 +101,7 @@ export class ClubsController {
     description: 'A new club has been created',
     type: Club,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async addClub(@Body() club: Club, @Req() req) {
     checkNotNull(
       req.user.club,
@@ -152,6 +152,7 @@ export class ClubsController {
     description: 'A new player has just been added to a the club',
     type: Club,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async addUserToAClub(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerAlreadyPresent(
@@ -178,6 +179,7 @@ export class ClubsController {
     description: 'A player has just been removed from the club',
     type: Club,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async removeUserFromAClub(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -207,6 +209,7 @@ export class ClubsController {
     description: 'Player whom privileges are changed',
     type: User,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async grantPrivileges(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -231,6 +234,7 @@ export class ClubsController {
     description: 'The privileges has been removed',
     type: String,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async revokePrivileges(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -253,6 +257,7 @@ export class ClubsController {
     description: 'The club has been deleted',
     type: Club,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async exitFromMyOwnClub(@Req() req) {
     const club: Club = req.user.club;
     checkNull(club, "You don't belong to a club");
@@ -280,6 +285,7 @@ export class ClubsController {
     description: 'id of the player if all went good',
     type: String,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async acceptJoin(@Req() req, @Param('idPlayer') idPlayer: string) {
     const sender = await this.usersService.findById(idPlayer);
     const club = await this.clubsService.getClubById(req.user.club._id);
@@ -303,6 +309,7 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'club updated', type: Club })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async rejectJoin(@Req() req, @Param('idPlayer') idPlayer: string) {
     const club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(

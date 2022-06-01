@@ -38,8 +38,8 @@ export class UsersService {
     return await this.userModel.find().populate('club').lean();
   }
 
-  async findById(id): Promise<User> {
-    try {
+  async findById(id: string): Promise<User> {
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
       return await this.userModel
         .findOne({ _id: id })
         .populate('club')
@@ -52,10 +52,11 @@ export class UsersService {
           },
         })
         .lean();
-    } catch (err) {
+    } else {
       throw new BadRequestException({
         title: 'Invalid_id',
-        description: 'The_id_is_invalid_please_check_it',
+
+        description: 'The_user_id_is_invalid_please_check_it',
         message: 'User with id [' + id + '] not found',
       });
     }
