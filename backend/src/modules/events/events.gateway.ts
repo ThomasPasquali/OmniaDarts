@@ -74,7 +74,7 @@ export class EventsGateway
 
   public broadcast(event: string, payload: any) {
     for (const c of this.clients) {
-      console.log('BROADCAST to ' + c.user.nickname);
+      //console.log('BROADCAST to ' + c.user.nickname);
       c.emit(event, payload);
     }
   }

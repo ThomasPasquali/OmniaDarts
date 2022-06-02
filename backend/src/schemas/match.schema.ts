@@ -3,8 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
 import { User } from './user.schema';
 import Lobby from "../classes/lobby";
-import PlayerThrows from "../classes/playerThrows";
+import PlayerThrows, {playerThrowsAddThrow} from "../classes/playerThrows";
 import Throw from "../classes/throw";
+import MatchResult from "../classes/matchResult";
 
 export type MatchDocument = Match & Document;
 
@@ -40,15 +41,18 @@ export class Match extends Document {
   @ApiProperty()
   winningMode: Record<string, any>;
 
-  //public final HashMap<String, Stack<CompleteThrow>> playerThrows;
   @Prop({ type: raw({}), default: {} })
-  gameThrows: Record<string, PlayerThrows>;
+  playersThrows: Record<string, PlayerThrows>;
 
-  public addThrow(user: User, setLeg: string, newThrow: Throw) {
-    const uID = user._id.toString();
-    !this.gameThrows[uID] && (this.gameThrows[uID] = new PlayerThrows(uID));
-    this.gameThrows[uID].addThrow(setLeg, newThrow);
-  }
+  @Prop({ type: Array, default: [] })
+  results: MatchResult[];
+
 }
 
 export const MatchSchema = SchemaFactory.createForClass(Match);
+
+export function matchAddThrow(match: Match, user: User, newThrow: Throw) {
+  const uID = user._id.toString();
+  !match.playersThrows[uID] && (match.playersThrows[uID] = new PlayerThrows(uID));
+  playerThrowsAddThrow(match.playersThrows[uID], newThrow);
+}

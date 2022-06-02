@@ -1,6 +1,10 @@
 import {
-    WebSocketGateway,
+  ConnectedSocket,
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
 } from '@nestjs/websockets';
+import { Socket } from 'net';
 import {EventsGateway} from '../events/events.gateway'
 import Throw from "../../classes/throw";
 
@@ -27,6 +31,12 @@ export class MatchesGateway extends EventsGateway {
     }
 
     static getRoomID = id => 'lobby_' + id;
+    
+	/*@SubscribeMessage('new_throw')
+	async newNotification(@MessageBody() body: any, @ConnectedSocket() client: Socket): Promise<void> {
+		const msg = body.data;
+		console.log(body);
+	}*/
 
     async emitNewThrow(userID: string, matchID: string, newThrow: Throw): Promise<void> {
         this.server.to(MatchesGateway.getRoomID(matchID)).emit('new_throw', { userID, newThrow });

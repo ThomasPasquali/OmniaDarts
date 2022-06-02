@@ -2,16 +2,22 @@
   <div class="h-100">
 
     <van-nav-bar
+      v-if="isAndroid()"
+      :title="title"
+      fixed
+      placeholder
+      safe-area-inset-top>
+    </van-nav-bar>
+    <van-nav-bar
+      v-else
       :title="title"
       fixed
       placeholder
       safe-area-inset-top
       left-arrow
       @click-left="back">
-      <template #right>
+      <template #right >
         <AppbarMenu />
-        <!--        <van-icon name="https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png" />-->
-        <!--        {{ ($auth.user && $auth.user.nickname) || 'NO_USER' }}-->
       </template>
     </van-nav-bar>
     <Nuxt class="h-100" />
@@ -29,8 +35,15 @@ export default {
     back() {
       window.history.back()
     },
+    isAndroid() {
+      return this.window && this.window.android
+    },
+  },
+  data() {
+    return { window: null }
   },
   computed: {
+    
     title() {
       //dev/notifications --> Dev Notifications
       //findClub --> Find club
@@ -43,6 +56,9 @@ export default {
           return str.toUpperCase();
         })}`
     }
+  },
+  mounted() {
+    this.window = window
   }
 }
 </script>

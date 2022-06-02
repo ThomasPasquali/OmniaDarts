@@ -63,7 +63,7 @@ export class MatchesService implements NotificationsProvider {
     async updateMatchThrows(match: Match): Promise<Match> {
         return this.matchModel.findByIdAndUpdate(
             match._id, {
-                $set: { gameThrows: match.gameThrows }
+                $set: { playersThrows: match.playersThrows }
             });
     }
 

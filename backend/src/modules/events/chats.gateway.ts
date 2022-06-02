@@ -23,7 +23,7 @@ export class ChatsGateway extends EventsGateway {
     await super.handleConnection(client);
     const chatID = client.handshake.query.chatID;
     if (chatID) {
-      const chat: Chat = await this.chatService.findById(chatID);
+      /*const chat: Chat = await this.chatService.findById(chatID);
 
       // TODO Remove to enable permissions
       //if (await this.checkPermissions(chats, client['user']._id)) {
@@ -31,7 +31,7 @@ export class ChatsGateway extends EventsGateway {
       client.join(roomName);
       console.log(client.user.nickname, 'is connecting to', roomName);
 
-      this.server.to(roomName).emit('text_msg_room_new', chat.messages);
+      this.server.to(roomName).emit('text_msg_room_new', chat.messages);*/
     } else client.disconnect();
     //}
   }
@@ -43,7 +43,7 @@ export class ChatsGateway extends EventsGateway {
   ): Promise<void> {
     const msg = body.data;
     console.log(msg);
-    const chat: Chat = await this.chatService.findById(msg.chatID);
+    /*const chat: Chat = await this.chatService.findById(msg.chatID);
     const message: TextMessage = new TextMessage();
     message.text = msg.text;
     message.user = { _id: client['user']._id } as User;
@@ -53,7 +53,7 @@ export class ChatsGateway extends EventsGateway {
     await this.chatService.update(chat._id, chat);
     this.server
       .to(this.PREFIX_ROOM_CHAT + msg.chatID)
-      .emit('text_msg_room_new', [message]);
+      .emit('text_msg_room_new', [message]);*/
   }
 
   private async checkPermissions(chat: Chat, user: User): Promise<boolean> {

@@ -9,12 +9,13 @@ export default class PlayerThrows {
     ) {
     }
 
-    public addThrow(setLeg: string, newThrow: Throw): void {
-        !this.playerThrows[setLeg] && (this.playerThrows[setLeg] = []);
-        this.playerThrows[setLeg].push(newThrow);
-    }
-
     public playerIs(id: string): boolean {
         return this.userID === id;
     }
+}
+
+export function playerThrowsAddThrow(playerThrows: PlayerThrows, newThrow: Throw): void {
+    const setLeg = newThrow.legSet;
+    !playerThrows.playerThrows[setLeg] && (playerThrows.playerThrows[setLeg] = []);
+    playerThrows.playerThrows[setLeg].push(newThrow);
 }

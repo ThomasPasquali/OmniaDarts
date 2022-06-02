@@ -37,7 +37,8 @@ export default {
               'notification_new --> notifications/addNew',
               'notification_update --> notifications/update',
               'text_msg_room_new --> textchats/newMessage',
-              'lobby_new_join_request --> lobbies/newJoinRequest'
+              'lobby_new_join_request --> lobbies/newJoinRequest',
+              'new_throw --> match/setLastThrow',
             ],
             emitBacks: [
               'notification_update <-- notifications/lastNotification',

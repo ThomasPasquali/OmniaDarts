@@ -26,6 +26,7 @@
     <div>
       <van-button v-if="isCurrentUserLobbyOwner()" @click="deleteLobby()">{{$t('delete_lobby')}}</van-button>
       <van-button v-else @click="deleteLobby()">{{$t('delete_lobby')}}</van-button>
+      <van-button @click="play">{{$t('lobby_play')}}</van-button>
     </div>
   </div>
   <div v-else>
@@ -129,6 +130,10 @@ export default {
         alert('Cannot delete lobby')
       }
     },
+    play() {
+      if(window.android)
+	window.android.play(JSON.stringify(this.match))
+    }
   }
 }
 </script>
