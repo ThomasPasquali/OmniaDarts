@@ -53,7 +53,9 @@ export class Tournament extends Document {
   })
   winningMode: WinningMode;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  })
   @ApiProperty({
     isArray: true,
     required: true,

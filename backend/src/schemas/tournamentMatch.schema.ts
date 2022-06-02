@@ -7,7 +7,7 @@ import { Tournament } from './tournaments.schema';
 export type TournamentMatchDocument = TournamentMatch & Document;
 
 @Schema()
-export class TournamentMatch {
+export class TournamentMatch extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Tournament' })
   @ApiProperty({
     required: true,
@@ -36,9 +36,9 @@ export class TournamentMatch {
   })
   match: Match;
 
-  @Prop()
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'TournamentMatch' })
   @ApiProperty()
-  nextTournamentMatch: string;
+  nextTournamentMatch: TournamentMatch;
 }
 
 export const TournamentMatchSchema =

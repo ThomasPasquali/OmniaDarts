@@ -20,16 +20,20 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { TournamentPlayer } from 'src/classes/tournamentPlayer';
+import { Match } from 'src/schemas/match.schema';
+import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
 import SimpleTournament from '../../classes/SimpleTournament';
 import { Club } from '../../schemas/club.schema';
-import { User } from '../../schemas/user.schema';
 import { Tournament } from '../../schemas/tournaments.schema';
+import { User } from '../../schemas/user.schema';
+import { checkNull, shuffleArray } from '../../utils/utilFunctions';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ClubsService } from '../clubs/clubs.service';
+import { MatchesService } from '../matches/matches.service';
 import { TournamentMatchesService } from '../tournament-matches/tournament-matches.service';
 import { UsersService } from '../users/users.service';
 import { TournamentsService } from './tournaments.service';
-import {checkNull} from "../../utils/utilFunctions";
 
 @Controller('tournaments')
 @ApiTags('tournaments')
@@ -39,6 +43,7 @@ export class TournamentsController {
     private readonly tournamentService: TournamentsService,
     private readonly usersService: UsersService,
     private readonly clubService: ClubsService,
+    private readonly matchService: MatchesService,
   ) {}
 
   @Post()
@@ -59,17 +64,15 @@ export class TournamentsController {
     type: SimpleTournament,
   })
   async addTournament(@Body() simpleTournament: SimpleTournament, @Req() req) {
-    // Check if admin of a club -> Frontend
-
     const currUser: User = await this.usersService.findById(req.user._id);
-
-    const tournament = {
+    let tournament = {
       name: simpleTournament.name,
       randomOrder: simpleTournament.randomOrder,
       type: simpleTournament.type,
       gamemode: simpleTournament.gamemode,
       winningMode: simpleTournament.winningMode,
       players: [currUser],
+      matches: [],
       creation_date: new Date(),
       finished: false,
       creator: currUser,
@@ -96,9 +99,18 @@ export class TournamentsController {
       checkNull(player, 'One player id does not exist');
       tournament.players.push(player);
     }
-
+    let newTournament = await this.tournamentService.addTournament(tournament);
     // Tournament setup
-    // tournament = setupTournament(tournament);
+    const tournamentWithMatches: Tournament = await this.setupTournament(
+      newTournament,
+    );
+    tournamentWithMatches.name = 'BergoglioGay';
+    console.log(tournamentWithMatches);
+    const finalTournament = await this.tournamentService.updateTournament(
+      tournamentWithMatches._id,
+      tournamentWithMatches,
+    );
+    console.log(finalTournament);
     // Add references
     /* if (club != null) {
       club.tournaments.push(tournament);
@@ -109,7 +121,7 @@ export class TournamentsController {
       await this.usersService.update(p._id, p);
     }); */
 
-    return await this.tournamentService.addTournament(tournament);
+    return finalTournament;
   }
 
   @Get()
@@ -160,5 +172,134 @@ export class TournamentsController {
           'One or more players are not part of the club',
         );
     });
+  }
+
+  private async setupTournament(tournament: Tournament) {
+    const players = [...tournament.players];
+
+    let rounds = this.chooseNumberGroups(players.length);
+    let numRounds = rounds[0] + rounds[1];
+    let round = 1;
+    if (tournament.randomOrder) shuffleArray(players);
+
+    console.log('Setupping tournament');
+    // First round
+    let tournamentMatches = await this.generateMatches(
+      tournament,
+      rounds[0],
+      rounds[1],
+      round++,
+      players,
+    );
+    // console.log(tournamentMatches);
+    for (const m of tournamentMatches) {
+      let match: TournamentMatch =
+        await this.tournamentMatchesService.addTournamentMatch(m);
+      // console.log(match);
+      delete match['tournamentRef'];
+      // tournament.matches.push(match);
+      tournament.matches.push({
+        _id: match._id,
+      } as TournamentMatch);
+    }
+    // tournament.matches = tournamentMatches;
+    // console.log(tournament);
+    // console.log(tournament.matches);
+    /* const newTournament = await this.tournamentService.update(
+      tournament._id,
+      tournament,
+    ); */
+    // Next rounds
+    /* do {
+      rounds = this.chooseNumberGroups(numRounds);
+      console.log(rounds);
+      numRounds = rounds[0] + rounds[1];
+      this.generateRounds(tournament, rounds[0], rounds[1], round++);
+    } while (numRounds > 1); */
+    return tournament;
+  }
+
+  private chooseNumberGroups(numPlayers: number): [number, number] {
+    let numPairs = 0;
+    let numTriplets = 0;
+    if (numPlayers % 3 == 0) {
+      numTriplets = numPlayers / 3;
+    } else if ((numPlayers + 1) % 3 == 0) {
+      numPairs = 1;
+      numTriplets = (numPlayers - 2) / 3;
+    } else {
+      numPairs = 2;
+      numTriplets = (numPlayers - 4) / 3;
+    }
+    return [numPairs, numTriplets];
+  }
+
+  private async generateMatches(
+    tournament: Tournament,
+    numPairs: number,
+    numTriplets: number,
+    round: number,
+    players: User[] = null,
+  ) {
+    let group = 1;
+    let matches = [];
+    for (let i = 0; i < numTriplets; i++) {
+      const match = await this.createTournamentMatch(
+        tournament,
+        round,
+        group++,
+        3,
+        players != null ? players.splice(0, 3) : null,
+      );
+      matches.push(match);
+    }
+    for (let i = 0; i < numPairs; i++) {
+      const match = await this.createTournamentMatch(
+        tournament,
+        round,
+        group++,
+        2,
+        players != null ? players.splice(0, 2) : null,
+      );
+      matches.push(match);
+    }
+    return matches;
+  }
+  private async createTournamentMatch(
+    tournament: Tournament,
+    round: number,
+    group: number,
+    numPlayers: number,
+    players: User[] = null,
+  ): Promise<TournamentMatch> {
+    const results =
+      players != null
+        ? players.map((p) => {
+            return {
+              userId: p._id.toString(),
+              result: 0,
+            } as TournamentPlayer;
+          })
+        : null;
+
+    const match = {
+      dateTime: new Date(),
+      players: players,
+      done: false,
+      results: results,
+      // gamemode: tournament.gamemode,
+      // winningMode: tournament.winningMode,
+    } as Match;
+    const newMatch: Match = await this.matchService.newMatch(match);
+
+    const tournamentMatch = {
+      tournamentRef: tournament,
+      round: round,
+      group: group,
+      numPlayers: numPlayers,
+      match: newMatch,
+      nextTournamentMatch: null,
+    } as TournamentMatch;
+    return tournamentMatch;
   }
 }
