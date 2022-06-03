@@ -22,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { Match } from 'src/schemas/match.schema';
 import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
+import MatchResult from '../../classes/matchResult';
 import SimpleTournament from '../../classes/SimpleTournament';
 import { Club } from '../../schemas/club.schema';
 import { Tournament } from '../../schemas/tournaments.schema';
@@ -33,7 +34,6 @@ import { MatchesService } from '../matches/matches.service';
 import { TournamentMatchesService } from '../tournament-matches/tournament-matches.service';
 import { UsersService } from '../users/users.service';
 import { TournamentsService } from './tournaments.service';
-import MatchResult from "../../classes/matchResult";
 
 @Controller('tournaments')
 @ApiTags('tournaments')
@@ -99,27 +99,27 @@ export class TournamentsController {
       checkNull(player, 'One player id does not exist');
       tournament.players.push(player);
     }
+
     let newTournament = await this.tournamentService.addTournament(tournament);
+
     // Tournament setup
     const tournamentWithMatches: Tournament = await this.setupTournament(
       newTournament,
     );
-    tournamentWithMatches.name = 'BergoglioGay';
-    console.log(tournamentWithMatches);
+
     const finalTournament = await this.tournamentService.updateTournament(
       tournamentWithMatches._id,
       tournamentWithMatches,
     );
-    console.log(finalTournament);
     // Add references
-    /* if (club != null) {
+    if (club != null) {
       club.tournaments.push(tournament);
       await this.clubService.update(club._id, club);
     }
     tournament.players.forEach(async (p) => {
       p.tournaments.push(tournament);
       await this.usersService.update(p._id, p);
-    }); */
+    });
 
     return finalTournament;
   }
@@ -182,40 +182,47 @@ export class TournamentsController {
     let round = 1;
     if (tournament.randomOrder) shuffleArray(players);
 
-    console.log('Setupping tournament');
     // First round
-    let tournamentMatches = await this.generateMatches(
+    let tournamentMatches: TournamentMatch[] = await this.generateMatches(
       tournament,
       rounds[0],
       rounds[1],
       round++,
       players,
     );
-    // console.log(tournamentMatches);
+    // Next rounds
+    do {
+      rounds = this.chooseNumberGroups(numRounds);
+      numRounds = rounds[0] + rounds[1];
+      tournamentMatches.push(
+        ...(await this.generateMatches(
+          tournament,
+          rounds[0],
+          rounds[1],
+          round++,
+        )),
+      );
+    } while (numRounds > 1);
+
+    // Add matches to tournament
+    let newMatches = [];
     for (const m of tournamentMatches) {
       let match: TournamentMatch =
         await this.tournamentMatchesService.addTournamentMatch(m);
-      // console.log(match);
-      delete match['tournamentRef'];
-      // tournament.matches.push(match);
+      newMatches.push(match);
       tournament.matches.push({
         _id: match._id,
       } as TournamentMatch);
     }
-    // tournament.matches = tournamentMatches;
-    // console.log(tournament);
-    // console.log(tournament.matches);
-    /* const newTournament = await this.tournamentService.update(
-      tournament._id,
-      tournament,
-    ); */
-    // Next rounds
-    /* do {
-      rounds = this.chooseNumberGroups(numRounds);
-      console.log(rounds);
-      numRounds = rounds[0] + rounds[1];
-      this.generateRounds(tournament, rounds[0], rounds[1], round++);
-    } while (numRounds > 1); */
+
+    // Link matches
+    this.linkMatches(newMatches, round);
+
+    // Update matches
+    for (const m of newMatches) {
+      await this.tournamentMatchesService.update(m._id, m);
+    }
+
     return tournament;
   }
 
@@ -234,13 +241,33 @@ export class TournamentsController {
     return [numPairs, numTriplets];
   }
 
+  private async linkMatches(matches: TournamentMatch[], numRounds: number) {
+    while (numRounds-- > 0) {
+      let currMatches = matches.filter((m) => m.round == numRounds);
+      let prevMatches = matches.filter((m) => m.round == numRounds - 1);
+      currMatches.sort((a, b) =>
+        a.group > b.group ? 1 : b.group > a.group ? -1 : 0,
+      );
+      prevMatches.sort((a, b) =>
+        a.group > b.group ? 1 : b.group > a.group ? -1 : 0,
+      );
+      currMatches.forEach((m) => {
+        let tmpMatches = prevMatches.splice(0, m.numPlayers);
+        tmpMatches.forEach((t) => {
+          t.nextTournamentMatch = { _id: m._id } as TournamentMatch;
+          m.previousTournamentMatches.push({ _id: t._id } as TournamentMatch);
+        });
+      });
+    }
+  }
+
   private async generateMatches(
     tournament: Tournament,
     numPairs: number,
     numTriplets: number,
     round: number,
     players: User[] = null,
-  ) {
+  ): Promise<TournamentMatch[]> {
     let group = 1;
     let matches = [];
     for (let i = 0; i < numTriplets; i++) {
@@ -265,6 +292,7 @@ export class TournamentsController {
     }
     return matches;
   }
+
   private async createTournamentMatch(
     tournament: Tournament,
     round: number,
@@ -299,6 +327,7 @@ export class TournamentsController {
       numPlayers: numPlayers,
       match: newMatch,
       nextTournamentMatch: null,
+      previousTournamentMatches: [],
     } as TournamentMatch;
     return tournamentMatch;
   }
