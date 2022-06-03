@@ -1,11 +1,10 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   Tournament,
   TournamentDocument,
 } from '../../schemas/tournaments.schema';
-import { TournamentMatchesService } from '../tournament-matches/tournament-matches.service';
 
 @Injectable()
 export class TournamentsService {
@@ -27,12 +26,17 @@ export class TournamentsService {
     return await this.tournamentModel.findById(id).populate('players').lean();
   }
 
-  async update(id, tournament: Tournament): Promise<Tournament> {
-    return await this.tournamentModel
-      .findByIdAndUpdate(id, tournament, { new: true })
-      .populate('players')
-      .populate('matches')
-      .lean();
+  async updateTournament(
+    id: string,
+    tournament: Tournament,
+  ): Promise<Tournament> {
+    return (
+      this.tournamentModel
+        .findOneAndUpdate({ _id: id }, tournament, { new: true })
+        // .populate('players')
+        // .populate('matches')
+        .lean()
+    );
   }
 
   async delete(id): Promise<Tournament> {
