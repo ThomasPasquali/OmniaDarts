@@ -8,9 +8,8 @@
       <p class="subtitle">{{ subtitle }}</p>
     </div>
 
-    <div class="buttons">
     <!--        :icon="b.icon"-->
-    <div v-if="!user.request" class="buttons">
+    <div v-if="user && !user.request" class="buttons">
       <van-button
         v-for="b in buttons.filter(b_ => !!b_)"
         @click="$emit(b.emit)"
@@ -27,7 +26,6 @@
     <!--      <van-button icon="success"></van-button>-->
     <!--      <van-button icon="cross"></van-button>-->
     <!--    </div>-->
-    </div>
   </div>
 </template>
 

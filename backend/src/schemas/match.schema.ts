@@ -1,7 +1,6 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import { TournamentPlayer } from 'src/classes/tournamentPlayer';
 import Lobby from '../classes/lobby';
 import { User } from './user.schema';
 import PlayerThrows, {playerThrowsAddThrow} from "../classes/playerThrows";

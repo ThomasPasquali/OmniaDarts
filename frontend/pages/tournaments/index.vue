@@ -4,7 +4,7 @@
     <TournamentPreview v-for="(t, i) in tournaments" :key="i" :tournament="t" />
 
     <h1>New tournament</h1>
-    <van-form @submit.prevent="submitNewTournament">
+    <van-form @submit="submitNewTournament">
       <van-cell-group inset>
         <van-field v-model="tournament.name" label="Name" placeholder="Name" />
       </van-cell-group>

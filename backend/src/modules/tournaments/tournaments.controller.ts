@@ -20,7 +20,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { TournamentPlayer } from 'src/classes/tournamentPlayer';
 import { Match } from 'src/schemas/match.schema';
 import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
 import SimpleTournament from '../../classes/SimpleTournament';
@@ -34,6 +33,7 @@ import { MatchesService } from '../matches/matches.service';
 import { TournamentMatchesService } from '../tournament-matches/tournament-matches.service';
 import { UsersService } from '../users/users.service';
 import { TournamentsService } from './tournaments.service';
+import MatchResult from "../../classes/matchResult";
 
 @Controller('tournaments')
 @ApiTags('tournaments')
@@ -276,9 +276,9 @@ export class TournamentsController {
       players != null
         ? players.map((p) => {
             return {
-              userId: p._id.toString(),
-              result: 0,
-            } as TournamentPlayer;
+              userID: p._id.toString(),
+              score: 0,
+            } as MatchResult;
           })
         : null;
 
