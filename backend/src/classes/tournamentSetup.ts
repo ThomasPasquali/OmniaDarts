@@ -70,7 +70,7 @@ function createTournamentMatch(
     dateTime: new Date(),
     players: players,
     done: false,
-    results: results,
+    //results: results,
     // gamemode: tournament.gamemode,
     // winningMode: tournament.winningMode,
   } as Match;

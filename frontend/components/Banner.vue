@@ -27,8 +27,7 @@
     <!--      <van-button icon="success"></van-button>-->
     <!--      <van-button icon="cross"></van-button>-->
     <!--    </div>-->
-
-
+    </div>
   </div>
 </template>
 
