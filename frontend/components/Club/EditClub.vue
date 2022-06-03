@@ -20,7 +20,7 @@ export default {
       required: true,
     }
   },
-  emits: ['submitClub'],  // il componente potrebbe emettere eventi con questo nome
+  emits: ['submitClub'],
   methods: {
     submit() {
       this.$emit('submitClub')

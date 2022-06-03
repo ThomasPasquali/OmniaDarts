@@ -30,7 +30,7 @@ export class FriendRequestsService {
     id: string,
     friendRequest: FriendRequest,
   ): Promise<FriendRequest> {
-    return await this.friendReqModel
+    return this.friendReqModel
       .findOneAndUpdate({ _id: id }, friendRequest, { new: true })
       .populate('user')
       .lean();

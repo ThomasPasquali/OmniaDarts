@@ -6,9 +6,12 @@ import {
 } from '@nestjs/websockets';
 import Notification from '../../classes/notification';
 import { Socket } from 'net';
-import { SocketIOBodyUnwrapper } from '../../utils/utils';
+import { SocketIOBodyUnwrapper } from '../../utils/utilFunctions';
 import { EventsGateway } from '../events/events.gateway';
-import {NotificationAction, NotificationState} from '../../enums/notifications';
+import {
+  NotificationAction,
+  NotificationState,
+} from '../../enums/notifications';
 
 @WebSocketGateway({
   namespace: 'notifications',
@@ -17,7 +20,6 @@ import {NotificationAction, NotificationState} from '../../enums/notifications';
   },
 })
 export class NotificationsGateway extends EventsGateway {
-
   async handleConnection(client: any): Promise<any> {
     await super.handleConnection(client);
     for (const provider of this.notificationsProviders) //for (const c of this.clients)

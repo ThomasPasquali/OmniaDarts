@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import {
   TournamentMatch,
   TournamentMatchDocument,
-} from 'src/schemas/tournamentMatch.schema';
+} from '../../schemas/tournamentMatch.schema';
 
 @Injectable()
 export class TournamentMatchesService {

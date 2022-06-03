@@ -12,7 +12,7 @@ import { google, Auth } from 'googleapis';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { use } from 'passport';
 import { oauth2 } from 'googleapis/build/src/apis/oauth2';
-import {generateString} from "../../utils/utils";
+import {generateString} from "../../utils/utilFunctions";
 
 @Injectable()
 export class AuthService {

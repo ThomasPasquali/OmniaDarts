@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 
 const characters =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -10,11 +10,11 @@ export function getEnumDescription(e: any): string {
 }
 
 export function checkNull(obj: any, message: string) {
-  if (obj == null) throwHttpExc(message, HttpStatus.BAD_REQUEST);
+  if (obj == null) throw new BadRequestException(message);
 }
 
 export function checkNotNull(obj: any, message: string) {
-  if (obj != null) throwHttpExc(message, HttpStatus.CONFLICT);
+  if (obj != null) throw new ConflictException(message);
 }
 
 export class SocketIOBodyUnwrapper<T> {
@@ -34,12 +34,9 @@ export function generateString(length) {
   return result;
 }
 
-export function throwHttpExc(message: string, code) {
-  throw new HttpException(
-    {
-      status: code,
-      error: message,
-    },
-    code,
-  );
+export function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }

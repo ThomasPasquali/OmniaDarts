@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Club, ClubDocument } from '../../schemas/club.schema';
 import Notification from '../../classes/notification';
-import { User } from '../../schemas/user.schema';
 import { NotificationState } from '../../enums/notifications';
 import { NotificationsProvider } from '../../interfaces/notifications';
+import { Club, ClubDocument } from '../../schemas/club.schema';
+import { User } from '../../schemas/user.schema';
 
 @Injectable()
 export class ClubsService implements NotificationsProvider {
@@ -14,8 +14,16 @@ export class ClubsService implements NotificationsProvider {
   ) {}
 
   async addClub(club: Club): Promise<Club> {
-    const createdClub = new this.clubModel(club);
-    return createdClub.save();
+    try {
+      const createdClub = new this.clubModel(club);
+      return createdClub.save();
+    } catch {
+      throw new BadRequestException({
+        title: 'Error_adding_club',
+        message: 'Cannot create club',
+        payload: club,
+      });
+    }
   }
 
   async findAll(): Promise<Club[]> {
@@ -23,7 +31,15 @@ export class ClubsService implements NotificationsProvider {
   }
 
   async getClubById(id: string): Promise<Club> {
-    return this.clubModel.findById(id).populate('players').lean();
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      return this.clubModel.findOne({ _id: id }).populate('players').lean();
+    } else {
+      throw new BadRequestException({
+        title: 'Invalid_id',
+        description: 'The_club_id_is_invalid_please_check_it',
+        message: 'Club with id [' + id + '] not found',
+      });
+    }
   }
 
   async update(id: string, club: Club): Promise<Club> {

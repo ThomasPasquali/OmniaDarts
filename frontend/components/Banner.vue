@@ -1,30 +1,32 @@
 <template>
   <div class="banner">
     <div>
-      <img class="pic" :src="user.imageUrl != null ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
+      <img class="pic" :src="(!!user && user.imageUrl != null) ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
     </div>
     <div class="info">
       <p class="title">{{ title }}</p>
       <p class="subtitle">{{ subtitle }}</p>
     </div>
 
+    <div class="buttons">
     <!--        :icon="b.icon"-->
     <div v-if="!user.request" class="buttons">
       <van-button
-        v-for="b in buttons"
+        v-for="b in buttons.filter(b_ => !!b_)"
         @click="$emit(b.emit)"
         :disabled="b.disabled"
       >
         <span class="material-icons">{{ b.icon }}</span>
+        <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>
         {{ b.text }}
       </van-button>
       <!--      <van-button icon="star"></van-button>-->
       <!--      <van-button icon="delete" v-if="admin"></van-button>-->
     </div>
-    <div v-else class="buttons">
-      <!--      <van-button icon="success"></van-button>-->
-      <!--      <van-button icon="cross"></van-button>-->
-    </div>
+    <!--    <div v-else class="buttons">-->
+    <!--      <van-button icon="success"></van-button>-->
+    <!--      <van-button icon="cross"></van-button>-->
+    <!--    </div>-->
 
 
   </div>
@@ -86,4 +88,11 @@ export default {
   gap: 8px;
 }
 
+.material-symbols-sharp {
+  font-variation-settings: 'FILL' 1;
+}
+
+.material-symbols-sharp.outlined {
+  font-variation-settings: 'FILL' 0 !important;
+}
 </style>

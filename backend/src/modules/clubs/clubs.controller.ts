@@ -1,24 +1,28 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
-  Param, Patch,
+  Param,
+  Patch,
   Post,
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { checkNotNull, checkNull, throwHttpExc } from 'src/utils/utils';
+import ModResponse from '../../classes/modResponse';
 import ClubRequest from '../../classes/clubRequest';
 import { Club } from '../../schemas/club.schema';
 import { User } from '../../schemas/user.schema';
@@ -28,7 +32,7 @@ import { AppAbility } from '../casl/casl-ability.factory';
 import { CheckPolicies, PoliciesGuard } from '../casl/policies-guard.service';
 import { UsersService } from '../users/users.service';
 import { ClubsService } from './clubs.service';
-
+import { checkNotNull, checkNull } from '../../utils/utilFunctions';
 @Controller('clubs')
 @ApiTags('clubs')
 export class ClubsController {
@@ -40,9 +44,10 @@ export class ClubsController {
   @Post('joinRequest')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Send request to join a club' })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Club updated', type: Club })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async sendRequest(
     @Req() req,
     @Query('message') message: string,
@@ -65,12 +70,7 @@ export class ClubsController {
     } as User);
 
     currUser.clubRequest = clubRequest;
-    console.log('hei');
-    await this.usersService.update(
-      currUser._id,
-      JSON.parse(JSON.stringify(currUser)),
-    );
-    console.log('ciao');
+    await this.usersService.update(currUser._id, currUser);
     return await this.clubsService.update(clubToApply._id, clubToApply);
   }
 
@@ -78,6 +78,7 @@ export class ClubsController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Get my club' })
   @HttpCode(HttpStatus.OK)
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'My club', type: Club })
   async getMyClub(@Req() req): Promise<Club> {
@@ -96,6 +97,7 @@ export class ClubsController {
     description: 'A new club has been created',
     type: Club,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async addClub(@Body() club: Club, @Req() req) {
     checkNotNull(
       req.user.club,
@@ -106,7 +108,9 @@ export class ClubsController {
       req.user._id.toString(),
     );
     user.isAdmin = true;
-    newClub.players.push(user);
+    newClub.players.push({
+      _id: user._id,
+    } as User);
     const clubUpdated = await this.clubsService.update(newClub._id, newClub);
     user.club = clubUpdated;
     await this.usersService.update(user._id, user);
@@ -146,6 +150,7 @@ export class ClubsController {
     description: 'A new player has just been added to a the club',
     type: Club,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async addUserToAClub(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerAlreadyPresent(
@@ -172,6 +177,7 @@ export class ClubsController {
     description: 'A player has just been removed from the club',
     type: Club,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async removeUserFromAClub(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -201,6 +207,7 @@ export class ClubsController {
     description: 'Player whom privileges are changed',
     type: User,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async grantPrivileges(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -225,6 +232,7 @@ export class ClubsController {
     description: 'The privileges has been removed',
     type: String,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async revokePrivileges(@Param('idPlayer') idPlayer: string, @Req() req) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -247,6 +255,7 @@ export class ClubsController {
     description: 'The club has been deleted',
     type: Club,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async exitFromMyOwnClub(@Req() req) {
     const club: Club = req.user.club;
     checkNull(club, "You don't belong to a club");
@@ -259,7 +268,7 @@ export class ClubsController {
     else await this.clubsService.update(club._id, club);
     playerToRemove.club = null;
     await this.usersService.update(playerToRemove._id, playerToRemove);
-    return playerToRemove.id;
+    return club;
   }
 
   @Patch('joinRequest/:idPlayer')
@@ -297,6 +306,7 @@ export class ClubsController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'club updated', type: Club })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async rejectJoin(@Req() req, @Param('idPlayer') idPlayer: string) {
     const club = await this.clubsService.getClubById(req.user.club._id);
     this.checkPlayerNotAlreadyPresent(
@@ -317,7 +327,7 @@ export class ClubsController {
     message: string,
   ) {
     if (club.players.findIndex((u) => u._id == idPlayer) != -1)
-      throwHttpExc(message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(message);
   }
 
   private checkPlayerNotAlreadyPresent(
@@ -326,7 +336,7 @@ export class ClubsController {
     message: string,
   ) {
     if (club.players.findIndex((u) => u._id == idPlayer) == -1)
-      throwHttpExc(message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(message);
   }
 }
 

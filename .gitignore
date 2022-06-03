@@ -22,3 +22,4 @@
 /backend/mongo/
 /backend/dist/
 /backend/static/
+node_modules/

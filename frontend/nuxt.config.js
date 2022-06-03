@@ -82,7 +82,6 @@ export default {
   auth: {
     redirect: {
       login: '/login',
-      register: '/register',
       logout: '/login',
       home: '/',
     },
@@ -136,6 +135,16 @@ export default {
   },
 
 
+
 // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {}
+  build: {
+    loaders: {
+      sass: {
+        implementation: require('sass'),
+      },
+      scss: {
+        implementation: require('sass'),
+      },
+    },
+  }
 };

@@ -1,5 +1,7 @@
 import {
+  BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpStatus,
@@ -18,9 +20,11 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
+import ModResponse from '../../classes/modResponse';
 import SimpleUser from '../../classes/SimpleUser';
 import { User } from '../../schemas/user.schema';
 import { UsersService } from '../users/users.service';
@@ -62,8 +66,11 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ description: 'Logout the current user' })
   @ApiOkResponse({ description: 'User logged out successfully', type: User })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async logout(@Req() req) {
     //TODO eventually blacklist tokens
     return req.user;
@@ -73,20 +80,22 @@ export class AuthController {
   @ApiOperation({ description: 'Register a user with nickname and password' })
   @ApiCreatedResponse({
     description: 'User register successfully',
-    type: SimpleUser,
+    type: User,
   })
-  @ApiNotFoundResponse({ description: 'User not found' })
   @ApiBody({
     description: 'Simple user',
     type: SimpleUser,
   })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
   async register(@Body() user: User) {
+    if (user.pwd.length == 0 || user.nickname.length == 0)
+      throw new BadRequestException('Nickname or password empty');
     const saltOrRounds: number = parseInt(this.config.get('SALTROUNDS'), 10);
     user.pwd = await bcrypt.hash(user.pwd.toString(), saltOrRounds as number);
     const u = await this.userService.create(user);
 
     if (u) return await this.authService.login(u);
-    else throw new InternalServerErrorException();
+    else throw new ConflictException();
   }
 
   @Post('google')
