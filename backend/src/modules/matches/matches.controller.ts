@@ -43,7 +43,7 @@ export class MatchesController {
   
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ description: 'Save new "offline" match (example: {"gamemode":{"name":"X01","settings":{"checkIn":"straight","checkOut":"double","startScore":40,"type":"X01"}},"playerThrows":{"-1":{"0:0":[{"darts":[{"score":40,"doubleTriple":"D","sector":20},null,null]}],"1:0":[{"darts":[{"score":40,"doubleTriple":"D","sector":20},null,null]}]},"0":{"0:0":[{"darts":[{"score":12,"doubleTriple":"D","sector":6},null,null]}]}},"winningMode":{"firstBest":"firstTo","goal":2,"setsLegs":"legs"}})' })
+  @ApiOperation({ description: 'Save new "offline" match (example: {"gamemode":{"name":"X01","settings":{"checkIn":"straight","checkOut":"double","startScore":40,"type":"X01"}},"playerThrows":{"-1":{},"0":{"0:0":[{"darts":[{"score":40,"doubleTriple":"D","sector":20},null,null]}],"1:0":[{"darts":[{"score":1,"doubleTriple":"","sector":1},{"score":9,"doubleTriple":"","sector":9},{"score":30,"doubleTriple":"D","sector":15}]}]}},"results":[{"score":0,"userID":"-1"},{"score":2,"userID":"0"},{"score":0,"userID":"-1"}],"winningMode":{"firstBest":"firstTo","goal":2,"setsLegs":"legs"}})' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: ' Match created' })

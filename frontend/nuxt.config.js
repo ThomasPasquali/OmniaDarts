@@ -82,6 +82,7 @@ export default {
   auth: {
     redirect: {
       login: '/login',
+      register: '/register',
       logout: '/login',
       home: '/',
     },

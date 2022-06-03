@@ -1,4 +1,6 @@
 export default {
+
+  something_went_wrong: 'Something went wrong',
   wrong_credentials: 'Wrong credentials',
   user_has_no_club: 'You don\'t have a club',
   user_new_notifications: 'Inbox',

@@ -86,8 +86,10 @@ export default {
   },
   methods: {
     async fetchLobby() {
-      await this.$store.dispatch('lobbies/fetchLobby', this.lobbyID_)
-      if (this.match) clearInterval(this.autoFetchInterval)
+      if(this.lobbyID_) {
+        await this.$store.dispatch('lobbies/fetchLobby', this.lobbyID_)
+        if (this.match) clearInterval(this.autoFetchInterval)
+      }
     },
     back() {
       window.history.go(-1)
@@ -131,8 +133,7 @@ export default {
       }
     },
     play() {
-      if(window.android)
-	window.android.play(JSON.stringify(this.match))
+      if(window.android) window.android.play(JSON.stringify(this.match))
     }
   }
 }
