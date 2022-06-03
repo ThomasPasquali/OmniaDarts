@@ -293,7 +293,7 @@ export class TournamentsController {
     const newMatch: Match = await this.matchService.newMatch(match);
 
     const tournamentMatch = {
-      tournamentRef: { id: tournament._id } as Tournament,
+      tournamentRef: { _id: tournament._id } as Tournament,
       round: round,
       group: group,
       numPlayers: numPlayers,
