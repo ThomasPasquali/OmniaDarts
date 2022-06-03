@@ -71,11 +71,11 @@ export class TournamentsController {
       type: simpleTournament.type,
       gamemode: simpleTournament.gamemode,
       winningMode: simpleTournament.winningMode,
-      players: [currUser],
+      players: [{ _id: currUser._id } as User],
       matches: [],
       creation_date: new Date(),
       finished: false,
-      creator: currUser,
+      creator: { _id: currUser._id } as User,
     } as Tournament;
 
     let club: Club;
@@ -97,7 +97,7 @@ export class TournamentsController {
     for (const idPlayer of simpleTournament.idPlayers) {
       const player: User = await this.usersService.findById(idPlayer);
       checkNull(player, 'One player id does not exist');
-      tournament.players.push(player);
+      tournament.players.push({ _id: player._id } as User);
     }
 
     let newTournament = await this.tournamentService.addTournament(tournament);
@@ -116,10 +116,11 @@ export class TournamentsController {
       club.tournaments.push(tournament);
       await this.clubService.update(club._id, club);
     }
-    tournament.players.forEach(async (p) => {
-      p.tournaments.push(tournament);
-      await this.usersService.update(p._id, p);
-    });
+    for (const p of finalTournament.players) {
+      const player = await this.usersService.findById(p._id);
+      player.tournaments.push({ _id: finalTournament._id } as Tournament);
+      await this.usersService.update(player._id, player);
+    }
 
     return finalTournament;
   }

@@ -27,10 +27,15 @@ export class TournamentMatchesService {
   }
 
   async getTournamentMatchById(id: string): Promise<TournamentMatch> {
-    return this.tournamentMatchModel
-      .findById(id)
-      .populate('tournamentRef')
-      .lean();
+    return (
+      this.tournamentMatchModel
+        .findById(id)
+        /*       .populate('tournamentRef')
+      .populate('nextTournamentMatch')
+      .populate('prevoiusTournamentMatches')
+      .populate('match') */
+        .lean()
+    );
   }
 
   async update(
@@ -40,6 +45,9 @@ export class TournamentMatchesService {
     return this.tournamentMatchModel
       .findByIdAndUpdate(id, tournamentMatch, { new: true })
       .populate('tournamentRef')
+      .populate('nextTournamentMatch')
+      .populate('previousTournamentMatches')
+      .populate('match')
       .lean();
   }
 
