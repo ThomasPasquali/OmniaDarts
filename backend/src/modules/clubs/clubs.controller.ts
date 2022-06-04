@@ -11,6 +11,7 @@ import {
   Post,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -21,6 +22,7 @@ import {
   ApiResponse,
   ApiOperation,
   ApiTags,
+  ApiConsumes, ApiPropertyOptional, ApiBody,
 } from '@nestjs/swagger';
 import ModResponse from '../../classes/modResponse';
 import ClubRequest from '../../classes/clubRequest';
@@ -33,12 +35,25 @@ import { CheckPolicies, PoliciesGuard } from '../casl/policies-guard.service';
 import { UsersService } from '../users/users.service';
 import { ClubsService } from './clubs.service';
 import { checkNotNull, checkNull } from '../../utils/utilFunctions';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { join } from 'path';
+import { ConfigService } from '@nestjs/config';
+
+class updateClub {
+  @ApiPropertyOptional() name: string;
+  @ApiPropertyOptional() description: string;
+  @ApiPropertyOptional({ type: 'string', format: 'binary' }) imageUrl: string;
+}
+
+
+
 @Controller('clubs')
 @ApiTags('clubs')
 export class ClubsController {
   constructor(
     private readonly clubsService: ClubsService,
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Post('joinRequest')
@@ -162,6 +177,41 @@ export class ClubsController {
     club.players.push(playerToAdd);
     playerToAdd.club = club;
     await this.usersService.update(playerToAdd._id, playerToAdd);
+    return await this.clubsService.update(club._id, club);
+  }
+
+  @Patch()
+  @UseGuards(JwtAuthGuard)
+  @CheckPolicies((ability: AppAbility) =>
+    ability.can(Action.AddRemoveComponents, Club),
+  )
+  @ApiOperation({ description: 'Update my club' })
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
+  @ApiConsumes('multipart/form-data')
+  @ApiBearerAuth()
+  @ApiBody({
+    description: 'Club',
+    type: updateClub,
+  })
+  @ApiOkResponse({ description: 'My club updated', type: Club })
+  async updateClub(
+    @Req() req,
+    @UploadedFile() file: Express.Multer.File,
+    @Body('name') name: string,
+    @Body('description') description: string,
+  ) {
+    checkNull(req.user.club, "You don't belong to a club");
+    const club = await this.clubsService.getClubById(req.user.club._id);
+    club.name = name != null ? name : club.name;
+    club.description = description != null ? description : club.description;
+    if (file != null) {
+      club.imageUri = join(
+        this.configService.get<string>('FOLDER_IMAGES').replace('./static', ''),
+        file.filename,
+      );
+    }
     return await this.clubsService.update(club._id, club);
   }
 

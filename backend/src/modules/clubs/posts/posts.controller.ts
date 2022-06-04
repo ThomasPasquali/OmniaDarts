@@ -34,7 +34,7 @@ import {
 } from '../../casl/policies-guard.service';
 import { UsersService } from '../../users/users.service';
 import { ClubsService } from '../clubs.service';
-import ModResponse from "../../../classes/modResponse";
+import ModResponse from '../../../classes/modResponse';
 
 @Controller('posts')
 @ApiTags('posts')
@@ -66,7 +66,6 @@ export class PostsController {
     @Body('message') message: string,
   ) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
-    //const filename = club._id + '_' + new Date().getTime().toString();
 
     const post: ClubPost = new ClubPost();
     post.title = title;
@@ -74,7 +73,7 @@ export class PostsController {
     console.log(file.filename);
     post.fileRelativeUri = join(
       this.configService
-        .get<string>('FOLDER_POST_IMAGES')
+        .get<string>('FOLDER_IMAGES')
         .replace('./static', ''),
       file.filename,
     );
@@ -94,7 +93,6 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @UseInterceptors(FileInterceptor('postImage'))
   @ApiOperation({ description: 'Request all post in a club' })
   @ApiCreatedResponse({ description: 'Post', type: [Post] })
   async getAllPostsOfMyClub(@Req() req) {

@@ -19,6 +19,7 @@ import { ChatsModule } from './modules/chats/chats.module';
 import { EventsModule } from './modules/events/events.module';
 import { MatchesModule } from './modules/matches/matches.module';
 import { TournamentMatchesModule } from './modules/tournament-matches/tournament-matches.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
