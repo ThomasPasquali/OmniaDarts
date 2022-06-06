@@ -65,7 +65,7 @@ export class TournamentsController {
   })
   async addTournament(@Body() simpleTournament: SimpleTournament, @Req() req) {
     const currUser: User = await this.usersService.findById(req.user._id);
-    let tournament = {
+    const tournament = {
       name: simpleTournament.name,
       randomOrder: simpleTournament.randomOrder,
       type: simpleTournament.type,
@@ -100,7 +100,9 @@ export class TournamentsController {
       tournament.players.push({ _id: player._id } as User);
     }
 
-    let newTournament = await this.tournamentService.addTournament(tournament);
+    const newTournament = await this.tournamentService.addTournament(
+      tournament,
+    );
 
     // Tournament setup
     const tournamentWithMatches: Tournament = await this.setupTournament(
@@ -195,7 +197,7 @@ export class TournamentsController {
     if (tournament.randomOrder) shuffleArray(players);
 
     // First round
-    let tournamentMatches: TournamentMatch[] = await this.generateMatches(
+    const tournamentMatches: TournamentMatch[] = await this.generateMatches(
       tournament,
       rounds[0],
       rounds[1],
@@ -217,9 +219,9 @@ export class TournamentsController {
     } while (numRounds > 1);
 
     // Add matches to tournament
-    let newMatches = [];
+    const newMatches = [];
     for (const m of tournamentMatches) {
-      let match: TournamentMatch =
+      const match: TournamentMatch =
         await this.tournamentMatchesService.addTournamentMatch(m);
       newMatches.push(match);
       tournament.matches.push({
@@ -228,7 +230,7 @@ export class TournamentsController {
     }
 
     // Link matches
-    this.linkMatches(newMatches, round);
+    await this.linkMatches(newMatches, round);
 
     // Update matches
     for (const m of newMatches) {
@@ -255,8 +257,8 @@ export class TournamentsController {
 
   private async linkMatches(matches: TournamentMatch[], numRounds: number) {
     while (numRounds-- > 0) {
-      let currMatches = matches.filter((m) => m.round == numRounds);
-      let prevMatches = matches.filter((m) => m.round == numRounds - 1);
+      const currMatches = matches.filter((m) => m.round == numRounds);
+      const prevMatches = matches.filter((m) => m.round == numRounds - 1);
       currMatches.sort((a, b) =>
         a.group > b.group ? 1 : b.group > a.group ? -1 : 0,
       );
@@ -264,7 +266,7 @@ export class TournamentsController {
         a.group > b.group ? 1 : b.group > a.group ? -1 : 0,
       );
       currMatches.forEach((m) => {
-        let tmpMatches = prevMatches.splice(0, m.numPlayers);
+        const tmpMatches = prevMatches.splice(0, m.numPlayers);
         tmpMatches.forEach((t) => {
           t.nextTournamentMatch = { _id: m._id } as TournamentMatch;
           m.previousTournamentMatches.push({ _id: t._id } as TournamentMatch);
@@ -281,7 +283,7 @@ export class TournamentsController {
     players: User[] = null,
   ): Promise<TournamentMatch[]> {
     let group = 1;
-    let matches = [];
+    const matches = [];
     for (let i = 0; i < numTriplets; i++) {
       const match = await this.createTournamentMatch(
         tournament,
