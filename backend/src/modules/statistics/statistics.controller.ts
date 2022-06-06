@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -37,6 +38,25 @@ export class StatisticsController {
   async getStats(@Req() req): Promise<GeneralStatistics[]> {
     const currUser = await this.usersService.findById(req.user._id);
     const stats: GeneralStatistics[] = this.generateStats(currUser);
+    return stats;
+  }
+
+  @Get(':idUser')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    description: 'Get statistics of the current user',
+  })
+  @ApiOkResponse({
+    description: 'Statistics generated',
+    type: [GeneralStatistics],
+  })
+  @HttpCode(HttpStatus.OK)
+  async getStatsFriend(
+    @Param('idUser') idUser: string,
+  ): Promise<GeneralStatistics[]> {
+    const user: User = await this.usersService.findById(idUser);
+    const stats: GeneralStatistics[] = this.generateStats(user);
     return stats;
   }
 
