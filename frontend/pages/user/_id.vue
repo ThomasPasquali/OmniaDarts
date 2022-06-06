@@ -1,12 +1,12 @@
 <template>
-  <UserProfile />
+  <UserProfile :userID="$route.params.id" />
 </template>
 
 <script>
 import UserProfile from "~/components/Profile/UserProfile";
 
 export default {
-  name: "profile",
+  name: "user",
   components: {UserProfile}
 }
 </script>

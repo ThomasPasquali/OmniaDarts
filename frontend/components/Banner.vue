@@ -1,14 +1,13 @@
 <template>
   <div class="banner">
-    <div>
+    <router-link class="link" :to="'/user/' + user._id" tag="div">
       <img class="pic" :src="(!!user && user.imageUrl != null) ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
-    </div>
-    <div class="info">
-      <p class="title">{{ title }}</p>
-      <p class="subtitle">{{ subtitle }}</p>
-    </div>
+      <div class="info">
+        <p class="title">{{ title }}</p>
+        <p class="subtitle">{{ subtitle }}</p>
+      </div>
+    </router-link>
 
-    <!--        :icon="b.icon"-->
     <div v-if="!!buttons" class="buttons">
       <van-button
         v-for="b in buttons.filter(b_ => !!b_)"
@@ -19,18 +18,11 @@
         <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>  <!-- FIXME -->
         {{ b.text }}
       </van-button>
-      <!--      <van-button icon="star"></van-button>-->
-      <!--      <van-button icon="delete" v-if="admin"></van-button>-->
     </div>
-    <!--    <div v-else class="buttons">-->
-    <!--      <van-button icon="success"></van-button>-->
-    <!--      <van-button icon="cross"></van-button>-->
-    <!--    </div>-->
   </div>
 </template>
 
 <script>
-
 export default {
   name: "Banner",
   props: ['title', 'subtitle', 'user', 'buttons', 'admin', 'disabled'],
@@ -40,14 +32,17 @@ export default {
 <style scoped>
 
 .banner {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
   max-height: 72px;
   padding: 8px 16px 8px 8px;
   margin-bottom: 16px;
   border-radius: 8px;
   background: lightsteelblue;
+}
+
+.banner, .link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   gap: 16px;
 }
 
@@ -62,7 +57,7 @@ export default {
   max-height: inherit;
 }
 
-.info {
+.link {
   width: 100%;
 }
 

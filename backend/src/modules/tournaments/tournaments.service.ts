@@ -30,13 +30,13 @@ export class TournamentsService {
     id: string,
     tournament: Tournament,
   ): Promise<Tournament> {
-    return (
-      this.tournamentModel
-        .findOneAndUpdate({ _id: id }, tournament, { new: true })
-        // .populate('players')
-        // .populate('matches')
-        .lean()
-    );
+    return this.tournamentModel
+      .findOneAndUpdate({ _id: id }, tournament, { new: true })
+      .populate('players')
+      .populate('matches')
+      .populate('clubRef')
+      .populate('creator')
+      .lean();
   }
 
   async delete(id): Promise<Tournament> {

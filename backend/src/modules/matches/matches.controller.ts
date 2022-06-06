@@ -16,20 +16,21 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiCreatedResponse, ApiOkResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {Match, matchAddThrow} from '../../schemas/match.schema';
+import { Match, matchAddThrow } from '../../schemas/match.schema';
 import { User } from '../../schemas/user.schema';
 import Lobby from '../../classes/lobby';
 import { UsersService } from '../users/users.service';
 import { MatchesService } from './matches.service';
 import { ChatsService } from '../chats/chats.service';
 import { LobbiesService } from '../lobbies/lobbies.service';
-import Throw from "../../classes/throw";
-import PlayerThrows from "../../classes/playerThrows";
+import Throw from '../../classes/throw';
+import PlayerThrows from '../../classes/playerThrows';
 
 @Controller('matches')
 @ApiTags('matches')
@@ -40,10 +41,13 @@ export class MatchesController {
     private readonly chatService: ChatsService,
     private readonly lobbiesService: LobbiesService,
   ) {}
-  
+
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ description: 'Save new "offline" match (example: {"gamemode":{"name":"X01","settings":{"checkIn":"straight","checkOut":"double","startScore":40,"type":"X01"}},"playerThrows":{"-1":{},"0":{"0:0":[{"darts":[{"score":40,"doubleTriple":"D","sector":20},null,null]}],"1:0":[{"darts":[{"score":1,"doubleTriple":"","sector":1},{"score":9,"doubleTriple":"","sector":9},{"score":30,"doubleTriple":"D","sector":15}]}]}},"results":[{"score":0,"userID":"-1"},{"score":2,"userID":"0"},{"score":0,"userID":"-1"}],"winningMode":{"firstBest":"firstTo","goal":2,"setsLegs":"legs"}})' })
+  @ApiOperation({
+    description:
+      'Save new "offline" match (example: {"gamemode":{"name":"X01","settings":{"checkIn":"straight","checkOut":"double","startScore":40,"type":"X01"}},"playerThrows":{"-1":{},"0":{"0:0":[{"darts":[{"score":40,"doubleTriple":"D","sector":20},null,null]}],"1:0":[{"darts":[{"score":1,"doubleTriple":"","sector":1},{"score":9,"doubleTriple":"","sector":9},{"score":30,"doubleTriple":"D","sector":15}]}]}},"results":[{"score":0,"userID":"-1"},{"score":2,"userID":"0"},{"score":0,"userID":"-1"}],"winningMode":{"firstBest":"firstTo","goal":2,"setsLegs":"legs"}})',
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: ' Match created' })
@@ -55,7 +59,7 @@ export class MatchesController {
   @Post('lobby/new')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Create new online game lobby' })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Lobby created' })
   async newLobby(@Req() req, @Body() match: Match) {
@@ -68,7 +72,9 @@ export class MatchesController {
 
     match.lobby = lobby;
     match.players = [lobby.owner];
-    match.playersThrows = { '0:0': new PlayerThrows(lobby.owner._id.toString()) }
+    match.playersThrows = {
+      '0:0': new PlayerThrows(lobby.owner._id.toString()),
+    };
 
     if (await this.matchesService.findUserActiveLobby(req.user))
       throw new BadRequestException(
@@ -106,20 +112,23 @@ export class MatchesController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Request created' })
   async newThrow(
-      @Req() req,
-      @Param('idMatch') idMatch: string,
-      @Body() newThrow: Throw
+    @Req() req,
+    @Param('idMatch') idMatch: string,
+    @Body() newThrow: Throw,
   ) {
     const match = await this.matchesService.findById(idMatch);
     const user = req.user;
-    
 
-    if(!this.doesUserBelongToMatch(user, match))
+    if (!this.doesUserBelongToMatch(user, match))
       throw new BadRequestException(user, 'User does not belong to the match');
 
-    matchAddThrow(match, user, newThrow)
+    matchAddThrow(match, user, newThrow);
     await this.matchesService.updateMatchThrows(match);
-    await this.matchesService.emitNewThrow(user._id.toString(), idMatch, newThrow);
+    await this.matchesService.emitNewThrow(
+      user._id.toString(),
+      idMatch,
+      newThrow,
+    );
   }
 
   @Get()
@@ -149,11 +158,12 @@ export class MatchesController {
     const match = await this.matchesService.findByIdFull(matchID);
     const user = req.user;
 
-    if (match && (
-      (match.lobby && match.lobby.isPublic) ||
-      MatchesController.isUserLobbyOwner(user, match) ||
-      this.doesUserBelongToMatch(user, match)
-    ))
+    if (
+      match &&
+      ((match.lobby && match.lobby.isPublic) ||
+        MatchesController.isUserLobbyOwner(user, match) ||
+        this.doesUserBelongToMatch(user, match))
+    )
       return match;
 
     if (this.hasUserJoinRequest(user, match))

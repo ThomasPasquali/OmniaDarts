@@ -2,16 +2,15 @@ import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
 import Lobby from '../classes/lobby';
+import MatchResult from '../classes/matchResult';
+import PlayerThrows, { playerThrowsAddThrow } from '../classes/playerThrows';
+import Throw from '../classes/throw';
 import { User } from './user.schema';
-import PlayerThrows, {playerThrowsAddThrow} from "../classes/playerThrows";
-import Throw from "../classes/throw";
-import MatchResult from "../classes/matchResult";
 
 export type MatchDocument = Match & Document;
 
 @Schema()
 export class Match extends Document {
-
   @Prop({ default: new Date() })
   @ApiProperty()
   dateTime: Date;
@@ -54,12 +53,20 @@ export class Match extends Document {
   @Prop({ type: Array, default: [] })
   results: MatchResult[];
 
+  /* @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  })
+  @ApiProperty({ description: 'The winner of the match' })
+  winner: User; */
 }
 
 export const MatchSchema = SchemaFactory.createForClass(Match);
 
 export function matchAddThrow(match: Match, user: User, newThrow: Throw) {
   const uID = user._id.toString();
-  !match.playersThrows[uID] && (match.playersThrows[uID] = new PlayerThrows(uID));
+  !match.playersThrows[uID] &&
+    (match.playersThrows[uID] = new PlayerThrows(uID));
   playerThrowsAddThrow(match.playersThrows[uID], newThrow);
 }

@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       autoFetchInterval: null,
-      id: null,
+      id: this.$route.params.id,
     }
   },
   computed: {
@@ -33,13 +33,10 @@ export default {
     players() { return this.$store.getters["match/players"] },
     lastThrow() { return this.$store.getters['match/lastThrow'] }
   },
-  async asyncData({params}) {
-    const id = params.id
-    return {id}
-  },
   async mounted() {
+  console.log(this.id)
     await this.fetchMatch()
-    //console.log(this.match)
+    console.log(this.match)
     if (this.match) {
       this.sockets = {
         match: this.$store.getters.newIo(this, 'matches?matchID=' + this.id)

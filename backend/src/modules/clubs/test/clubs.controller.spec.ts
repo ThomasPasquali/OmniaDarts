@@ -53,6 +53,7 @@ describe('ClubsController', () => {
       providers: [
         CaslAbilityFactory,
         UsersService,
+        ConfigService,
         ClubsService,
         { provide: getModelToken(Club.name), useValue: {} },
         { provide: getModelToken(User.name), useValue: {} },

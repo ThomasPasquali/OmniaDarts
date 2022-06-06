@@ -21,6 +21,7 @@ const CheckInOut = {
 }
 
 class X01Settings {
+  type = 'X01'
   constructor(startScore, checkIn, checkOut) {
     this.startScore = startScore
     this.checkIn = checkIn
