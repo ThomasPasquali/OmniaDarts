@@ -31,9 +31,12 @@ export const getters = {
     return state.match && state.match.players
   },
   lastThrow(state) { return state.lastThrow },
-  playerThrows: state => userID =>
-    state.match
-    && state.match.gameThrows[userID]
-    && state.match.gameThrows[userID].playerThrows[legSet(state)],
+  playerThrows: state => userID => {
+  	console.log(state.match.playersThrows[userID])//FIXME tutta la struttura datiiiiiiii
+      //, state.match.playersThrows[userID].playersThrows[legSet(state)])
+    return state.match
+      && state.match.playersThrows[userID]
+      && state.match.playersThrows[userID].playersThrows[legSet(state)]
+  },
 
 }
