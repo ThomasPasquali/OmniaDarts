@@ -161,6 +161,17 @@ export class TournamentsController {
     return await this.tournamentService.getTournamentById(idTournament);
   }
 
+  @Get('tournamentMatch/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    description: 'Get tournament by id',
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'The tournament selected',
+    type: Tournament,
+  })
   private checkIsAdminClub(club: Club, idAdmin: string) {
     if (club.players.findIndex((u) => u._id == idAdmin && u.isAdmin) == -1)
       throw new BadRequestException('You are not the admin of the club');
