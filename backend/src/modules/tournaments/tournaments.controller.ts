@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -18,8 +19,10 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import ModResponse from 'src/classes/modResponse';
 import { Match } from 'src/schemas/match.schema';
 import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
 import MatchResult from '../../classes/matchResult';
@@ -63,7 +66,11 @@ export class TournamentsController {
     description: 'Simple tournament',
     type: SimpleTournament,
   })
-  async addTournament(@Body() simpleTournament: SimpleTournament, @Req() req) {
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
+  async addTournament(
+    @Body() simpleTournament: SimpleTournament,
+    @Req() req,
+  ): Promise<Tournament> {
     const currUser: User = await this.usersService.findById(req.user._id);
     const tournament = {
       name: simpleTournament.name,
@@ -166,26 +173,57 @@ export class TournamentsController {
   @Get('tournamentMatch/:idMatch')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    description: 'Get tournament by id',
+    description: 'Get tournament match by id',
   })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOkResponse({
-    description: 'The tournament selected',
-    type: Tournament,
+    description: 'The tournament match selected',
+    type: TournamentMatch,
   })
-  private checkIsAdminClub(club: Club, idAdmin: string) {
-    if (club.players.findIndex((u) => u._id == idAdmin && u.isAdmin) == -1)
-      throw new BadRequestException('You are not the admin of the club');
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
+  async getTournamentMatch(
+    @Param('idMatch') idMatch: string,
+  ): Promise<TournamentMatch> {
+    return await this.tournamentMatchesService.getTournamentMatchById(idMatch);
   }
 
-  private checkPlayersClubComponents(club: Club, idPlayers: string[]) {
-    idPlayers.forEach((id) => {
-      if (club.players.findIndex((u) => u._id == id) == -1)
-        throw new BadRequestException(
-          'One or more players are not part of the club',
-        );
-    });
+  @Patch('tournamentMatch/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    description: 'Move winner player to next match/shout-out winner',
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'id of the next match/shout-out winner message',
+  })
+  async moveWinner(@Param('idMatch') idMatch: string) {
+    const currTournamentMatch: TournamentMatch =
+      await this.tournamentMatchesService.getTournamentMatchById(idMatch);
+    const match: Match = await this.matchService.findById(
+      currTournamentMatch.match._id,
+    );
+    // if (!match.done) throw new ConflictException(match, 'Match has to be done');
+    match.results.sort((a, b) =>
+      a.score > b.score ? -1 : b.score > a.score ? -1 : 0,
+    );
+    const idWinner: string = match.results[0].userID.toString();
+    const winner: User = await this.usersService.getByIdPopulating(idWinner);
+    const idNextTournamentMatch =
+      currTournamentMatch.nextTournamentMatch._id.toString();
+    if (idNextTournamentMatch == null)
+      return 'The winner is user ' + winner.nickname;
+    let nextTournamentMatch: TournamentMatch =
+      await this.tournamentMatchesService.getTournamentMatchById(
+        currTournamentMatch.nextTournamentMatch._id.toString(),
+      );
+    nextTournamentMatch.match.players.push(winner);
+    nextTournamentMatch = await this.tournamentMatchesService.update(
+      nextTournamentMatch._id,
+      nextTournamentMatch,
+    );
+    return nextTournamentMatch._id;
   }
 
   private async setupTournament(tournament: Tournament) {
@@ -344,5 +382,18 @@ export class TournamentsController {
       previousTournamentMatches: [],
     } as TournamentMatch;
     return tournamentMatch;
+  }
+  private checkIsAdminClub(club: Club, idAdmin: string) {
+    if (club.players.findIndex((u) => u._id == idAdmin && u.isAdmin) == -1)
+      throw new BadRequestException('You are not the admin of the club');
+  }
+
+  private checkPlayersClubComponents(club: Club, idPlayers: string[]) {
+    idPlayers.forEach((id) => {
+      if (club.players.findIndex((u) => u._id == id) == -1)
+        throw new BadRequestException(
+          'One or more players are not part of the club',
+        );
+    });
   }
 }
