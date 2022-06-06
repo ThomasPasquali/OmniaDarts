@@ -23,46 +23,58 @@ export default {
   name: "AppbarMenu",
   data() {
     return {
-      options: [  // fixme full path
+      options: [
         {
           title: 'Profile',
-          to: 'profile',
+          to: '/profile',
           show: true,
           onClick: this.onConfirm
         },
         {
           title: 'Friends',
-          to: 'friends',
+          to: '/friends',
           show: true,
           onClick: this.onConfirm
         },
         {
           title: 'Club',
-          to: 'club',
-          show: this.$auth.user.club,
-          onClick: this.onConfirm
-        },
-        {
-          title: 'Find club',
-          to: 'findClub',
+          to: '/club',
           show: true,
           onClick: this.onConfirm
         },
+        // {
+        //   title: 'Find club',
+        //   to: 'findClub',
+        //   show: true,
+        //   onClick: this.onConfirm
+        // },
         {
           title: 'Tournaments',
-          to: 'index.vue',
+          to: '/tournaments',
           show: true,
           onClick: this.onConfirm
         },
         {
-          title: 'Dev',
-          to: 'dev',
+          title: 'Stats',
+          to: '/stats',
+          show: true,
+          onClick: this.onConfirm
+        },
+        {
+          title: 'Dev',  // FIXME
+          to: '/dev',
           show: true,
           onClick: this.onConfirm
         },
         {
           title: 'Notifications',
-          to: 'notifications',
+          to: '/notifications',
+          show: true,
+          onClick: this.onConfirm
+        },
+        {
+          title: 'Lobbies',
+          to: '/lobbies',
           show: true,
           onClick: this.onConfirm
         },
