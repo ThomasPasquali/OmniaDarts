@@ -48,7 +48,7 @@ export class PostsController {
   @Post()
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.CreatePost, Club))
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('postImage'))
   @ApiOperation({ description: 'Create a post for user s club' })
@@ -70,13 +70,12 @@ export class PostsController {
     const post: ClubPost = new ClubPost();
     post.title = title;
     post.message = message;
-    console.log(file.filename);
-    post.fileRelativeUri = join(
-      this.configService
-        .get<string>('FOLDER_IMAGES')
-        .replace('./static', ''),
-      file.filename,
-    );
+    if (file != null) {
+      post.fileRelativeUri = join(
+        this.configService.get<string>('FOLDER_IMAGES').replace('./static', ''),
+        file.filename,
+      );
+    }
 
     post.user = {
       _id: req.user._id,
