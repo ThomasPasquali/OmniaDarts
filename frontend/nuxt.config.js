@@ -2,7 +2,6 @@ require('dotenv').config()
 
 export default {
   server: {
-    port: process.env.PORT || 3000,
     host: '0.0.0.0'
   },
 
@@ -18,10 +17,10 @@ export default {
       {hid: "description", name: "description", content: ""},
       {name: "format-detection", content: "telephone=no"},
     ],
-    link: [
-      {rel: "icon", type: "image/x-icon", href: "/favicon.ico"},
-      {rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:FILL@0..1'}
-    ],
+    link: [{rel: "icon", type: "image/x-icon", href: "/favicon.ico"}, {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/icon?family=Material+Icons'
+    }],
     script: [{src: '/android.js'}],
   },
 
@@ -38,7 +37,8 @@ export default {
               'notification_new --> notifications/addNew',
               'notification_update --> notifications/update',
               'text_msg_room_new --> textchats/newMessage',
-              'lobby_new_join_request --> lobbies/newJoinRequest'
+              'lobby_new_join_request --> lobbies/newJoinRequest',
+              'new_throw --> match/setLastThrow',
             ],
             emitBacks: [
               'notification_update <-- notifications/lastNotification',
@@ -133,6 +133,7 @@ export default {
   axios: {
     baseURL: process.env.API_BASE_URL, //Used as fallback if no runtime config is provided
   },
+
 
 
 // Build Configuration: https://go.nuxtjs.dev/config-build

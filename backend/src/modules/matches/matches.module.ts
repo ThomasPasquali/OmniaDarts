@@ -10,17 +10,20 @@ import {AuthModule} from "../auth/auth.module";
 import {ClubsModule} from "../clubs/clubs.module";
 import {ChatsModule} from "../chats/chats.module";
 import {LobbiesModule} from "../lobbies/lobbies.module";
+import {MatchesGateway} from "./matches.gateway";
+import {FriendRequestsModule} from "../friendRequests/friendRequests.module";
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
+    FriendRequestsModule,
     LobbiesModule,
-    forwardRef(() => ClubsModule),
     forwardRef(() => ChatsModule),
+    forwardRef(() => ClubsModule),
     MongooseModule.forFeature([{ name: Match.name, schema: MatchSchema }])
   ],
-  providers: [MatchesService],
+  providers: [MatchesService, MatchesGateway],
   controllers: [MatchesController],
   exports: [MatchesService],
 })

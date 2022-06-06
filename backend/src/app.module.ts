@@ -12,7 +12,6 @@ import { UsersModule } from './modules/users/users.module';
 import { Dart, DartSchema } from './schemas/dart.schema';
 import { Match, MatchSchema } from './schemas/match.schema';
 import { MatchThrows, MatchThrowsSchema } from './schemas/matchThrows.schema';
-import { Throw, ThrowSchema } from './schemas/throw.schema';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ChatsModule } from './modules/chats/chats.module';
@@ -46,7 +45,6 @@ import { MulterModule } from '@nestjs/platform-express';
     MongooseModule.forFeature([
       { name: Match.name, schema: MatchSchema },
       { name: MatchThrows.name, schema: MatchThrowsSchema },
-      { name: Throw.name, schema: ThrowSchema },
       { name: Dart.name, schema: DartSchema },
     ]),
     UsersModule,

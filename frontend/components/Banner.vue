@@ -8,12 +8,14 @@
       <p class="subtitle">{{ subtitle }}</p>
     </div>
 
-    <div class="buttons">
+    <!--        :icon="b.icon"-->
+    <div v-if="user && !user.request" class="buttons">
       <van-button
         v-for="b in buttons.filter(b_ => !!b_)"
         @click="$emit(b.emit)"
         :disabled="b.disabled"
       >
+        <span class="material-icons">{{ b.icon }}</span>
         <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>
         {{ b.text }}
       </van-button>
@@ -24,8 +26,6 @@
     <!--      <van-button icon="success"></van-button>-->
     <!--      <van-button icon="cross"></van-button>-->
     <!--    </div>-->
-
-
   </div>
 </template>
 

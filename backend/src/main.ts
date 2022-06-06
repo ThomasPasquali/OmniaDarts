@@ -7,7 +7,7 @@ import { HttpExceptionFilter } from './http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
-  const configService = app.get<ConfigService>(ConfigService);
+  const configService = app.get<ConfigService>(ConfigService)
   /**
    * Swagger configuration
    */
@@ -30,6 +30,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  ;
   app.enableCors({
     origin: configService.get('ALLOWED_ORIGIN'),
   });

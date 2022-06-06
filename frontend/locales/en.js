@@ -1,4 +1,6 @@
 export default {
+
+  something_went_wrong: 'Something went wrong',
   wrong_credentials: 'Wrong credentials',
   user_has_no_club: 'You don\'t have a club',
   user_new_notifications: 'Inbox',
@@ -23,9 +25,11 @@ export default {
 
   //Lobby
   my_lobby: 'My lobby',
+  live_matches: 'Live matches',
   all_lobbies: 'All lobbies',
   lobby_waiting_to_join: 'Waiting for lobby owner to approve',
-
+  delete_lobby: 'Delete lobby',
+  user_has_no_lobby: 'You are not in any lobby, create a new one or join an existing one',
 
   // Text chats
   message_placeholder: 'Message'

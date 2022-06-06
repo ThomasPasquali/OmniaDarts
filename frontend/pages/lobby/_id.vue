@@ -12,14 +12,9 @@ export default {
   data() {
     return {
       autoFetchInterval: null,
-      lobbyID: this.$route.query.id,  // fixme ↓ ? [dv]
+      lobbyID: this.$route.params.id,
     }
   },
-  // async asyncData({params}) {
-  //   const id = params.id
-  //   return {id}
-  // },                               // fixme ↑ ? [dv]
-
   // computed: {
   //   match() {
   //     return this.$store.getters['lobbies/lobby']

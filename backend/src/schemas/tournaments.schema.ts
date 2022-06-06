@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import { TournamentPlayer } from 'src/classes/tournamentPlayer';
 import WinningMode from '../classes/winningmode';
 import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
@@ -53,7 +52,9 @@ export class Tournament extends Document {
   })
   winningMode: WinningMode;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  })
   @ApiProperty({
     isArray: true,
     required: true,
@@ -90,9 +91,6 @@ export class Tournament extends Document {
   @ApiProperty()
   numRounds: number;
 
-  @Prop()
-  @ApiProperty()
-  results: TournamentPlayer[];
 }
 
 export const TournamentsSchema = SchemaFactory.createForClass(Tournament);

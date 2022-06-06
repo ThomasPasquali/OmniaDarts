@@ -2,14 +2,12 @@
   <div>
     <Login />
 
-    <van-divider
-      :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }"
-    >
+    <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
       or
     </van-divider>
 
     <GLogin />
-
+    <nuxt-link to="register">Register</nuxt-link>
   </div>
 </template>
 

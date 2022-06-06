@@ -26,6 +26,7 @@
     <div>
       <van-button v-if="isCurrentUserLobbyOwner()" @click="deleteLobby()">{{$t('delete_lobby')}}</van-button>
       <van-button v-else @click="deleteLobby()">{{$t('delete_lobby')}}</van-button>
+      <van-button @click="play">{{$t('lobby_play')}}</van-button>
     </div>
   </div>
   <div v-else>
@@ -85,8 +86,10 @@ export default {
   },
   methods: {
     async fetchLobby() {
-      await this.$store.dispatch('lobbies/fetchLobby', this.lobbyID_)
-      if (this.match) clearInterval(this.autoFetchInterval)
+      if(this.lobbyID_) {
+        await this.$store.dispatch('lobbies/fetchLobby', this.lobbyID_)
+        if (this.match) clearInterval(this.autoFetchInterval)
+      }
     },
     back() {
       window.history.go(-1)
@@ -129,6 +132,9 @@ export default {
         alert('Cannot delete lobby')
       }
     },
+    play() {
+      if(window.android) window.android.play(JSON.stringify(this.match))
+    }
   }
 }
 </script>
