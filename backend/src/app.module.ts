@@ -18,6 +18,7 @@ import { ChatsModule } from './modules/chats/chats.module';
 import { EventsModule } from './modules/events/events.module';
 import { MatchesModule } from './modules/matches/matches.module';
 import { TournamentMatchesModule } from './modules/tournament-matches/tournament-matches.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { TournamentMatchesModule } from './modules/tournament-matches/tournament
     EventsModule,
     MatchesModule,
     TournamentMatchesModule,
+    StatisticsModule,
   ],
   controllers: [],
   providers: [ConfigService],
