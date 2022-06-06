@@ -39,6 +39,12 @@ export class TournamentMatch extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'TournamentMatch' })
   @ApiProperty()
   nextTournamentMatch: TournamentMatch;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TournamentMatch' }],
+  })
+  @ApiProperty()
+  previousTournamentMatches: TournamentMatch[];
 }
 
 export const TournamentMatchSchema =

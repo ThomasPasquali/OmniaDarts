@@ -16,7 +16,8 @@ import {UsersModule} from "../../users/users.module";
     MulterModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        dest: configService.get<string>('FOLDER_POST_IMAGES'),
+        dest: configService.get<string>('FOLDER_IMAGES'),
+        preservePath: true,
       }),
       inject: [ConfigService],
     }),

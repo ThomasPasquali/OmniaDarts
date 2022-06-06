@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -18,10 +19,13 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Match } from 'src/schemas/match.schema';
-import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
+import ModResponse from '../../classes/modResponse';
+import { Match } from '../../schemas/match.schema';
+import { TournamentMatch } from '../../schemas/tournamentMatch.schema';
+import MatchResult from '../../classes/matchResult';
 import SimpleTournament from '../../classes/SimpleTournament';
 import { Club } from '../../schemas/club.schema';
 import { Tournament } from '../../schemas/tournaments.schema';
@@ -33,7 +37,6 @@ import { MatchesService } from '../matches/matches.service';
 import { TournamentMatchesService } from '../tournament-matches/tournament-matches.service';
 import { UsersService } from '../users/users.service';
 import { TournamentsService } from './tournaments.service';
-import MatchResult from "../../classes/matchResult";
 
 @Controller('tournaments')
 @ApiTags('tournaments')
@@ -63,19 +66,23 @@ export class TournamentsController {
     description: 'Simple tournament',
     type: SimpleTournament,
   })
-  async addTournament(@Body() simpleTournament: SimpleTournament, @Req() req) {
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
+  async addTournament(
+    @Body() simpleTournament: SimpleTournament,
+    @Req() req,
+  ): Promise<Tournament> {
     const currUser: User = await this.usersService.findById(req.user._id);
-    let tournament = {
+    const tournament = {
       name: simpleTournament.name,
       randomOrder: simpleTournament.randomOrder,
       type: simpleTournament.type,
       gamemode: simpleTournament.gamemode,
       winningMode: simpleTournament.winningMode,
-      players: [currUser],
+      players: [{ _id: currUser._id } as User],
       matches: [],
       creation_date: new Date(),
       finished: false,
-      creator: currUser,
+      creator: { _id: currUser._id } as User,
     } as Tournament;
 
     let club: Club;
@@ -97,29 +104,32 @@ export class TournamentsController {
     for (const idPlayer of simpleTournament.idPlayers) {
       const player: User = await this.usersService.findById(idPlayer);
       checkNull(player, 'One player id does not exist');
-      tournament.players.push(player);
+      tournament.players.push({ _id: player._id } as User);
     }
-    let newTournament = await this.tournamentService.addTournament(tournament);
+
+    const newTournament = await this.tournamentService.addTournament(
+      tournament,
+    );
+
     // Tournament setup
     const tournamentWithMatches: Tournament = await this.setupTournament(
       newTournament,
     );
-    tournamentWithMatches.name = 'BergoglioGay';
-    console.log(tournamentWithMatches);
+
     const finalTournament = await this.tournamentService.updateTournament(
       tournamentWithMatches._id,
       tournamentWithMatches,
     );
-    console.log(finalTournament);
     // Add references
-    /* if (club != null) {
+    if (club != null) {
       club.tournaments.push(tournament);
       await this.clubService.update(club._id, club);
     }
-    tournament.players.forEach(async (p) => {
-      p.tournaments.push(tournament);
-      await this.usersService.update(p._id, p);
-    }); */
+    for (const p of finalTournament.players) {
+      const player = await this.usersService.findById(p._id);
+      player.tournaments.push({ _id: finalTournament._id } as Tournament);
+      await this.usersService.update(player._id, player);
+    }
 
     return finalTournament;
   }
@@ -160,18 +170,60 @@ export class TournamentsController {
     return await this.tournamentService.getTournamentById(idTournament);
   }
 
-  private checkIsAdminClub(club: Club, idAdmin: string) {
-    if (club.players.findIndex((u) => u._id == idAdmin && u.isAdmin) == -1)
-      throw new BadRequestException('You are not the admin of the club');
+  @Get('tournamentMatch/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    description: 'Get tournament match by id',
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'The tournament match selected',
+    type: TournamentMatch,
+  })
+  @ApiResponse({ description: 'Error response structure', type: ModResponse })
+  async getTournamentMatch(
+    @Param('idMatch') idMatch: string,
+  ): Promise<TournamentMatch> {
+    return await this.tournamentMatchesService.getTournamentMatchById(idMatch);
   }
 
-  private checkPlayersClubComponents(club: Club, idPlayers: string[]) {
-    idPlayers.forEach((id) => {
-      if (club.players.findIndex((u) => u._id == id) == -1)
-        throw new BadRequestException(
-          'One or more players are not part of the club',
-        );
-    });
+  @Patch('tournamentMatch/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    description: 'Move winner player to next match/shout-out winner',
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'id of the next match/shout-out winner message',
+  })
+  async moveWinner(@Param('idMatch') idMatch: string) {
+    const currTournamentMatch: TournamentMatch =
+      await this.tournamentMatchesService.getTournamentMatchById(idMatch);
+    const match: Match = await this.matchService.findById(
+      currTournamentMatch.match._id,
+    );
+    // if (!match.done) throw new ConflictException(match, 'Match has to be done');
+    match.results.sort((a, b) =>
+      a.score > b.score ? -1 : b.score > a.score ? -1 : 0,
+    );
+    const idWinner: string = match.results[0].userID.toString();
+    const winner: User = await this.usersService.getByIdPopulating(idWinner);
+    const idNextTournamentMatch =
+      currTournamentMatch.nextTournamentMatch._id.toString();
+    if (idNextTournamentMatch == null)
+      return 'The winner is user ' + winner.nickname;
+    let nextTournamentMatch: TournamentMatch =
+      await this.tournamentMatchesService.getTournamentMatchById(
+        currTournamentMatch.nextTournamentMatch._id.toString(),
+      );
+    nextTournamentMatch.match.players.push(winner);
+    nextTournamentMatch = await this.tournamentMatchesService.update(
+      nextTournamentMatch._id,
+      nextTournamentMatch,
+    );
+    return nextTournamentMatch._id;
   }
 
   private async setupTournament(tournament: Tournament) {
@@ -182,40 +234,47 @@ export class TournamentsController {
     let round = 1;
     if (tournament.randomOrder) shuffleArray(players);
 
-    console.log('Setupping tournament');
     // First round
-    let tournamentMatches = await this.generateMatches(
+    const tournamentMatches: TournamentMatch[] = await this.generateMatches(
       tournament,
       rounds[0],
       rounds[1],
       round++,
       players,
     );
-    // console.log(tournamentMatches);
+    // Next rounds
+    do {
+      rounds = this.chooseNumberGroups(numRounds);
+      numRounds = rounds[0] + rounds[1];
+      tournamentMatches.push(
+        ...(await this.generateMatches(
+          tournament,
+          rounds[0],
+          rounds[1],
+          round++,
+        )),
+      );
+    } while (numRounds > 1);
+
+    // Add matches to tournament
+    const newMatches = [];
     for (const m of tournamentMatches) {
-      let match: TournamentMatch =
+      const match: TournamentMatch =
         await this.tournamentMatchesService.addTournamentMatch(m);
-      // console.log(match);
-      delete match['tournamentRef'];
-      // tournament.matches.push(match);
+      newMatches.push(match);
       tournament.matches.push({
         _id: match._id,
       } as TournamentMatch);
     }
-    // tournament.matches = tournamentMatches;
-    // console.log(tournament);
-    // console.log(tournament.matches);
-    /* const newTournament = await this.tournamentService.update(
-      tournament._id,
-      tournament,
-    ); */
-    // Next rounds
-    /* do {
-      rounds = this.chooseNumberGroups(numRounds);
-      console.log(rounds);
-      numRounds = rounds[0] + rounds[1];
-      this.generateRounds(tournament, rounds[0], rounds[1], round++);
-    } while (numRounds > 1); */
+
+    // Link matches
+    await this.linkMatches(newMatches, round);
+
+    // Update matches
+    for (const m of newMatches) {
+      await this.tournamentMatchesService.update(m._id, m);
+    }
+
     return tournament;
   }
 
@@ -234,15 +293,35 @@ export class TournamentsController {
     return [numPairs, numTriplets];
   }
 
+  private async linkMatches(matches: TournamentMatch[], numRounds: number) {
+    while (numRounds-- > 0) {
+      const currMatches = matches.filter((m) => m.round == numRounds);
+      const prevMatches = matches.filter((m) => m.round == numRounds - 1);
+      currMatches.sort((a, b) =>
+        a.group > b.group ? 1 : b.group > a.group ? -1 : 0,
+      );
+      prevMatches.sort((a, b) =>
+        a.group > b.group ? 1 : b.group > a.group ? -1 : 0,
+      );
+      currMatches.forEach((m) => {
+        const tmpMatches = prevMatches.splice(0, m.numPlayers);
+        tmpMatches.forEach((t) => {
+          t.nextTournamentMatch = { _id: m._id } as TournamentMatch;
+          m.previousTournamentMatches.push({ _id: t._id } as TournamentMatch);
+        });
+      });
+    }
+  }
+
   private async generateMatches(
     tournament: Tournament,
     numPairs: number,
     numTriplets: number,
     round: number,
     players: User[] = null,
-  ) {
+  ): Promise<TournamentMatch[]> {
     let group = 1;
-    let matches = [];
+    const matches = [];
     for (let i = 0; i < numTriplets; i++) {
       const match = await this.createTournamentMatch(
         tournament,
@@ -265,6 +344,7 @@ export class TournamentsController {
     }
     return matches;
   }
+
   private async createTournamentMatch(
     tournament: Tournament,
     round: number,
@@ -299,7 +379,21 @@ export class TournamentsController {
       numPlayers: numPlayers,
       match: newMatch,
       nextTournamentMatch: null,
+      previousTournamentMatches: [],
     } as TournamentMatch;
     return tournamentMatch;
+  }
+  private checkIsAdminClub(club: Club, idAdmin: string) {
+    if (club.players.findIndex((u) => u._id == idAdmin && u.isAdmin) == -1)
+      throw new BadRequestException('You are not the admin of the club');
+  }
+
+  private checkPlayersClubComponents(club: Club, idPlayers: string[]) {
+    idPlayers.forEach((id) => {
+      if (club.players.findIndex((u) => u._id == id) == -1)
+        throw new BadRequestException(
+          'One or more players are not part of the club',
+        );
+    });
   }
 }

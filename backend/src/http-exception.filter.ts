@@ -28,7 +28,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     console.log('Response from backend:', content_res);
     delete content_res.statusCode;
 
-    let resObj = {
+    const resObj = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,

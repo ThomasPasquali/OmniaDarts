@@ -34,7 +34,7 @@ import {
 } from '../../casl/policies-guard.service';
 import { UsersService } from '../../users/users.service';
 import { ClubsService } from '../clubs.service';
-import ModResponse from "../../../classes/modResponse";
+import ModResponse from '../../../classes/modResponse';
 
 @Controller('posts')
 @ApiTags('posts')
@@ -48,7 +48,7 @@ export class PostsController {
   @Post()
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.CreatePost, Club))
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('postImage'))
   @ApiOperation({ description: 'Create a post for user s club' })
@@ -66,18 +66,16 @@ export class PostsController {
     @Body('message') message: string,
   ) {
     const club: Club = await this.clubsService.getClubById(req.user.club._id);
-    //const filename = club._id + '_' + new Date().getTime().toString();
 
     const post: ClubPost = new ClubPost();
     post.title = title;
     post.message = message;
-    console.log(file.filename);
-    post.fileRelativeUri = join(
-      this.configService
-        .get<string>('FOLDER_POST_IMAGES')
-        .replace('./static', ''),
-      file.filename,
-    );
+    if (file != null) {
+      post.fileRelativeUri = join(
+        this.configService.get<string>('FOLDER_IMAGES').replace('./static', ''),
+        file.filename,
+      );
+    }
 
     post.user = {
       _id: req.user._id,
@@ -94,7 +92,6 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @UseInterceptors(FileInterceptor('postImage'))
   @ApiOperation({ description: 'Request all post in a club' })
   @ApiCreatedResponse({ description: 'Post', type: [Post] })
   async getAllPostsOfMyClub(@Req() req) {

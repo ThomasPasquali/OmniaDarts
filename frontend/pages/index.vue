@@ -37,10 +37,9 @@ export default {
   mounted() {
     this.user = this.$auth.user
   },
-  created() {
-    this.$store.dispatch('fetchClub')
-    this.$store.dispatch('friends/fetchFriends')
-
+  created() {  // FIXME ???
+    // this.$store.dispatch('fetchClub')
+    // this.$store.dispatch('friends/fetchFriends')
   },
 }
 </script>
