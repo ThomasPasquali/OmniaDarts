@@ -55,8 +55,8 @@
         </div>
       </div>
 
-      <br> <br>
-      <pre>myClub {{ myClub }}</pre>
+<!--      <br> <br>-->
+<!--      <pre>myClub {{ myClub }}</pre>-->
 
     </div>
 

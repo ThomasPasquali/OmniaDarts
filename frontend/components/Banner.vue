@@ -9,14 +9,14 @@
     </div>
 
     <!--        :icon="b.icon"-->
-    <div v-if="user && !user.request" class="buttons">
+    <div v-if="!!buttons" class="buttons">
       <van-button
         v-for="b in buttons.filter(b_ => !!b_)"
         @click="$emit(b.emit)"
         :disabled="b.disabled"
       >
-        <span class="material-icons">{{ b.icon }}</span>
-        <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>
+        <span class="material-icons">{{ b.icon }}</span>  <!-- FIXME -->
+        <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>  <!-- FIXME -->
         {{ b.text }}
       </van-button>
       <!--      <van-button icon="star"></van-button>-->

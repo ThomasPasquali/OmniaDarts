@@ -11,12 +11,10 @@
             :user="f.user"
             :title="f.user.nickname"
             :subtitle="f.user.firstname + ' ' + f.user.lastname"
-            :buttons="[
-              {
-                icon: 'person_remove',
-                emit: 'deleteFriend',
-              },
-            ]"
+            :buttons="[{
+              icon: 'person_remove',
+              emit: 'deleteFriend',
+            }]"
             @deleteFriend="deleteFriend(f.user._id)"
           />
         </div>
@@ -32,16 +30,13 @@
             :user="f.user"
             :title="f.user.nickname"
             :subtitle="f.user.firstname + ' ' + f.user.lastname"
-            :buttons="[
-              {
-                icon: 'done',
-                emit: 'acceptFriend',
-              },
-              {
-                icon: 'close',
-                emit: 'deleteFriend',
-              },
-            ]"
+            :buttons="[{
+              icon: 'done',
+              emit: 'acceptFriend',
+            }, {
+              icon: 'close',
+              emit: 'deleteFriend',
+            }]"
             @acceptFriend="acceptFriend(f.user._id)"
             @deleteFriend="deleteFriend(f.user._id)"
           />
@@ -55,6 +50,10 @@
             :user="f.user"
             :title="f.user.nickname"
             :subtitle="f.user.firstname + ' ' + f.user.lastname"
+            :buttons="[{
+              icon: 'schedule',
+              emit: '',
+            }]"
           />
         </div>
         <p v-else>{{ $t('user_has_no_friend_requests') }}</p>
@@ -63,7 +62,7 @@
       <van-tab :title="$t('search')">
         <van-search v-model="search" :placeholder="$t('search_user')" />
         <Banner
-          v-for="u in users.filter(us => {return us.nickname.includes(search) && us._id !== authUser._id})"
+          v-for="u in users.filter(us => {return us.nickname.includes(search) && us._id !== $auth.user._id})"
           :key="u._id"
           :user="u"
           :title="u.nickname"
@@ -130,7 +129,6 @@ export default {
   mounted() {
     this.$store.dispatch("friends/fetchFriendRequests");
     this.$store.dispatch("friends/fetchUsers");
-    this.$store.dispatch("friends/fetchAuthUser");
   },
   computed: {
     friendRequests() {
@@ -139,9 +137,6 @@ export default {
     users() {
       return this.$store.getters['friends/users'];
     },
-    authUser() {
-      return this.$store.getters['friends/authUser'];
-    }
   },
 };
 
