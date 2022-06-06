@@ -22,9 +22,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import ModResponse from 'src/classes/modResponse';
-import { Match } from 'src/schemas/match.schema';
-import { TournamentMatch } from 'src/schemas/tournamentMatch.schema';
+import ModResponse from '../../classes/modResponse';
+import { Match } from '../../schemas/match.schema';
+import { TournamentMatch } from '../../schemas/tournamentMatch.schema';
 import MatchResult from '../../classes/matchResult';
 import SimpleTournament from '../../classes/SimpleTournament';
 import { Club } from '../../schemas/club.schema';
