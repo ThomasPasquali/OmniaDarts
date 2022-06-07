@@ -71,6 +71,14 @@ export class MatchesService implements NotificationsProvider {
         await this.matchesGateway.emitNewThrow(userID, matchID, newThrow);
     }
 
+    async emitLegWon(user: User, matchID: string, leg: Number, set: Number) {
+        await this.matchesGateway.emitLegWon(user, matchID, leg, set);
+    }
+
+    async emitMatchWon(user: User, matchID: string) {
+        await this.matchesGateway.emitMatchWon(user, matchID);
+    }
+
     async getNotifications(user: User): Promise<Notification[]> {
         const notifications: Notification[] = [];
         return notifications;

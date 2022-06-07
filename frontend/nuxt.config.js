@@ -39,6 +39,8 @@ export default {
               'text_msg_room_new --> textchats/newMessage',
               'lobby_new_join_request --> lobbies/newJoinRequest',
               'new_throw --> match/setLastThrow',
+              'match_won --> match/matchWon',
+              'leg_won --> match/legWon',
             ],
             emitBacks: [
               'notification_update <-- notifications/lastNotification',

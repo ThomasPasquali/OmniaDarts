@@ -1,4 +1,11 @@
+import {SetsLegs} from "~/enums/matches";
+
 const legSet = state => state.leg+':'+state.set
+const playerThrows = (state, userID) => {
+  return state.match
+    && state.match.playersThrows[userID]
+    && state.match.playersThrows[userID].playerThrows[legSet(state)]
+}
 
 export const state = () => ({
   match: null,
@@ -19,8 +26,25 @@ export const mutations = {
   },
   setLastThrow(state, t) {
     state.lastThrow = t
-    //TODO add to match
-  }
+    state.match.playersThrows[t.userID].playerThrows[legSet(state)].push(t.newThrow)
+  },
+  legWon(state, { nickname }) {
+    if(state.match.winningMode.setsLegs === SetsLegs.Sets) {
+      state.leg = (++state.leg)%3
+      if(state.leg === 0){
+        ++state.set
+        alert(nickname+" won this set")//FIXME better UI
+      }else
+        alert(nickname+" won this leg")//FIXME better UI
+    }else {
+      ++state.leg
+      alert(nickname+" won this leg")//FIXME better UI
+    }
+  },
+  matchWon(state, { nickname }) {
+    alert(nickname+" won the match")//FIXME better UI
+    window.location.href = '/lobbies'
+  },
 }
 
 export const getters = {
@@ -31,12 +55,28 @@ export const getters = {
     return state.match && state.match.players
   },
   lastThrow(state) { return state.lastThrow },
-  playerThrows: state => userID => {
-  	console.log(state.match.playersThrows[userID])//FIXME tutta la struttura datiiiiiiii
-      //, state.match.playersThrows[userID].playersThrows[legSet(state)])
-    return state.match
-      && state.match.playersThrows[userID]
-      && state.match.playersThrows[userID].playersThrows[legSet(state)]
+
+  playerCurrentScore: state => userID => {
+    if(!state.match) return null
+
+    let startScore = null
+    switch (state.match.gamemode.name) {
+      case 'X01':
+        startScore = state.match.gamemode.settings.startScore
+    }
+    if(!startScore) return null
+
+    const ts = playerThrows(state, userID)
+    if(ts)
+      for (const t of playerThrows(state, userID)) {
+        startScore -= t.score
+      }
+    return startScore
   },
+
+  playerLastThrow: state => userID => {
+    const ts = playerThrows(state, userID)
+    return ts && ts[ts.length-1]
+  }
 
 }
