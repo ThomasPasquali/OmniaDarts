@@ -28,19 +28,21 @@
       <van-button @click="play">{{ $t('lobby_play') }}</van-button>  <!-- TODO -->
     </div>
   </div>
-<!--  <div v-else>-->
+  <div v-else>
+    <CreateLobby/>
 <!--    {{ $t('lobby_waiting_to_join') }}-->
 <!--    <van-button @click="back">Back</van-button>-->
-<!--  </div>-->
+  </div>
 </template>
 
 <script>
 import TextChat from '~/components/Chat/TextChat';
+import CreateLobby from "~/components/Lobbies/CreateLobby";
 
 export default {
   name: 'Lobby',
   props: ['lobbyID'],
-  components: {TextChat},
+  components: {TextChat, CreateLobby},
   data() {
     return {
       autoFetchInterval: null,

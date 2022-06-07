@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Lobby from "~/components/Lobby";
+import Lobby from "~/components/Lobbies/Lobby";
 
 export default {
   name: "SpecificLobbyPage",
