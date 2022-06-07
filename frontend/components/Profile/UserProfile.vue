@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>{{ edit ? 'Edit profile' : 'Profile' }}</h1>
+    <h1>{{ edit ? 'Edit profile' : (!userID ? 'Profile' : 'User') }}</h1>
 
     <form v-if="edit" @submit.prevent="submit">
       <input id="photo" type="file" />  <!-- TODO -->
@@ -16,13 +16,13 @@
     </form>
 
     <div v-else>
-    <div v-if="!!user">
-      <img :src="user.imageUrl">
-      <div v-for="(field, key) in fields" v-if="field.type !== 'image' && !!user[key]" :key="key">
-        <p class="label">{{ field.label }}</p>
-        <h4 class="value">{{ user[key] }}</h4>
+      <div v-if="!!user">
+        <img :src="user.imageUrl">
+        <div v-for="(field, key) in fields" v-if="field.type !== 'image' && !!user[key]" :key="key">
+          <p class="label">{{ field.label }}</p>
+          <h4 class="value">{{ user[key] }}</h4>
+        </div>
       </div>
-    </div>
       <div v-else>Loading...</div>
     </div>
 
@@ -34,47 +34,45 @@
 import ProfileField from '~/components/Profile/ProfileField';
 
 export default {
-  name: "UserProfile",
+  name: 'UserProfile',
   components: {ProfileField},
   props: ['userID'],
   data() {
-    let fields_ = { // keys must be named as user attributes FIXME ?
-      'imageUrl': {
-        label: "Image",
-        type: "image",
-        required: false/*, editable: true, value: this.user.imageUrl*/
-      },
-      'nickname': {
-        label: "Nickname",
-        type: "text",
-        required: true/*, editable: true, value: this.user.nickname*/
-      },
-      'firstname': {
-        label: "First name",
-        type: "text",
-        required: false/*, editable: true, value: this.user.firstname*/
-      },
-      'lastname': {
-        label: "Last name",
-        type: "text",
-        required: false/*, editable: true, value: this.user.lastname*/
-      },
-      'country': {
-        label: "Country",
-        type: "country",
-        required: false/*, editable: true, value: this.user.country*/
-      },
-      'darts': {
-        label: "Darts",
-        type: "text",
-        required: false/*, editable: true, value: this.user.darts*/
-      },
-    };
-    // this.updateData(fields_);
     return {
       edit: false,
       isNickDuplicated: false,
-      fields: fields_,
+      fields: {  // keys must be named as user attributes
+        imageUrl: {
+          label: "Image",
+          type: "image",
+          required: false
+        },
+        nickname: {
+          label: "Nickname",
+          type: "text",
+          required: true
+        },
+        firstname: {
+          label: "First name",
+          type: "text",
+          required: false
+        },
+        lastname: {
+          label: "Last name",
+          type: "text",
+          required: false
+        },
+        country: {
+          label: "Country",
+          type: "country",
+          required: false
+        },
+        darts: {
+          label: "Darts",
+          type: "text",
+          required: false
+        },
+      },
     };
   },
   async mounted() {
@@ -117,19 +115,6 @@ export default {
           this.isNickDuplicated = true;
           return false;
         });
-
-
-      // this.$axios .$post("/auth", {nickname: this.usr, pwd: this.pwd})
-      //   .then((body) => {
-      //     // console.log(body);
-      //     let {access_token} = body;
-      //     // console.log(access_token);
-      //     this.failedLogin = false;
-      //     localStorage.setItem("auth", access_token);
-      //     this.$axios.setToken(access_token, "Bearer");
-      //     this.$router.push("/");
-      //   })
-      //   .catch((_) => (this.failedLogin = true));
     }
   },
 }

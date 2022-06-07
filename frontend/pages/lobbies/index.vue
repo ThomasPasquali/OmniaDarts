@@ -3,35 +3,53 @@
 
     <van-tab :title="$t('all_lobbies')">
       <h1>{{ $t('all_lobbies') }}</h1>
+      <!--      <pre v-for="m in lobbies">{{m}}</pre>-->
       <div v-if="lobbies">
-        <div>
+        <div v-if="lobbies.length">
           <Banner
             v-for="m in lobbies"
-            v-if="!doesCurrentUserBelongToLobby(m)"
             :key="m._id"
             :title="m.lobby.owner.nickname"
+            :subtitle="m.gamemode.settings.startScore /* TODO */"
             :user="m.lobby.owner"
             :buttons="[{
-              icon: 'login',
-              text: m.lobby.isPublic ? 'Join' : 'Request',
-              emit: 'joinLobby',
-              disabled: !!currentUserLobby(),
-            }]"
+                  icon: 'visibility',
+                  text: 'Spectate',
+                  emit: 'spectateLobby',
+              },
+              (m.lobby.joinRequests.filter(u => u._id === $auth.user._id).length
+              ? { icon: 'schedule',
+                  text: '',
+                  emit: '',
+                  disabled: true }
+              : (!!currentUserLobby && m._id === currentUserLobby._id
+              ? { icon: '',
+                  text: 'My lobby',
+                  emit: '',
+                  disabled: true }
+              : { icon: 'login',
+                  text: m.lobby.isPublic ? 'Join' : 'Request',
+                  emit: 'joinLobby',
+                  disabled: !!currentUserLobby }))
+            ]"
             @joinLobby="joinLobby(m)"
+            @spectateLobby="spectateLobby(m._id)"
           />
         </div>
+        <div v-else>There are no lobbies yet</div>
       </div>
       <div v-else>Loading...</div>
     </van-tab>
 
+    <!--     TODO ? -->
     <van-tab :title="$t('live_matches')">
       <h1>{{ $t('live_matches') }}</h1>
     </van-tab>
 
     <van-tab :title="$t('my_lobby')">
       <h1>{{ $t('my_lobby') }}</h1>
-      <div v-if="!!currentUserLobby()">
-        <Lobby :lobbyID="currentUserLobby()._id" />
+      <div v-if="!!currentUserLobby">
+        <Lobby :lobbyID="currentUserLobby._id" />
       </div>
       <div v-else>
         <p>{{ $t('user_has_no_lobby') }}</p>
@@ -71,24 +89,6 @@
       </div>
     </van-tab>
 
-    <!--    <van-tab title="Search">-->
-    <!--      <van-search v-model="search" :placeholder="$t('search_user')" />-->
-    <!--      <Banner-->
-    <!--        v-for="u in users.filter(us => {return us.nickname.includes(search) && us._id !== authUser._id})"-->
-    <!--        :key="u._id"-->
-    <!--        :user="u"-->
-    <!--        :buttons="-->
-    <!--            [{-->
-    <!--              icon: 'friends-o',-->
-    <!--              emit: 'sendRequest',-->
-    <!--            }]-->
-    <!--          "-->
-    <!--        @acceptFriend="acceptFriend(u._id)"-->
-    <!--        @deleteFriend="deleteFriend(u._id)"-->
-    <!--        @sendRequest="sendRequest(u._id)"-->
-    <!--      />-->
-    <!--    </van-tab>-->
-
   </van-tabs>
 
 </template>
@@ -102,33 +102,27 @@ export default {
   name: "LobbiesPage",
   components: {Banner, Lobby},
   data() {
-    let fields_ = [
-      {
-        title: 'Start point',
-        values: [301, 501, 'custom'],
-        defaultIndex: 0,
-      },
-      {
-        title: 'Check in',
-        values: ['Straight', 'Double', 'Triple', 'Master'],
-        defaultIndex: 0,
-      },
-      {
-        title: 'Check out',
-        values: ['Straight', 'Double', 'Triple', 'Master'],
-        defaultIndex: 0,
-      },
-      {
-        title: 'Winning mode',
-        values: ['First of', 'Best of'],
-        defaultIndex: 0,
-      },
-      {
-        title: 'Sets/Legs',
-        values: ['Sets', 'Legs'],
-        defaultIndex: 0,
-      },
-    ];
+    let fields_ = [{
+      title: 'Start point',
+      values: [301, 501, 'custom'],
+      defaultIndex: 0,
+    }, {
+      title: 'Check in',
+      values: ['Straight', 'Double', 'Triple', 'Master'],
+      defaultIndex: 0,
+    }, {
+      title: 'Check out',
+      values: ['Straight', 'Double', 'Triple', 'Master'],
+      defaultIndex: 0,
+    }, {
+      title: 'Winning mode',
+      values: ['First of', 'Best of'],
+      defaultIndex: 0,
+    }, {
+      title: 'Sets/Legs',
+      values: ['Sets', 'Legs'],
+      defaultIndex: 0,
+    }];
     let defaultValues = [];
     for (let f in fields_) {
       defaultValues.push(fields_[f].values[fields_[f].defaultIndex]);
@@ -144,15 +138,14 @@ export default {
   },
   methods: {
     async newLobby(values) {
-      // alert(JSON.stringify(values, null, 4))
       try {
         await this.$axios.$post('matches/lobby/new', {
           gamemode: {
             name: GamemodeName.X01,
             settings: new X01Settings(
               values['Start point'] === 'custom' ? this.customStartPoint : values['Start point'],
-              values['Check in'].toLowerCase(),   // fixme lower ?
-              values['Check out'].toLowerCase(),  // fixme lower ?
+              values['Check in'].toLowerCase(),
+              values['Check out'].toLowerCase(),
             ),
           },
           winningMode: {
@@ -176,23 +169,23 @@ export default {
         } catch {
         }
       }
-      window.location.href = `/lobby/${match._id}`  // fixme redirect ? [dv]
+      // this.$router.go();
+    },
+    async spectateLobby(matchID) {
+      window.location.href = `/lobbies/spectate/${matchID}`;
+      // if (!this.isCurrentUserLobbyOwner(match) || !this.doesCurrentUserBelongToLobby(match)) {
+      //   try {
+      //     await this.$axios.$post('matches/lobby/joinRequest/' + match._id)
+      //   } catch {
+      //   }
+      // }
+      // this.$router.go();
     },
     isCurrentUserLobbyOwner(match) {
       return match ? match.lobby.owner._id === this.$auth.user._id : false;
     },
     doesCurrentUserBelongToLobby(match) {
       return match.players.includes(this.$auth.user._id)
-    },
-    currentUserLobby() {  // FIXME endpoint [dv]
-      for (let i in this.lobbies) {
-        let m = this.lobbies[i];
-        // alert(this.doesCurrentUserBelongToLobby(m))
-        if (this.doesCurrentUserBelongToLobby(m) || this.isCurrentUserLobbyOwner(m)) {
-          return m;
-        }
-      }
-      return null;
     },
   },
   mounted() {
@@ -204,6 +197,15 @@ export default {
   computed: {
     lobbies() {
       return this.$store.getters["lobbies/lobbies"]
+    },
+    currentUserLobby() {  // FIXME endpoint [dv]
+      for (let i in this.lobbies) {
+        let m = this.lobbies[i];
+        if (this.doesCurrentUserBelongToLobby(m) || this.isCurrentUserLobbyOwner(m)) {
+          return m;
+        }
+      }
+      return null;
     },
   },
 }

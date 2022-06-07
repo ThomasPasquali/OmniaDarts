@@ -1,7 +1,7 @@
 <template>
   <div class="appbar_menu">
     <van-badge class="badge" :content="notifications.filter(n => {return ['NEW', 'PENDING'].includes(n.state)}).length" />
-    <img :src="this.$auth.user.imageUrl" height="24px">  <!-- fixme -->
+    <img :src="this.$auth.user.imageUrl" height="24px">
     <van-dropdown-menu class="aaa">
       <van-dropdown-item ref="item">
         <van-cell
@@ -116,8 +116,8 @@ export default {
 }
 img {
   position: fixed;
-  right: 12px; /* fixme */
-  top: 12px; /* fixme */
+  right: 12px;
+  top: 12px;
 }
 
 .badge {

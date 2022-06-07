@@ -24,15 +24,14 @@
       {{ match.gamemode }}
     </pre>
     <div>
-      <van-button v-if="isCurrentUserLobbyOwner()" @click="deleteLobby()">{{$t('delete_lobby')}}</van-button>
-      <van-button v-else @click="deleteLobby()">{{$t('delete_lobby')}}</van-button>
-      <van-button @click="play">{{$t('lobby_play')}}</van-button>
+      <van-button v-if="isCurrentUserLobbyOwner()" @click="deleteLobby()">{{ $t('delete_lobby') }}</van-button>
+      <van-button @click="play">{{ $t('lobby_play') }}</van-button>  <!-- TODO -->
     </div>
   </div>
-  <div v-else>
-    {{ $t('lobby_waiting_to_join') }}
-    <van-button @click="back">Back</van-button>
-  </div>
+<!--  <div v-else>-->
+<!--    {{ $t('lobby_waiting_to_join') }}-->
+<!--    <van-button @click="back">Back</van-button>-->
+<!--  </div>-->
 </template>
 
 <script>
@@ -86,7 +85,7 @@ export default {
   },
   methods: {
     async fetchLobby() {
-      if(this.lobbyID_) {
+      if (this.lobbyID_) {
         await this.$store.dispatch('lobbies/fetchLobby', this.lobbyID_)
         if (this.match) clearInterval(this.autoFetchInterval)
       }
@@ -133,7 +132,7 @@ export default {
       }
     },
     play() {
-      if(window.android) window.android.play(JSON.stringify(this.match))
+      if (window.android) window.android.play(JSON.stringify(this.match))
     }
   }
 }

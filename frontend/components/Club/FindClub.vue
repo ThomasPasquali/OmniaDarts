@@ -4,8 +4,6 @@
       Loading...
     </div>
     <div v-else>
-      <!--      <pre>{{ $auth.user }}</pre>-->
-      <!--      <pre v-for="c in clubs">{{ c }}</pre>-->
       <Banner
         v-for="c in clubs"
         :key="c._id"

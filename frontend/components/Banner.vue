@@ -1,6 +1,6 @@
 <template>
   <div class="banner">
-    <router-link class="link" :to="'/user/' + user._id" tag="div">
+    <router-link class="link" :to="!user ? '' : ('/user/' + user._id)" tag="div">
       <img class="pic" :src="(!!user && user.imageUrl != null) ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
       <div class="info">
         <p class="title">{{ title }}</p>
@@ -14,8 +14,7 @@
         @click="$emit(b.emit)"
         :disabled="b.disabled"
       >
-        <span class="material-icons">{{ b.icon }}</span>  <!-- FIXME -->
-        <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>  <!-- FIXME -->
+        <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>
         {{ b.text }}
       </van-button>
     </div>
@@ -25,7 +24,7 @@
 <script>
 export default {
   name: "Banner",
-  props: ['title', 'subtitle', 'user', 'buttons', 'admin', 'disabled'],
+  props: ['title', 'subtitle', 'user', 'buttons'],
 }
 </script>
 

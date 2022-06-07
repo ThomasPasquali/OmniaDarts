@@ -21,7 +21,7 @@
         <p v-else>{{ $t('user_has_no_friends') }}</p>
       </van-tab>
 
-      <van-tab :title="$t('requests')">
+      <van-tab :title="$t('requests') + (friendRequests.filter(fr => {return fr.pending && !fr.isSender}).length ? ' [' + friendRequests.filter(fr => {return fr.pending && !fr.isSender}).length + ']' : '')">
         <h1>{{ $t('requests_received') }}</h1>
         <div v-if="friendRequests.filter(fr => {return fr.pending && !fr.isSender}).length">
           <Banner
@@ -62,7 +62,7 @@
       <van-tab :title="$t('search')">
         <van-search v-model="search" :placeholder="$t('search_user')" />
         <Banner
-          v-for="u in users.filter(us => {return us.nickname.includes(search) && us._id !== $auth.user._id})"
+          v-for="u in users.filter(us => {return us.nickname.toLowerCase().includes(search.toLowerCase()) && us._id !== $auth.user._id})"
           :key="u._id"
           :user="u"
           :title="u.nickname"
@@ -118,12 +118,15 @@ export default {
   methods: {
     async sendRequest(userID) {
       await this.$axios.$post('friends/' + userID);
+      this.$router.go();
     },
     async deleteFriend(userID) {
       await this.$axios.$delete('friends/' + userID);
+      this.$router.go();
     },
     async acceptFriend(userID) {
       await this.$axios.$patch('friends/' + userID);
+      this.$router.go();
     },
   },
   mounted() {
