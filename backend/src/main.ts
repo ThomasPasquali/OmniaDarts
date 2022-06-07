@@ -14,7 +14,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('OmniaDarts')
     .setDescription('The OmniaDarts API description')
-    .addTag('users')
+    // .addTag('users')
     .addTag('auth')
     .addTag('friends')
     .addTag('clubs')

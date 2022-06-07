@@ -13,13 +13,12 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
 } from '@nestjs/swagger';
 import { User } from '../../schemas/user.schema';
 import { UsersService } from './users.service';
 
 @Controller('users')
-@ApiTags('users')
+// @ApiTags('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
