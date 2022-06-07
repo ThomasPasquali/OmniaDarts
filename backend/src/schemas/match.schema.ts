@@ -26,6 +26,9 @@ export class Match extends Document {
   lobby: Lobby;
 
   @Prop({ type: Boolean, default: false })
+  started: boolean;
+
+  @Prop({ type: Boolean, default: false })
   done: boolean;
 
   @Prop(
