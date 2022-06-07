@@ -1,20 +1,19 @@
 <template>
   <div class="banner">
-    <router-link class="link" :to="'/user/' + user._id" tag="div">
-      <img class="pic" :src="(!!user && user.imageUrl != null) ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
+    <router-link class="link" :to="!user ? (!to ? '' : to) : ('/user/' + user._id)" tag="div">
+      <img v-if="!!user" class="pic" :src="!!user.imageUrl ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
       <div class="info">
         <p class="title">{{ title }}</p>
         <p class="subtitle">{{ subtitle }}</p>
       </div>
     </router-link>
 
-    <div class="buttons">
+    <div v-if="!!buttons" class="buttons">
       <van-button
         v-for="b in buttons.filter(b_ => !!b_)"
         @click="$emit(b.emit)"
         :disabled="b.disabled"
       >
-        <span class="material-icons">{{ b.icon }}</span>
         <span :class="'material-symbols-sharp' + (b.outlined ? ' outlined' : '')">{{ b.icon }}</span>
         {{ b.text }}
       </van-button>
@@ -22,12 +21,10 @@
   </div>
 </template>
 
-
 <script>
-
 export default {
   name: "Banner",
-  props: ['title', 'subtitle', 'user', 'buttons', 'admin', 'disabled'],
+  props: ['title', 'subtitle', 'user', 'buttons', 'to'],
 }
 </script>
 

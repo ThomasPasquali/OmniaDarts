@@ -1,3 +1,5 @@
+<!-- TODO / FIXME !!! -->
+
 <template>
   <div :class="'banner ' + class_">
 
@@ -12,7 +14,7 @@
       <van-button icon="success" @click="$emit('accept')"></van-button>
       <van-button icon="cross" @click="$emit('reject')"></van-button>
       <van-button icon="delete" @click="$emit('dismiss')"></van-button>
-      <van-button icon="question" @click="debug = !debug"></van-button> <!-- FIXME remove -->
+      <!--      <van-button icon="question" @click="debug = !debug"></van-button>-->
     </div>
     <div v-if="debug">
       <pre>notification {{ notification }}</pre>

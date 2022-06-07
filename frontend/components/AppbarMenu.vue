@@ -1,8 +1,8 @@
 <template>
   <div class="appbar_menu">
     <van-badge class="badge" :content="notifications.filter(n => {return ['NEW', 'PENDING'].includes(n.state)}).length" />
-    <img :src="this.$auth.user.imageUrl" height="24px">  <!-- fixme -->
-    <van-dropdown-menu>
+    <img :src="this.$auth.user.imageUrl" height="24px">
+    <van-dropdown-menu class="aaa">
       <van-dropdown-item ref="item">
         <van-cell
           v-for="(o, i) in options"
@@ -42,12 +42,6 @@ export default {
           show: true,
           onClick: this.onConfirm
         },
-        // {
-        //   title: 'Find club',
-        //   to: 'findClub',
-        //   show: true,
-        //   onClick: this.onConfirm
-        // },
         {
           title: 'Tournaments',
           to: '/tournaments',
@@ -57,12 +51,6 @@ export default {
         {
           title: 'Stats',
           to: '/stats',
-          show: true,
-          onClick: this.onConfirm
-        },
-        {
-          title: 'Dev',  // FIXME
-          to: '/dev',
           show: true,
           onClick: this.onConfirm
         },
@@ -114,11 +102,10 @@ export default {
   display: flex;
   flex-direction: row;
 }
-
 img {
   position: fixed;
-  right: 12px; /* fixme */
-  top: 12px; /* fixme */
+  right: 12px;
+  top: 12px;
 }
 
 .badge {

@@ -1,4 +1,5 @@
 <template>
+
   <div v-if="match !== null">
     <div v-if="isCurrentUserLobbyOwner()">
       <h1>Join requests</h1>
@@ -24,24 +25,23 @@
       {{ match.gamemode }}
     </pre>
     <div>
-      <van-button v-if="isCurrentUserLobbyOwner()" @click="deleteLobby()">{{$t('delete_lobby')}}</van-button>
-      <van-button v-else @click="deleteLobby()">{{$t('delete_lobby')}}</van-button>
-      <van-button @click="play">{{$t('lobby_play')}}</van-button>
+      <van-button v-if="isCurrentUserLobbyOwner()" @click="deleteLobby()">{{ $t('delete_lobby') }}</van-button>
+      <van-button v-if="useAndroid" @click="play">{{ $t('lobby_play') }}</van-button>  <!-- TODO -->
     </div>
   </div>
-  <div v-else>
-    {{ $t('lobby_waiting_to_join') }}
-    <van-button @click="back">Back</van-button>
-  </div>
+
+  <CreateMatches v-else />
+
 </template>
 
 <script>
 import TextChat from '~/components/Chat/TextChat';
+import CreateMatches from "~/components/Lobbies/CreateMatches";
 
 export default {
   name: 'Lobby',
   props: ['lobbyID'],
-  components: {TextChat},
+  components: {TextChat, CreateMatches},
   data() {
     return {
       autoFetchInterval: null,
@@ -54,7 +54,10 @@ export default {
     },
     joinRequests() {
       return this.$store.getters['lobbies/lobbyJoinRequests']
-    }
+    },
+    useAndroid() {
+      return !!window.android;
+    },
   },
   async mounted() {
     await this.fetchLobby()
@@ -86,7 +89,7 @@ export default {
   },
   methods: {
     async fetchLobby() {
-      if(this.lobbyID_) {
+      if (this.lobbyID_) {
         await this.$store.dispatch('lobbies/fetchLobby', this.lobbyID_)
         if (this.match) clearInterval(this.autoFetchInterval)
       }
@@ -133,7 +136,7 @@ export default {
       }
     },
     play() {
-      if(window.android) window.android.play(JSON.stringify(this.match))
+      if (window.android) window.android.play(JSON.stringify(this.match))
     }
   }
 }

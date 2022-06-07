@@ -1,6 +1,8 @@
 <template>
   <div v-if="!!myClub" class="container">
 
+<!--    <pre>{{myClub}}</pre>-->
+
     <img id="club_photo" src="https://pickywallpapers.com/img/2018/10/dart-board-game-desktop-wallpaper-1306-1311-hd-wallpapers.jpg">
 
     <div v-if="!edit" class="content">
@@ -9,7 +11,7 @@
 
       <div id="buttons">
         <van-button
-          v-for="(btn, i) in buttons.filter((b) => {return b.admin === false || isAdmin})"
+          v-for="(btn, i) in buttons.filter((b) => {return b.admin === false || $auth.user.isAdmin})"
           :key="i"
           :icon="btn.icon"
           @click="btn.onClick()"
@@ -29,13 +31,13 @@
           :title="member.nickname"
           :subtitle="member.firstname + ' ' + member.lastname"
           :buttons="[
-            {icon: 'grade', emit: 'setAdminprivileges', outlined: !member.isAdmin, disabled: !isAdmin || member._id === $auth.user._id},
-            isAdmin ? {icon: 'person_remove', emit: 'removeUser', disabled: member._id === $auth.user._id} : '',
+            {icon: 'grade', emit: 'setAdminprivileges', outlined: !member.isAdmin, disabled: !$auth.user.isAdmin || member._id === $auth.user._id},
+            $auth.user.isAdmin ? {icon: 'person_remove', emit: 'removeUser', disabled: member._id === $auth.user._id} : '',
           ]"
           @setAdminprivileges="setAdminprivileges(member)"
           @removeUser="removeUser(member._id)"
         />
-        <div v-if="isAdmin">
+        <div v-if="$auth.user.isAdmin">
           <h3>Requests</h3>
           <Banner
             v-for="member in myClub.players.filter(m => !m.club)"
@@ -51,24 +53,22 @@
             @rejectRequest="rejectRequest(member._id)"
           />
           <p v-if="!myClub.players.filter(m => !m.club).length">There are no pending requests</p>
-          <!-- <van-button id="add_btn" icon="add">Invite player</van-button> -->
         </div>
       </div>
-
-      <br> <br>
-      <pre>myClub {{ myClub }}</pre>
 
     </div>
 
     <div v-else class="content">
-      <EditClub :club="myClub" @submitClub="submit" />
+      <EditClub
+        :clubName="myClub.name"
+        :clubDescription="myClub.description"
+        @submitClub="submit" />
     </div>
 
   </div>
 
   <div v-else>
     <h1>{{ $t('user_has_no_club') }}</h1>
-<!--    <pre>{{myClub}}</pre>-->
     <FindClub />
     <van-button icon="add" to="club/newClub">{{ $t('new_club') }}</van-button>
   </div>
@@ -94,7 +94,7 @@ export default {
         {label: 'Find club', icon: 'search', admin: false, onClick: () => this.$router.push('/club/findClub')},
         {label: 'Edit club', icon: 'edit', admin: true, onClick: () => this.edit = true},
         {label: 'Leave club', icon: 'cross', admin: false, onClick: () => this.deleteClub()},
-        {label: 'Delete club', icon: 'delete', admin: true, onClick: () => this.deleteClub()},
+        // {label: 'Delete club', icon: 'delete', admin: true, onClick: () => this.deleteClub()},
       ],
     }
   },
@@ -118,23 +118,12 @@ export default {
     async joinRequest(clubID) { // TODO add message
       await this.$axios.$post('clubs/joinRequest?message=_&idClub=' + clubID);
     },
-    async deleteClub() { // TODO add message
+    async deleteClub() {
       await this.$axios.$delete('clubs/emergencyExit');
     },
-    submit() {
+    submit(clubName, clubDescription) {
+      this.$axios.$patch('clubs/', {name: clubName, description: clubDescription});
       this.edit = false;
-      // this.$axios
-      //   .$post("/auth", {nickname: this.usr, pwd: this.pwd})
-      //   .then((body) => {
-      //     // console.log(body);
-      //     let {access_token} = body;
-      //     // console.log(access_token);
-      //     this.failedLogin = false;
-      //     localStorage.setItem("auth", access_token);
-      //     this.$axios.setToken(access_token, "Bearer");
-      //     this.$router.push("/");
-      //   })
-      //   .catch((_) => (this.failedLogin = true));
     },
   },
   mounted() {
@@ -148,9 +137,9 @@ export default {
     myClub() {
       return this.$store.getters['clubs/myClub'];
     },
-    isAdmin() {  // FIXME ?
-      return this.myClub.players.find(p => p._id === this.$auth.user._id).isAdmin;
-    }
+    // isAdmin() {
+    //   return this.myClub.players.find(p => p._id === this.$auth.user._id).isAdmin;
+    // },
   },
 }
 

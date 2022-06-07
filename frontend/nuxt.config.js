@@ -19,7 +19,7 @@ export default {
     ],
     link: [{rel: "icon", type: "image/x-icon", href: "/favicon.ico"}, {
       rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/icon?family=Material+Icons'
+      href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:FILL@0..1'
     }],
     script: [{src: '/android.js'}],
   },
@@ -39,6 +39,8 @@ export default {
               'text_msg_room_new --> textchats/newMessage',
               'lobby_new_join_request --> lobbies/newJoinRequest',
               'new_throw --> match/setLastThrow',
+              'match_won --> match/matchWon',
+              'leg_won --> match/legWon',
             ],
             emitBacks: [
               'notification_update <-- notifications/lastNotification',

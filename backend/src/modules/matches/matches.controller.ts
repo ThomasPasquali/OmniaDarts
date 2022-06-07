@@ -72,9 +72,8 @@ export class MatchesController {
 
     match.lobby = lobby;
     match.players = [lobby.owner];
-    match.playersThrows = {
-      '0:0': new PlayerThrows(lobby.owner._id.toString()),
-    };
+    match.playersThrows = {};
+    match.playersThrows[lobby.owner._id] = new PlayerThrows(lobby.owner._id.toString());
 
     if (await this.matchesService.findUserActiveLobby(req.user))
       throw new BadRequestException(
@@ -131,6 +130,47 @@ export class MatchesController {
     );
   }
 
+  @Post('lobby/legWon/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Notify that user who sent this request has won the current match leg' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Ok' })
+  async legWon(
+      @Req() req,
+      @Param('idMatch') idMatch: string,
+      @Body() data,
+  ) {
+    //TODO db update
+    //await this.matchesService.updateMatchThrows(match);
+    const user = req.user;
+    await this.matchesService.emitLegWon(
+        user,
+        idMatch,
+        data.leg,
+        data.set
+    );
+  }
+
+  @Post('lobby/matchWon/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Notify that user who sent this request has won match' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Ok' })
+  async matchWon(
+      @Req() req,
+      @Param('idMatch') idMatch: string,
+  ) {
+    //TODO db update
+    //await this.matchesService.updateMatchThrows(match);
+    const user = req.user;
+    await this.matchesService.emitMatchWon(
+        user,
+        idMatch
+    );
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Get all matches' })
@@ -158,17 +198,17 @@ export class MatchesController {
     const match = await this.matchesService.findByIdFull(matchID);
     const user = req.user;
 
-    if (
-      match &&
-      ((match.lobby && match.lobby.isPublic) ||
-        MatchesController.isUserLobbyOwner(user, match) ||
-        this.doesUserBelongToMatch(user, match))
-    )
-      return match;
+    // if (
+    //   match &&
+    //   ((match.lobby && match.lobby.isPublic) ||
+    //     MatchesController.isUserLobbyOwner(user, match) ||
+    //     this.doesUserBelongToMatch(user, match))
+    // )
+    return match;
 
-    if (this.hasUserJoinRequest(user, match))
-      throw new ForbiddenException(user, 'User join request pending');
-    throw new ForbiddenException(user, 'User must send join request');
+    // if (this.hasUserJoinRequest(user, match))
+    //   throw new ForbiddenException(user, 'User join request pending');
+    // throw new ForbiddenException(user, 'User must send join request');
   }
 
   @Patch('lobby/joinRequest/:idUser')

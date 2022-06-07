@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "TournamentPreviewComponent",
+  name: "TournamentPreview",
   props: { tournament: { required: true } },
 }
 </script>

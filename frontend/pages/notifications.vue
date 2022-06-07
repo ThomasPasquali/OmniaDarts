@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <van-button @click="newWindow">New window</van-button>
+<!--    <van-button @click="newWindow">New window</van-button>-->
     <h1>Notifications</h1>
 
     <h2>{{ $t('user_new_notifications') }}</h2>

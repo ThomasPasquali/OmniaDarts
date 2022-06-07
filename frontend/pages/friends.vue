@@ -11,19 +11,17 @@
             :user="f.user"
             :title="f.user.nickname"
             :subtitle="f.user.firstname + ' ' + f.user.lastname"
-            :buttons="[
-              {
-                icon: 'person_remove',
-                emit: 'deleteFriend',
-              },
-            ]"
+            :buttons="[{
+              icon: 'person_remove',
+              emit: 'deleteFriend',
+            }]"
             @deleteFriend="deleteFriend(f.user._id)"
           />
         </div>
         <p v-else>{{ $t('user_has_no_friends') }}</p>
       </van-tab>
 
-      <van-tab :title="$t('requests')">
+      <van-tab :title="$t('requests') + (friendRequests.filter(fr => {return fr.pending && !fr.isSender}).length ? ' [' + friendRequests.filter(fr => {return fr.pending && !fr.isSender}).length + ']' : '')">
         <h1>{{ $t('requests_received') }}</h1>
         <div v-if="friendRequests.filter(fr => {return fr.pending && !fr.isSender}).length">
           <Banner
@@ -32,16 +30,13 @@
             :user="f.user"
             :title="f.user.nickname"
             :subtitle="f.user.firstname + ' ' + f.user.lastname"
-            :buttons="[
-              {
-                icon: 'done',
-                emit: 'acceptFriend',
-              },
-              {
-                icon: 'close',
-                emit: 'deleteFriend',
-              },
-            ]"
+            :buttons="[{
+              icon: 'done',
+              emit: 'acceptFriend',
+            }, {
+              icon: 'close',
+              emit: 'deleteFriend',
+            }]"
             @acceptFriend="acceptFriend(f.user._id)"
             @deleteFriend="deleteFriend(f.user._id)"
           />
@@ -55,6 +50,10 @@
             :user="f.user"
             :title="f.user.nickname"
             :subtitle="f.user.firstname + ' ' + f.user.lastname"
+            :buttons="[{
+              icon: 'schedule',
+              emit: '',
+            }]"
           />
         </div>
         <p v-else>{{ $t('user_has_no_friend_requests') }}</p>
@@ -63,7 +62,7 @@
       <van-tab :title="$t('search')">
         <van-search v-model="search" :placeholder="$t('search_user')" />
         <Banner
-          v-for="u in users.filter(us => {return us.nickname.includes(search) && us._id !== authUser._id})"
+          v-for="u in users.filter(us => {return us.nickname.toLowerCase().includes(search.toLowerCase()) && us._id !== $auth.user._id})"
           :key="u._id"
           :user="u"
           :title="u.nickname"
@@ -119,18 +118,20 @@ export default {
   methods: {
     async sendRequest(userID) {
       await this.$axios.$post('friends/' + userID);
+      // this.$router.go();
     },
     async deleteFriend(userID) {
       await this.$axios.$delete('friends/' + userID);
+      // this.$router.go();
     },
     async acceptFriend(userID) {
       await this.$axios.$patch('friends/' + userID);
+      // this.$router.go();
     },
   },
   mounted() {
     this.$store.dispatch("friends/fetchFriendRequests");
     this.$store.dispatch("friends/fetchUsers");
-    this.$store.dispatch("friends/fetchAuthUser");
   },
   computed: {
     friendRequests() {
@@ -139,9 +140,6 @@ export default {
     users() {
       return this.$store.getters['friends/users'];
     },
-    authUser() {
-      return this.$store.getters['friends/authUser'];
-    }
   },
 };
 

@@ -7,6 +7,7 @@ import {
 import { Socket } from 'net';
 import {EventsGateway} from '../events/events.gateway'
 import Throw from "../../classes/throw";
+import {User} from "../../schemas/user.schema";
 
 @WebSocketGateway({
     namespace: 'matches',
@@ -40,6 +41,14 @@ export class MatchesGateway extends EventsGateway {
 
     async emitNewThrow(userID: string, matchID: string, newThrow: Throw): Promise<void> {
         this.server.to(MatchesGateway.getRoomID(matchID)).emit('new_throw', { userID, newThrow });
+    }
+
+    async emitLegWon(user: User, matchID: string, leg: Number, set: Number): Promise<void> {
+        this.server.to(MatchesGateway.getRoomID(matchID)).emit('leg_won', { nickname: user.nickname, leg, set });
+    }
+
+    async emitMatchWon(user: User, matchID: string): Promise<void> {
+        this.server.to(MatchesGateway.getRoomID(matchID)).emit('match_won', { nickname: user.nickname });
     }
 
 }

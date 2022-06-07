@@ -1,11 +1,15 @@
 <template>
 
-  <div v-if="match.players.length" class="box">
-    <div class="row" v-for="p in match.players">
-      <div class="name">{{ Object(participants.find(p_ => p_.id === p.id)).name /* fixme ??? */ }}</div>
-      <div class="win">{{ (match.winner === p.id ? 'V' : 'X') }}</div>
-      <div class="points">{{ p.points }}</div>
-    </div>
+  <div v-if="!!match" class="box">
+    <!--    <div class="row" v-for="p in match.players">-->
+    <!--      <div class="name">{{ Object(participants.find(p_ => p_.id === p.id)).name /* fixme ??? */ }}</div>-->
+    <!--      <div class="win">{{ (match.winner === p.id ? 'V' : 'X') }}</div>-->
+    <!--      <div class="points">{{ p.points }}</div>-->
+    <!--    </div>-->
+    {{ tournamentMatch._id }}
+    {{ tournamentMatch.match }}
+    {{ match._id }}
+    {{ match.players/*.map(p => p.nickname)*/ }}
   </div>
 
   <div v-else class="box">
@@ -16,8 +20,18 @@
 
 <script>
 export default {
-  name: "TournamentNode",
-  props: ['match', 'participants'],
+  name: "TournamentPlayers",
+  props: ['tournamentMatch'],
+  async mounted() {
+    // try {  // FIXME
+      await this.$store.dispatch("match/fetchMatch", this.tournamentMatch.match);
+    // } catch {}
+  },
+  computed: {
+    match() {
+      return this.$store.getters["match/match"];
+    },
+  },
 }
 </script>
 
@@ -27,7 +41,7 @@ export default {
   display: flex;
   flex-direction: column;
   width: 200px;
-  background: navy;
+  background: white;
   gap: 4px;
   padding: 8px;
 }

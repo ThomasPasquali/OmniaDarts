@@ -1,54 +1,42 @@
 <template>
-  <div class="container">
-    <h1>Tournaments</h1>
-    <TournamentPreview v-for="(t, i) in tournaments" :key="i" :tournament="t" />
+  <van-tabs v-model:active="active">
 
-    <h1>New tournament</h1>
-    <van-form @submit="submitNewTournament">
-      <van-cell-group inset>
-        <van-field v-model="tournament.name" label="Name" placeholder="Name" />
-      </van-cell-group>
-      <div style="margin: 16px">
-        <van-button round block type="primary" native-type="submit">
-          Submit
-        </van-button>
-      </div>
-    </van-form>
+    <van-tab title="New tournament">
+      <h1>New tournament</h1>
 
-    <h3>Club friends</h3>
-    <p v-for="f in $store.getters['friends/clubFriends']" :key="f['_id']">
-      {{ f.nickname }}
-    </p>
-    <h3>Friends</h3>
-    <p v-for="f in $store.getters['friends/friends']" :key="f['_id']">
-      {{ f.nickname }}
-    </p>
-    <h1>Debug</h1>
-    <pre>{{ $store.getters.club }}</pre>
-  </div>
+      <CreateMatch :isTournament="true" />
+    </van-tab>
+
+    <van-tab title="Tournaments">
+      <h1>Tournaments</h1>
+      <!--      <pre>{{ tournaments }}</pre>-->
+      <Banner
+        v-for="t in tournaments"
+        :key="t._id"
+        :title="t.name"
+        subtitle="TODO"
+        :to="'/tournaments/' + t._id"
+      />
+    </van-tab>
+
+  </van-tabs>
 </template>
 
 <script>
 import TournamentPreview from "~/components/Tournaments/TournamentPreview";
+import CreateMatch from "~/components/Lobbies/CreateMatches";
 
 export default {
   name: "tournaments",
-  components: {TournamentPreview},
+  components: {TournamentPreview, CreateMatch},
   data() {
     return {
-      tournament: {
-        name: "",
-      },
+      active: 0,
     };
   },
   computed: {
     tournaments() {
       return this.$store.getters["tournaments/tournaments"];
-    },
-  },
-  methods: {
-    submitNewTournament() {
-      //TODO
     },
   },
   mounted() {

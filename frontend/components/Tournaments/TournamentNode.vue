@@ -1,21 +1,35 @@
 <template>
 
-  <div v-if="!!match.children" :class="'item' + (root ? ' root' : '')">
+  <!--  <pre>{{match}}</pre>-->
+
+  <div v-if="match.previousTournamentMatches.length" :class="'item' + (round === finalRound ? ' root' : '')">
     <div class="item-parent">
-      <TournamentPlayers :match="match" :participants="participants" />
+    <TournamentPlayers :tournamentMatch="match" />
+      <!--        :finalRound="finalRound"-->
+      <!--        :round="round"-->
+      <!--        :group="group"-->
     </div>
     <div class="item-children">
       <div
-        v-for="(child, i) in match.children"
-        :key="i"
-        :class="'item-child' + (!child.children ? ' leaf' : '')">
-        <TournamentNode :match="child" :participants="participants" />
+        v-for="matchID in match.previousTournamentMatches"
+        :key="matchID"
+        :class="'item-child' + (!getPreviousMatch(matchID).previousTournamentMatches.length ? ' leaf' : '')">
+        <TournamentNode
+          :matches="matches"
+          :match="getPreviousMatch(matchID)"
+          :finalRound="finalRound"
+          :round="round - 1"
+          :group="getPreviousMatch(matchID).group"
+        />
       </div>
     </div>
   </div>
 
   <div v-else>
-    <TournamentPlayers :match="match" :participants="participants" />
+    <TournamentPlayers :tournamentMatch="match" />
+    <!--      :finalRound="finalRound"-->
+    <!--      :round="round"-->
+    <!--      :group="group"-->
   </div>
 
 </template>
@@ -25,9 +39,19 @@ import TournamentPlayers from "~/components/Tournaments/TournamentPlayers";
 
 export default {
   name: "TournamentNode",
-  props: ['match', 'participants', 'root'],
+  props: ['match', 'matches', 'finalRound', 'round', 'group'],
   components: {TournamentPlayers},
-  mounted: function () {
+  // data() {
+  //   return {
+  //     match: this.matches.find(m => m.round === this.round && m.group === this.group),
+  //   }
+  // },
+  methods: {
+    getPreviousMatch(matchID) {
+      return this.matches.find(m => m._id === matchID);
+    }
+  },
+  mounted() {
     this.$nextTick(() => {
       let root = document.querySelector(".root");
       root.scrollLeft = -root.scrollWidth;
