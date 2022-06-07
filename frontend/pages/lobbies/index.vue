@@ -3,7 +3,7 @@
 
     <van-tab :title="$t('all_lobbies')">
 
-      <pre v-for="m in lobbies">{{ m }}</pre>
+<!--      <pre v-for="m in lobbies">{{ m }}</pre>-->
 
 
       <h1>{{ $t('all_lobbies') }}</h1>
