@@ -1,12 +1,12 @@
 <template>
   <form>
-    <!-- TODO -->
-    <label for="input_photo">Club photo</label>
+
+    <label for="input_photo">Club photo</label><!-- TODO -->
     <input id="input_photo" type="file" />
     <label for="input_name">Club name</label>
-    <input id="input_name" type="text" v-model="club.name" />
+    <input id="input_name" type="text" v-model="clubName" />
     <label for="input_descr">Description</label>
-    <textarea id="input_descr" v-model="club.description" rows="5" />
+    <textarea id="input_descr" v-model="clubDescription" rows="5" />
     <input type="submit" value="Save" @click.prevent="submit"/>
   </form>
 </template>
@@ -14,16 +14,11 @@
 <script>
 export default {
   name: "EditClub",
-  props: {
-    club: {
-      //type: { name: String, description: String }, FIXME
-      required: true,
-    }
-  },
+  props: ['clubName', 'clubDescription'],
   emits: ['submitClub'],
   methods: {
     submit() {
-      this.$emit('submitClub')
+      this.$emit('submitClub', this.clubName, this.clubDescription)
     }
   }
 }

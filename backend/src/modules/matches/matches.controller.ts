@@ -158,17 +158,17 @@ export class MatchesController {
     const match = await this.matchesService.findByIdFull(matchID);
     const user = req.user;
 
-    if (
-      match &&
-      ((match.lobby && match.lobby.isPublic) ||
-        MatchesController.isUserLobbyOwner(user, match) ||
-        this.doesUserBelongToMatch(user, match))
-    )
-      return match;
+    // if (
+    //   match &&
+    //   ((match.lobby && match.lobby.isPublic) ||
+    //     MatchesController.isUserLobbyOwner(user, match) ||
+    //     this.doesUserBelongToMatch(user, match))
+    // )
+    return match;
 
-    if (this.hasUserJoinRequest(user, match))
-      throw new ForbiddenException(user, 'User join request pending');
-    throw new ForbiddenException(user, 'User must send join request');
+    // if (this.hasUserJoinRequest(user, match))
+    //   throw new ForbiddenException(user, 'User join request pending');
+    // throw new ForbiddenException(user, 'User must send join request');
   }
 
   @Patch('lobby/joinRequest/:idUser')

@@ -59,7 +59,10 @@
     </div>
 
     <div v-else class="content">
-      <EditClub :club="myClub" @submitClub="submit" />
+      <EditClub
+        :clubName="myClub.name"
+        :clubDescription="myClub.description"
+        @submitClub="submit" />
     </div>
 
   </div>
@@ -91,7 +94,7 @@ export default {
         {label: 'Find club', icon: 'search', admin: false, onClick: () => this.$router.push('/club/findClub')},
         {label: 'Edit club', icon: 'edit', admin: true, onClick: () => this.edit = true},
         {label: 'Leave club', icon: 'cross', admin: false, onClick: () => this.deleteClub()},
-        {label: 'Delete club', icon: 'delete', admin: true, onClick: () => this.deleteClub()},
+        // {label: 'Delete club', icon: 'delete', admin: true, onClick: () => this.deleteClub()},
       ],
     }
   },
@@ -118,20 +121,9 @@ export default {
     async deleteClub() {
       await this.$axios.$delete('clubs/emergencyExit');
     },
-    submit() {
+    submit(clubName, clubDescription) {
+      this.$axios.$patch('clubs/', {name: clubName, description: clubDescription});
       this.edit = false;
-      // this.$axios
-      //   .$post("/auth", {nickname: this.usr, pwd: this.pwd})
-      //   .then((body) => {
-      //     // console.log(body);
-      //     let {access_token} = body;
-      //     // console.log(access_token);
-      //     this.failedLogin = false;
-      //     localStorage.setItem("auth", access_token);
-      //     this.$axios.setToken(access_token, "Bearer");
-      //     this.$router.push("/");
-      //   })
-      //   .catch((_) => (this.failedLogin = true));
     },
   },
   mounted() {

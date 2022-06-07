@@ -42,12 +42,6 @@ export default {
           show: true,
           onClick: this.onConfirm
         },
-        // {
-        //   title: 'Find club',
-        //   to: 'findClub',
-        //   show: true,
-        //   onClick: this.onConfirm
-        // },
         {
           title: 'Tournaments',
           to: '/tournaments',
@@ -57,12 +51,6 @@ export default {
         {
           title: 'Stats',
           to: '/stats',
-          show: true,
-          onClick: this.onConfirm
-        },
-        {
-          title: 'Dev',  // FIXME
-          to: '/dev',
           show: true,
           onClick: this.onConfirm
         },

@@ -1,7 +1,7 @@
 <template>
   <div class="banner">
-    <router-link class="link" :to="!user ? '' : ('/user/' + user._id)" tag="div">
-      <img class="pic" :src="(!!user && user.imageUrl != null) ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
+    <router-link class="link" :to="!user ? (!to ? '' : to) : ('/user/' + user._id)" tag="div">
+      <img v-if="!!user" class="pic" :src="!!user.imageUrl ? user.imageUrl : 'https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png'" />
       <div class="info">
         <p class="title">{{ title }}</p>
         <p class="subtitle">{{ subtitle }}</p>
@@ -24,7 +24,7 @@
 <script>
 export default {
   name: "Banner",
-  props: ['title', 'subtitle', 'user', 'buttons'],
+  props: ['title', 'subtitle', 'user', 'buttons', 'to'],
 }
 </script>
 

@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     async fetchMatch() {
-      await this.$store.dispatch('match/fetch', this.id)
+      await this.$store.dispatch('match/fetchMatch', this.id)
     },
     getNickname(id) {
       const res = _.find(this.players, {_id: id})
