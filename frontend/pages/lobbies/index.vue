@@ -2,12 +2,8 @@
   <van-tabs v-model:active="active">
 
     <van-tab :title="$t('all_lobbies')">
-
 <!--      <pre v-for="m in lobbies">{{ m }}</pre>-->
-
-
       <h1>{{ $t('all_lobbies') }}</h1>
-      <!--      <pre v-for="m in lobbies">{{m}}</pre>-->
       <div v-if="lobbies">
         <div v-if="lobbies.length">
           <Banner
@@ -56,7 +52,10 @@
         <Lobby :lobbyID="currentUserLobby._id" />
       </div>
       <div v-else>
-        <CreateLobby />
+        <p>{{ $t('user_has_no_lobby') }}</p>
+        <van-form @submit="newLobby">
+          <CreateMatch />
+        </van-form>
       </div>
     </van-tab>
 
@@ -67,11 +66,11 @@
 <script>
 import Banner from '~/components/Banner';
 import Lobby from '~/components/Lobbies/Lobby';
-import CreateLobby from "~/components/Lobbies/CreateLobby";
+import CreateMatch from "~/components/Lobbies/CreateMatch";
 
 export default {
   name: "LobbiesPage",
-  components: {Banner, Lobby, CreateLobby},
+  components: {Banner, Lobby, CreateMatch},
   data() {
     return {
       active: 0,

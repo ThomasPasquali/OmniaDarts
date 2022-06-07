@@ -1,5 +1,5 @@
 <template>
-  
+
   <div v-if="match !== null">
     <div v-if="isCurrentUserLobbyOwner()">
       <h1>Join requests</h1>
@@ -30,18 +30,18 @@
     </div>
   </div>
 
-  <CreateLobby v-else />
+  <CreateMatch v-else />
 
 </template>
 
 <script>
 import TextChat from '~/components/Chat/TextChat';
-import CreateLobby from "~/components/Lobbies/CreateLobby";
+import CreateMatch from "~/components/Lobbies/CreateMatch";
 
 export default {
   name: 'Lobby',
   props: ['lobbyID'],
-  components: {TextChat, CreateLobby},
+  components: {TextChat, CreateMatch},
   data() {
     return {
       autoFetchInterval: null,
