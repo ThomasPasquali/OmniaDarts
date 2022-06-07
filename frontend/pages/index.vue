@@ -8,10 +8,11 @@
       :to="switchLocalePath(locale.code)">{{ locale.name }}</nuxt-link> -->
 
     <!-- TODO -->
-    <van-button type="primary" size="large" to="club">{{ $auth.user.club ? 'Club' : 'Find club' }}</van-button>
-    <van-button type="primary" size="large" to="tournaments">Tornei</van-button>
+    <van-button type="primary" size="large" to="club">Club</van-button>
+    <van-button type="primary" size="large" to="friends">Friends</van-button>
+    <van-button type="primary" size="large" to="tournaments">Tournaments</van-button>
     <van-button type="primary" size="large" to="lobbies">Lobbies</van-button>
-    <van-button type="primary" size="large" to="dev">Dev</van-button>
+<!--    <van-button type="primary" size="large" to="dev">Dev</van-button>-->
   </div>
 </template>
 

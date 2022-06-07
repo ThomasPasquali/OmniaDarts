@@ -93,7 +93,6 @@ export default {
       document.querySelector(".van-dropdown-menu__bar").style.opacity = "0";
     })
   },
-
 }
 </script>
 

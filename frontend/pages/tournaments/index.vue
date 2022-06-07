@@ -14,7 +14,7 @@
         v-for="t in tournaments"
         :key="t._id"
         :title="t.name"
-        subtitle="TODO"
+        :subtitle="t.players.length + ' players'"
         :to="'/tournaments/' + t._id"
       />
     </van-tab>
