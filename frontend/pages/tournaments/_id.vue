@@ -10,8 +10,7 @@
         :group="1"
       />
     </div>
-    <pre>{{ tournament.winningMode }}</pre>
-    <pre>{{ tournament.gamemode }}</pre>
+    <br>
     <Banner
       v-for="p in tournament.players"
       :key="p._id"
@@ -19,7 +18,8 @@
       :title="p.nickname"
       :subtitle="p.firstname + ' ' + p.lastname"
     />
-<!--    <pre>{{ tournament.matches }}</pre>-->
+    <pre>{{ tournament.winningMode }}</pre>
+    <pre>{{ tournament.gamemode }}</pre>
   </div>
   <div v-else>Loading...</div>
 </template>
