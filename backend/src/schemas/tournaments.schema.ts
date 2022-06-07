@@ -1,8 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import mongoose, { Document } from 'mongoose';
-import WinningMode from '../classes/winningmode';
-import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
 import { getEnumDescription } from '../utils/utilFunctions';
 import { Club } from './club.schema';
@@ -38,19 +36,24 @@ export class Tournament extends Document {
   })
   type: string;
 
-  @Prop()
-  @ApiProperty({
-    enum: Gamemodes,
-    example: getEnumDescription(Gamemodes),
-    required: true,
-  })
-  gamemode: string;
+  @Prop(
+    raw({
+      name: { type: String /*GamemodeName*/ },
+      settings: { type: Object /*MatchSettings*/ },
+    }),
+  )
+  @ApiProperty()
+  gamemode: Record<string, any>;
 
-  @Prop()
-  @ApiProperty({
-    required: true,
-  })
-  winningMode: WinningMode;
+  @Prop(
+    raw({
+      goal: { type: Number },
+      firstBest: { type: String } /*{ enum: () => FirstBest }*/,
+      setsLegs: { type: String } /*{ enum: () => SetsLegs }*/,
+    }),
+  )
+  @ApiProperty()
+  winningMode: Record<string, any>;
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
@@ -90,7 +93,6 @@ export class Tournament extends Document {
   @Prop()
   @ApiProperty()
   numRounds: number;
-
 }
 
 export const TournamentsSchema = SchemaFactory.createForClass(Tournament);

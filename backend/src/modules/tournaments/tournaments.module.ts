@@ -18,7 +18,10 @@ import { TournamentsService } from './tournaments.service';
     TournamentMatchesModule,
     MatchesModule,
     MongooseModule.forFeature([
-      { name: Tournament.name, schema: TournamentsSchema },
+      {
+        name: Tournament.name,
+        schema: TournamentsSchema,
+      },
     ]),
   ],
   controllers: [TournamentsController],

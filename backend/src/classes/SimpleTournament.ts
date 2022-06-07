@@ -1,8 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import Gamemodes from '../enums/gamemodes';
 import TournamentTypes from '../enums/tournamentTypes';
 import { getEnumDescription } from '../utils/utilFunctions';
-import WinningMode from './winningmode';
 
 export default class SimpleTournament {
   @ApiProperty({
@@ -11,28 +9,27 @@ export default class SimpleTournament {
     default: 'tournament_name',
   })
   name: string;
+
   @ApiProperty({
     description: 'Set the users at random order inside the tournament',
     required: false,
     default: true,
   })
   randomOrder: boolean;
+
   @ApiProperty({
     enum: TournamentTypes,
     example: getEnumDescription(TournamentTypes),
     required: true,
   })
   type: string;
-  @ApiProperty({
-    enum: Gamemodes,
-    example: getEnumDescription(Gamemodes),
-    required: true,
-  })
-  gamemode: string;
-  @ApiProperty({
-    required: true,
-  })
-  winningMode: WinningMode;
+
+  @ApiProperty()
+  gamemode: Record<string, any>;
+
+  @ApiProperty()
+  winningMode: Record<string, any>;
+
   @ApiProperty({
     isArray: true,
     // required: true, TODO change
@@ -41,6 +38,7 @@ export default class SimpleTournament {
     default: [],
   })
   idPlayers: string[];
+
   @ApiPropertyOptional({
     default: null,
   })

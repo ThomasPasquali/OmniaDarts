@@ -23,7 +23,11 @@ export class TournamentsService {
   }
 
   async getTournamentById(id: string): Promise<Tournament> {
-    return await this.tournamentModel.findById(id).populate('players').lean();
+    return await this.tournamentModel
+      .findById(id)
+      .populate('players')
+      .populate('matches')
+      .lean();
   }
 
   async updateTournament(
