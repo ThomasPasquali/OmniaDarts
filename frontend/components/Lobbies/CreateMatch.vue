@@ -3,7 +3,7 @@
 
     <p v-if="!isTournament">{{ $t('user_has_no_lobby') }}</p>
 
-    <van-form @submit="!isTournament ? newLobby : newTournament">
+    <van-form @submit="submitCreate">
 
       <van-cell-group v-if="!!isTournament" inset>
         <van-field v-model="tournament.name" label="Name" placeholder="Tournament name" />
@@ -74,27 +74,22 @@ export default {
     let fields_ = [{
       title: 'Start point',
       values: [301, 501, 'custom'],
-      defaultIndex: 0,
     }, {
       title: 'Check in',
       values: ['Straight', 'Double', 'Triple', 'Master'],
-      defaultIndex: 0,
     }, {
       title: 'Check out',
       values: ['Straight', 'Double', 'Triple', 'Master'],
-      defaultIndex: 0,
     }, {
       title: 'Winning mode',
       values: ['First of', 'Best of'],
-      defaultIndex: 0,
     }, {
       title: 'Sets/Legs',
       values: ['Sets', 'Legs'],
-      defaultIndex: 0,
     }];
     let defaultValues = [];
     for (let f in fields_) {
-      defaultValues.push(fields_[f].values[fields_[f].defaultIndex]);
+      defaultValues.push(fields_[f].values[0]);
     }
     return {
       fields: fields_,
@@ -130,58 +125,55 @@ export default {
       }
       this.update++;
     },
-    async newLobby(values) {
-      try {
-        await this.$axios.$post('matches/lobby/new', {
-          gamemode: {
-            name: GamemodeName.X01,
-            settings: new X01Settings(
-              values['Start point'] === 'custom' ? this.customStartPoint : values['Start point'],
-              values['Check in'].toLowerCase(),
-              values['Check out'].toLowerCase(),
-            ),
-          },
-          winningMode: {
-            goal: this.goal,
-            firstBest: values['Winning mode'],
-            setsLegs: values['Sets/Legs'],
-          },
-          lobby: {
-            isPublic: !this.isPrivate,
-          },
-        })
-        await this.$store.dispatch("lobbies/fetchLobbies")
-      } catch {
-        alert('Cannot create lobby')
-      }
-    },
-    async newTournament(values) {
-      try {
-        await this.$axios.$post('tournaments', {
+    async submitCreate(values) {
+      if (!this.isTournament) {
+        try {
+          await this.$axios.$post('matches/lobby/new', {
+            gamemode: {
+              name: GamemodeName.X01,
+              settings: new X01Settings(
+                values['Start point'] === 'custom' ? this.customStartPoint : values['Start point'],
+                values['Check in'].toLowerCase(),
+                values['Check out'].toLowerCase(),
+              ),
+            },
+            winningMode: {
+              goal: this.goal,
+              firstBest: values['Winning mode'],
+              setsLegs: values['Sets/Legs'],
+            },
+            lobby: {
+              isPublic: !this.isPrivate,
+            },
+          })
+          await this.$store.dispatch("lobbies/fetchLobbies")
+        } catch {
+          alert('Cannot create lobby')
+        }
+      } else {
+        let tournament = {
           name: this.tournament.name,
           randomOrder: true,
           idPlayers: Array.from(this.selectedUsers),
           idClub: null,
-          gamemode: {
-            name: GamemodeName.X01,
-            settings: new X01Settings(
-              values['Start point'] === 'custom' ? this.customStartPoint : values['Start point'],
-              values['Check in'].toLowerCase(),
-              values['Check out'].toLowerCase(),
-            ),
-          },
+          type: 'League',
+          gamemode: 'X01',
           winningMode: {
             goal: this.goal,
             firstBest: values['Winning mode'],
             setsLegs: values['Sets/Legs'],
           },
-        })
-        // await this.$store.dispatch("lobbies/fetchLobbies")
-      } catch {
-        alert('Cannot create tournament')
+        };
+        alert(JSON.stringify(tournament, null, 4));
+        try {
+          await this.$axios.$post('tournaments', tournament)
+          // await this.$store.dispatch("lobbies/fetchLobbies")
+        } catch {
+          // alert('Cannot create tournament')  // FIXME ?
+        }
       }
     },
-  },
+  }
 }
 </script>
 

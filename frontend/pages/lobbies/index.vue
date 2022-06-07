@@ -2,7 +2,7 @@
   <van-tabs v-model:active="active">
 
     <van-tab :title="$t('all_lobbies')">
-<!--      <pre v-for="m in lobbies">{{ m }}</pre>-->
+      <!--      <pre v-for="m in lobbies">{{ m }}</pre>-->
       <h1>{{ $t('all_lobbies') }}</h1>
       <div v-if="lobbies">
         <div v-if="lobbies.length">
@@ -53,9 +53,7 @@
       </div>
       <div v-else>
         <p>{{ $t('user_has_no_lobby') }}</p>
-        <van-form @submit="newLobby">
-          <CreateMatch />
-        </van-form>
+        <CreateMatch />
       </div>
     </van-tab>
 
