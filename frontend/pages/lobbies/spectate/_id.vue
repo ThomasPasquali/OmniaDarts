@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>Spectate</h1>
     <!-- <pre>{{match}}</pre> -->
     <div v-for="p in players" :key="p.nickname">
       <Banner
