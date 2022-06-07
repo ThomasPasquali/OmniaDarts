@@ -10,7 +10,7 @@
     <!-- TODO -->
     <van-button type="primary" size="large" to="club">{{ $auth.user.club ? 'Club' : 'Find club' }}</van-button>
     <van-button type="primary" size="large" to="tournaments">Tornei</van-button>
-    <van-button type="primary" size="large" to="lobby">Lobbies</van-button>
+    <van-button type="primary" size="large" to="lobbies">Lobbies</van-button>
     <van-button type="primary" size="large" to="dev">Dev</van-button>
   </div>
 </template>
