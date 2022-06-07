@@ -207,6 +207,7 @@ export default {
 /*  background: red;*/
 /*}*/
 
+
 .wrapper {
   /*display: flex;*/
   /*max-height: 600px;*/

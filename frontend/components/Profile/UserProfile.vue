@@ -108,7 +108,7 @@ export default {
           this.$axios.$put("/users/" + this.user._id, updatedData);
           this.edit = false;
           this.updateData(this.fields);
-          this.$router.go()
+          this.$router.go();  // FIXME
           return true;
         })
         .catch(_ => {
