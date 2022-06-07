@@ -19,7 +19,7 @@
       :title="p.nickname"
       :subtitle="p.firstname + ' ' + p.lastname"
     />
-    <pre>{{ tournament.matches }}</pre>
+<!--    <pre>{{ tournament.matches }}</pre>-->
   </div>
   <div v-else>Loading...</div>
 </template>

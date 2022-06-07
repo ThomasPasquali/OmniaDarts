@@ -1,7 +1,7 @@
 export const state = () => ({
   tournaments: [],
   tournamentID: null,
-  tournamentMatches: [],
+  tournamentMatches: {},
 })
 
 export const actions = {
@@ -11,8 +11,8 @@ export const actions = {
   async fetchTournamentID({commit}, tournamentID) {
     commit('setTournamentID', await this.$axios.$get('tournaments/'+ tournamentID))
   },
-  async fetchTournamentMatches({commit}, tournamentID) {
-    commit('setTournamentMatches', await this.$axios.$get('tournament-matches/' + tournamentID))
+  async fetchTournamentMatches({commit}, matchID) {
+    commit('setTournamentMatches', await this.$axios.$get('matches/' + matchID))
   }
 }
 
@@ -23,8 +23,10 @@ export const mutations = {
   setTournamentID(state, tournamentID) {
     state.tournamentID = tournamentID
   },
-  setTournamentMatches(state, tournamentMatches) {
-    state.tournamentMatches = tournamentMatches
+  setTournamentMatches(state, match) {
+    let tmp = {...state.tournamentMatches}
+    tmp[match._id] = match
+    state.tournamentMatches = tmp
   },
 }
 

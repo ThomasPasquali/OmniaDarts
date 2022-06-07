@@ -1,35 +1,34 @@
 <template>
-
-  <div v-if="!!match" class="box">
-    <!--    <div class="row" v-for="p in match.players">-->
-    <!--      <div class="name">{{ Object(participants.find(p_ => p_.id === p.id)).name /* fixme ??? */ }}</div>-->
-    <!--      <div class="win">{{ (match.winner === p.id ? 'V' : 'X') }}</div>-->
-    <!--      <div class="points">{{ p.points }}</div>-->
-    <!--    </div>-->
-    {{ tournamentMatch._id }}
-    {{ tournamentMatch.match }}
-    {{ match._id }}
-    {{ match.players/*.map(p => p.nickname)*/ }}
+  <div v-if="!!match && !!match.players &&match.players.length" class="box">
+    <div class="row" v-for="p in match.players">
+      <div class="name">{{ p.nickname }}</div>
+      <div class="win">
+        {{ match.done ? (match.results.find(r => r.userID === p._id).score === winnerScore ? 'V' : 'X') : '-' }}
+      </div>
+      <div class="score">{{ match.results.find(r => r.userID === p._id).score }}</div>
+    </div>
   </div>
 
   <div v-else class="box">
     <p>???</p>
   </div>
-
 </template>
 
 <script>
+import {max} from "lodash/math";
+
 export default {
   name: "TournamentPlayers",
   props: ['tournamentMatch'],
   async mounted() {
-    // try {  // FIXME
-      await this.$store.dispatch("match/fetchMatch", this.tournamentMatch.match);
-    // } catch {}
+    await this.$store.dispatch("tournaments/fetchTournamentMatches", this.tournamentMatch.match);
   },
   computed: {
     match() {
-      return this.$store.getters["match/match"];
+      return this.$store.getters["tournaments/tournamentMatches"][this.tournamentMatch.match];
+    },
+    winnerScore() {
+      return max(this.match.results.map(r => r.score));
     },
   },
 }
@@ -41,9 +40,10 @@ export default {
   display: flex;
   flex-direction: column;
   width: 200px;
-  background: white;
+  background: navy;
   gap: 4px;
   padding: 8px;
+  color: white;
 }
 
 .row {
@@ -51,7 +51,7 @@ export default {
   flex-direction: row;
   align-items: center;
   border-radius: 8px;
-
+  color: black;
 }
 
 .row > * {
@@ -68,7 +68,7 @@ export default {
   background: orange;
 }
 
-.points {
+.score {
   width: 2rem;
   text-align: right;
   background: green;
