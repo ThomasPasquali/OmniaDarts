@@ -2,6 +2,10 @@
   <van-tabs v-model:active="active">
 
     <van-tab :title="$t('all_lobbies')">
+
+      <pre v-for="m in lobbies">{{ m }}</pre>
+
+
       <h1>{{ $t('all_lobbies') }}</h1>
       <!--      <pre v-for="m in lobbies">{{m}}</pre>-->
       <div v-if="lobbies">

@@ -1,4 +1,5 @@
 <template>
+  
   <div v-if="match !== null">
     <div v-if="isCurrentUserLobbyOwner()">
       <h1>Join requests</h1>
@@ -25,14 +26,12 @@
     </pre>
     <div>
       <van-button v-if="isCurrentUserLobbyOwner()" @click="deleteLobby()">{{ $t('delete_lobby') }}</van-button>
-      <van-button @click="play">{{ $t('lobby_play') }}</van-button>  <!-- TODO -->
+      <van-button v-if="useAndroid" @click="play">{{ $t('lobby_play') }}</van-button>  <!-- TODO -->
     </div>
   </div>
-  <div v-else>
-    <CreateLobby/>
-<!--    {{ $t('lobby_waiting_to_join') }}-->
-<!--    <van-button @click="back">Back</van-button>-->
-  </div>
+
+  <CreateLobby v-else />
+
 </template>
 
 <script>
@@ -55,7 +54,10 @@ export default {
     },
     joinRequests() {
       return this.$store.getters['lobbies/lobbyJoinRequests']
-    }
+    },
+    useAndroid() {
+      return !!window.android;
+    },
   },
   async mounted() {
     await this.fetchLobby()
