@@ -30,18 +30,18 @@
     </div>
   </div>
 
-  <CreateMatch v-else />
+  <CreateMatches v-else />
 
 </template>
 
 <script>
 import TextChat from '~/components/Chat/TextChat';
-import CreateMatch from "~/components/Lobbies/CreateMatch";
+import CreateMatches from "~/components/Lobbies/CreateMatches";
 
 export default {
   name: 'Lobby',
   props: ['lobbyID'],
-  components: {TextChat, CreateMatch},
+  components: {TextChat, CreateMatches},
   data() {
     return {
       autoFetchInterval: null,

@@ -118,15 +118,15 @@ export default {
   methods: {
     async sendRequest(userID) {
       await this.$axios.$post('friends/' + userID);
-      this.$router.go();
+      // this.$router.go();
     },
     async deleteFriend(userID) {
       await this.$axios.$delete('friends/' + userID);
-      this.$router.go();
+      // this.$router.go();
     },
     async acceptFriend(userID) {
       await this.$axios.$patch('friends/' + userID);
-      this.$router.go();
+      // this.$router.go();
     },
   },
   mounted() {

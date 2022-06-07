@@ -53,7 +53,7 @@
       </div>
       <div v-else>
         <p>{{ $t('user_has_no_lobby') }}</p>
-        <CreateMatch />
+        <CreateMatches />
       </div>
     </van-tab>
 
@@ -64,11 +64,11 @@
 <script>
 import Banner from '~/components/Banner';
 import Lobby from '~/components/Lobbies/Lobby';
-import CreateMatch from "~/components/Lobbies/CreateMatch";
+import CreateMatches from "~/components/Lobbies/CreateMatches";
 
 export default {
   name: "LobbiesPage",
-  components: {Banner, Lobby, CreateMatch},
+  components: {Banner, Lobby, CreateMatches},
   data() {
     return {
       active: 0,

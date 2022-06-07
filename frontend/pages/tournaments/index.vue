@@ -51,7 +51,7 @@
 
 <script>
 import TournamentPreview from "~/components/Tournaments/TournamentPreview";
-import CreateMatch from "~/components/Lobbies/CreateMatch";
+import CreateMatch from "~/components/Lobbies/CreateMatches";
 
 export default {
   name: "tournaments",
