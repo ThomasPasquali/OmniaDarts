@@ -32,9 +32,9 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.enableCors({
-    origin: configService.get('ALLOWED_ORIGIN'),
+    origin: 'http://10.0.2.2:3000',
   });
-  console.log(configService.get('ALLOWED_ORIGIN'));
+
   await app.listen(configService.get('PORT'));
 }
 

@@ -34,8 +34,11 @@ export default {
   methods: {
     async login() {
       try {
+        console.log("hi pie");
         await this.$auth.loginWith('local', { data: { nickname: this.usr, pwd: this.pwd } })
-      }catch {
+        console.log("hi pie");
+      } catch (err) {
+        console.log(err);
         this.failedLogin = true
       }
     },
