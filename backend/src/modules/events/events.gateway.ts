@@ -51,14 +51,16 @@ export class EventsGateway
   }
 
   async handleConnection(client: any) {
-    this.clients.push(client);
     const payload = this.jwtService.decode(
       client.handshake.headers.authorization.split(' ')[1],
     );
-    client.user = await this.usersService.findById(payload.sub);
-    console.log(
-      `IO: "${client.user.nickname}" connected to "${this.server['name']}"`,
-    );
+    if(payload) {
+	    client.user = await this.usersService.findById(payload.sub);
+	    console.log(
+	      `IO: "${client.user.nickname}" connected to "${this.server['name']}"`,
+	    );
+	    this.clients.push(client);
+    }
   }
 
   handleDisconnect(client) {

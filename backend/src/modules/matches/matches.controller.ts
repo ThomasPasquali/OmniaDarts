@@ -128,6 +128,7 @@ export class MatchesController {
       idMatch,
       newThrow,
     );
+    return "OK";
   }
 
   @Post('lobby/legWon/:idMatch')

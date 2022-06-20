@@ -30,7 +30,7 @@
               : { icon: 'login',
                   text: m.lobby.isPublic ? 'Join' : 'Request',
                   emit: 'joinLobby',
-                  disabled: !!currentUserLobby }))
+                  disabled: false/*FIXME !!currentUserLobby*/ }))
             ]"
             @joinLobby="joinLobby(m)"
             @spectateLobby="spectateLobby(m._id)"

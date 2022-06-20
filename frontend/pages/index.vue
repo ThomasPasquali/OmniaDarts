@@ -13,6 +13,7 @@
     <van-button type="primary" size="large" to="tournaments">Tournaments</van-button>
     <van-button type="primary" size="large" to="lobbies">Lobbies</van-button>
 <!--    <van-button type="primary" size="large" to="dev">Dev</van-button>-->
+<pre>{{$auth.user}}</pre>
   </div>
   
 </template>
@@ -34,8 +35,8 @@ export default {
         }
         console.log("user logged")
         window.localStorage.setItem('user', user)
-        window.android.login('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImYiLCJzdWIiOiI2Mjk5MWYwNzBjMmJhZGE4YzU2MDNmNzIiLCJpYXQiOjE2NTU2NTIyMjQsImV4cCI6MTY1Njg4NTgyNH0.XC0Uze7G1jVLbsb2YrIgKEOCzEl2GGX2w9blyEmk7S8',
-          '{"_id": "62991f070c2bada8c5603f72","nickname": "f","firstname": "","imageUrl": "https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png","club": null,"isAdmin": false,}')
+        window.android.login('Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImEiLCJzdWIiOiI2Mjk5Y2ZjMGVhY2E4YmQ4OGMyNmQ5MmIiLCJpYXQiOjE2NTU2NzA4MDcsImV4cCI6MTY1NjkwNDQwN30.WD0Iw2Y_6SYYJpRbXqTByzIe7Obt3pedNINGuVZE4NM',
+          '{"_id": "6299cfc0eaca8bd88c26d92b","nickname": "a","firstname": "","imageUrl": "https://www.google.com/search?q=funny+images&sxsrf=ALiCzsat-mwHjZUgMXXMezONtIumdFbYRQ:1655670937300&tbm=isch&source=iu&ictx=1&vet=1&fir=reeA1DN2wr7d-M%252Cu8TG4n0BCLIJlM%252C_%253Bl4DZwqRrmJ1ztM%252CmYp30vKTPrwjdM%252C_%253BFQOuadU2lKP7_M%252CN_OhQZbnpZGkxM%252C_%253BG8u2guoeIMRmkM%252CsYpYylrj26dpBM%252C_%253BkFeW-KTI5llFPM%252CPwwD24Ot10RpPM%252C_%253BqDBuxN6FoWK4EM%252CFvYi-YR58g5DeM%252C_%253BVkN_RAWeOJcVDM%252Cf2twI4GHHmeRqM%252C_%253B68sYEbDPiE_KWM%252Cu8TG4n0BCLIJlM%252C_%253BSYYdjnkVZhFKDM%252C4bDBGjluLdk1HM%252C_%253BTZ3zPAK-_8ZC2M%252CIYe722_ft9NDUM%252C_%253B5xJW29CzVH80BM%252CJwP_JmSIjvczWM%252C_%253BHVJSnv7Q71hfRM%252Cv4ik2aliP1qMaM%252C_%253BkPwcemRgF5H-dM%252CvzCPwpAcn4k-ZM%252C_%253BzIluHF4Bf46CGM%252CN_OhQZbnpZGkxM%252C_%253B08KZe6TeTSmiTM%252CIYe722_ft9NDUM%252C_&usg=AI4_-kTTdsO5G6TbuBjUtpML24505pM0Uw&sa=X&ved=2ahUKEwjpmtTwrrr4AhXZ8LsIHVIvBHUQ9QF6BAgZEAE#imgrc=FQOuadU2lKP7_M","club": null,"isAdmin": false,}')
       }
   },
   watch: {
