@@ -13,9 +13,9 @@ import { NotificationsProvider } from '../../interfaces/notifications';
 import { User } from '../../schemas/user.schema';
 import { ChatsService } from '../chats/chats.service';
 import { FriendRequestsService } from '../friendRequests/friendRequests.service';
-import {MatchesService} from "../matches/matches.service";
-import {MatchesGateway} from "../matches/matches.gateway";
-import {forwardRef, Inject} from "@nestjs/common";
+import { MatchesService } from '../matches/matches.service';
+import { MatchesGateway } from '../matches/matches.gateway';
+import { forwardRef, Inject } from '@nestjs/common';
 
 @WebSocketGateway()
 export class EventsGateway
@@ -30,7 +30,8 @@ export class EventsGateway
     private readonly friendReqService: FriendRequestsService,
     protected readonly clubService: ClubsService,
     protected readonly chatService: ChatsService,
-    @Inject(forwardRef(() => MatchesService)) protected readonly matchesService: MatchesService,
+    @Inject(forwardRef(() => MatchesService))
+    protected readonly matchesService: MatchesService,
   ) {
     this.notificationsProviders = [clubService, friendReqService];
   }
@@ -85,14 +86,18 @@ export class EventsGateway
   }
 
   public sentToUser(user: User, event: string, payload: any) {
-    for (const c of this.clients) if(c.user._id.equals(user._id)) c.emit(event, payload);
+    for (const c of this.clients)
+      if (c.user._id.equals(user._id)) c.emit(event, payload);
   }
 
   public sentToClub(clubID: string, event: string, payload: any) {
-    for (const c of this.clients) if(c.user.club._id.equals(clubID)) c.emit(event, payload);
+    for (const c of this.clients)
+      if (c.user.club._id.equals(clubID)) c.emit(event, payload);
   }
 
   public sentToClubAdmins(clubID: string, event: string, payload: any) {
-    for (const c of this.clients) if(c.user.club._id.equals(clubID) && c.user.isAdmin) c.emit(event, payload);  }
-
+    for (const c of this.clients)
+      if (c.user.club._id.equals(clubID) && c.user.isAdmin)
+        c.emit(event, payload);
+  }
 }

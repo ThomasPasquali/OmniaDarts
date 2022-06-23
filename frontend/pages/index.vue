@@ -34,8 +34,8 @@ export default {
         }
         console.log("user logged")
         window.localStorage.setItem('user', user)
-        window.android.login('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImYiLCJzdWIiOiI2Mjk5MWYwNzBjMmJhZGE4YzU2MDNmNzIiLCJpYXQiOjE2NTU2NTIyMjQsImV4cCI6MTY1Njg4NTgyNH0.XC0Uze7G1jVLbsb2YrIgKEOCzEl2GGX2w9blyEmk7S8',
-          '{"_id": "62991f070c2bada8c5603f72","nickname": "f","firstname": "","imageUrl": "https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png","club": null,"isAdmin": false,}')
+        window.android.login('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImYiLCJzdWIiOiI2Mjk5MWYwNzBjMmJhZGE4YzU2MDNmNzIiLCJpYXQiOjE2NTU2NjU3OTIsImV4cCI6MTY1Njg5OTM5Mn0.iL-KG3zQLkRV37d99gUuUZcSh9HyVElEHi2P8fvFNsw',
+          '{"_id": "62991f070c2bada8c5603f72","nickname": "f","firstname": "","imageUrl": "https://cdn.jsdelivr.net/npm/@vant/assets/icon-demo.png","club": null,"isAdmin": false}')
       }
   },
   watch: {

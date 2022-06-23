@@ -1,0 +1,116 @@
+public class VideoChatFragment extends Fragment {
+
+    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA"};
+    private int lensFacing = CameraSelector.LENS_FACING_FRONT;
+
+    private static final int RC_CALL = 111;
+    public static final String VIDEO_TRACK_ID = "ARDAMSv0";
+    public static final int VIDEO_RESOLUTION_WIDTH = 1280;
+    public static final int VIDEO_RESOLUTION_HEIGHT = 720;
+    public static final int FPS = 30;
+
+    private boolean isInitiator;
+    private boolean isChannelReady;
+    private boolean isStarted;
+
+    private PreviewView mPreviewView;
+    private CameraSelector cameraSelector;
+    private ProcessCameraProvider cameraProvider;
+    private VideoChatSocket socket;
+
+    private final ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            new ActivityResultCallback<Boolean>() {
+                @Override
+                public void onActivityResult(Boolean result) {
+                    if(result) startCamera();
+                }
+            });
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LinearLayout layout = (LinearLayout)inflater.inflate(R.layout.fragment_chat_video, container, false);
+        mPreviewView = layout.findViewById(R.id.cameraView);
+        return layout;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        String jwt = getContext()
+                .getSharedPreferences(Constants.USER_PREFERENCES, Context.MODE_PRIVATE)
+                .getString(Constants.KEY_TOKEN, "");
+        try {
+            socket = new VideoChatSocket(jwt, "1");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startCamera() {
+        final ListenableFuture<ProcessCameraProvider> cameraProviderFuture
+                = ProcessCameraProvider.getInstance(requireContext());
+        cameraProviderFuture.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    cameraProvider = cameraProviderFuture.get();
+                    bindPreview(cameraProvider);
+                } catch (ExecutionException | InterruptedException ignored) {}
+            }
+        }, ContextCompat.getMainExecutor(requireContext()));
+    }
+
+    void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
+
+        cameraProvider.unbindAll();
+
+        Preview preview = new Preview.Builder().build();
+        cameraSelector = new CameraSelector.Builder()
+                .requireLensFacing(lensFacing)
+                .build();
+        ImageAnalysis imageAnalysis = new ImageAnalysis.Builder().build();
+        ImageCapture.Builder builder = new ImageCapture.Builder();
+        HdrImageCaptureExtender hdrImageCaptureExtender = HdrImageCaptureExtender.create(builder);
+
+        if (hdrImageCaptureExtender.isExtensionAvailable(cameraSelector))
+            hdrImageCaptureExtender.enableExtension(cameraSelector);
+
+        final ImageCapture imageCapture = builder
+                .setTargetRotation(requireActivity().getWindowManager().getDefaultDisplay().getRotation())
+                .build();
+        preview.setSurfaceProvider(mPreviewView.createSurfaceProvider());
+
+        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)requireActivity(),
+                cameraSelector, preview, imageAnalysis, imageCapture);
+    }
+
+    public void flipCamera() {
+        if (lensFacing == CameraSelector.LENS_FACING_BACK) lensFacing = CameraSelector.LENS_FACING_FRONT;
+        else if (lensFacing == CameraSelector.LENS_FACING_FRONT) lensFacing = CameraSelector.LENS_FACING_BACK;
+        startCamera();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (socket != null) {
+            socket.disconnect();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPermissionResult.launch(Manifest.permission.CAMERA);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
