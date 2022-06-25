@@ -4,14 +4,14 @@ import {
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
-var os = require('os');
+
 import { EventsGateway } from './events.gateway';
 import { Socket } from 'net';
 import { Chat } from '../../schemas/chat.schema';
 import { TextMessage } from '../../classes/textMessage';
 import { User } from '../../schemas/user.schema';
-import console from 'console';
 import { Logger } from '@nestjs/common';
+//const os = require('os');
 
 @WebSocketGateway({
   namespace: 'videochats',
@@ -25,6 +25,7 @@ export class VideoChatsGateway extends EventsGateway {
   async handleConnection(client: any): Promise<void> {
     await super.handleConnection(client);
     const videochatID = client.handshake.query.videochatID;
+
     //if (videochatID) {
     // console.log('Someone enter in a video chat');
     /*const chat: Chat = await this.chatService.findById(chatID);
@@ -40,29 +41,25 @@ export class VideoChatsGateway extends EventsGateway {
     //}
   }
 
+  private log(argument) {
+    this.broadcast('log', 'Message from server: ' + argument);
+  }
+
   @SubscribeMessage('message')
   async newMessage(
     @MessageBody() body: any,
-    @ConnectedSocket() client: Socket,
-  ): Promise<void> {
-    Logger.debug(body);
-    const roomId = this.getRoomID(body);
-    Logger.debug('Client said: ', roomId);
-
-    this.server.to(roomId).emit('message', this.getMessage(body));
-  }
-
-  @SubscribeMessage('discover')
-  async discoverOthersInTheRoom(
-    @MessageBody() body: any,
     @ConnectedSocket() client: any,
   ): Promise<void> {
-    const room = this.getRoomID(body);
-    for (let other of this.clients[room]) {
-      Logger.debug(other.handshake.address);
-      if (other.id !== client.id)
-        client.emit('discovered', other.handshake.address);
-    }
+    let message = body;
+    message = message.mex ? message.mex : message;
+    this.log('Client said: ' + message);
+    //console.log(message);
+    // for a real app, would be room-only (not broadcast)
+    if (body.sendTo) {
+      console.log('Sending to ', body.sendTo);
+      if (message.from) message.from = client.id;
+      this.server.to(body.sendTo).emit('message', message);
+    } else this.broadcast('message', message);
   }
 
   @SubscribeMessage('create or join')
@@ -70,26 +67,37 @@ export class VideoChatsGateway extends EventsGateway {
     @MessageBody() body: any,
     @ConnectedSocket() client: any,
   ): Promise<void> {
-    const msg = JSON.parse(body);
-    const room = msg.roomId;
+    const room = body;
+    this.log('Received request to create or join room ' + room);
 
-    // Add client to the list
-    this.clients[room] = this.clients[room] == null ? [] : this.clients[room];
-    this.clients[room].push(client);
+    const clientsInRoom = client.adapter['rooms'].get(room);
+    console.log(clientsInRoom);
+    const numClients = clientsInRoom ? clientsInRoom.size : 0;
+    this.log('Room ' + room + ' now has ' + numClients + ' client(s)');
 
-    Logger.debug(
-      'Received request to join room ' +
-        room +
-        ' with ' +
-        this.clients[room].length +
-        ' people',
-    );
-    Logger.debug('Client ID ' + client.id + ' joined room ' + room);
-
-    this.server.to(room).emit('join', room);
-    client.join(room);
-    client.emit('joined', room, client.id);
-    this.server.to(room).emit('ready');
+    if (numClients === 0) {
+      console.log('First conencted');
+      client.join(room);
+      this.log('Client ID ' + client.id + ' created room ' + room);
+      console.log(client.id);
+      client.emit('created', room, client.id);
+    } else if (numClients === 1) {
+      console.log('Second connected');
+      this.log('Client ID ' + client.id + ' joined room ' + room);
+      this.broadcast('join', room);
+      client.join(room);
+      client.emit('joined', room, client.id);
+      this.broadcast('ready', '');
+    } else {
+      console.log('Third or higher client');
+      console.log('Others ' + [...clientsInRoom]);
+      client.emit('more', [...clientsInRoom]);
+      this.log('Client ID ' + client.id + ' joined room ' + room);
+      this.broadcast('join', room);
+      client.join(room);
+      client.emit('joined', room, client.id);
+      this.broadcast('ready', '');
+    }
   }
 
   @SubscribeMessage('ipaddr')
@@ -97,17 +105,22 @@ export class VideoChatsGateway extends EventsGateway {
     @MessageBody() body: any,
     @ConnectedSocket() client: any,
   ): Promise<void> {
-    const room = this.getRoomID(body);
-
-    var ifaces = os.networkInterfaces();
+    var ifaces = null; //os.networkInterfaces();
     for (var dev in ifaces) {
       ifaces[dev].forEach(function (details) {
         if (details.family === 'IPv4' && details.address !== '127.0.0.1') {
-          Logger.debug('Sending ip: ' + details.address);
-          client.to(room).emit('ipaddr', details.address);
+          client.emit('ipaddr', details.address);
         }
       });
     }
+  }
+
+  @SubscribeMessage('bye')
+  async bye(
+    @MessageBody() body: any,
+    @ConnectedSocket() client: any,
+  ): Promise<void> {
+    console.log('received bye from ' + client.id);
   }
 
   private getRoomID(body: any) {
