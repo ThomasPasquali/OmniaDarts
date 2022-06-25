@@ -41,8 +41,10 @@ export class VideoChatsGateway extends EventsGateway {
     //}
   }
 
-  private log(argument) {
-    this.broadcast('log', 'Message from server: ' + argument);
+  private log(...args: Object[]) {
+    var array = ['Message from server:'];
+    array.push.apply(array, args);
+    this.broadcast('log', array);
   }
 
   @SubscribeMessage('message')
@@ -50,16 +52,9 @@ export class VideoChatsGateway extends EventsGateway {
     @MessageBody() body: any,
     @ConnectedSocket() client: any,
   ): Promise<void> {
-    let message = body;
-    message = message.mex ? message.mex : message;
-    this.log('Client said: ' + message);
-    //console.log(message);
-    // for a real app, would be room-only (not broadcast)
-    if (body.sendTo) {
-      console.log('Sending to ', body.sendTo);
-      if (message.from) message.from = client.id;
-      this.server.to(body.sendTo).emit('message', message);
-    } else this.broadcast('message', message);
+    var to = body['to'];
+    this.log('from:' + client.id + ' to:' + to, body);
+    this.server.to(to).emit('message', body);
   }
 
   @SubscribeMessage('create or join')
@@ -68,6 +63,7 @@ export class VideoChatsGateway extends EventsGateway {
     @ConnectedSocket() client: any,
   ): Promise<void> {
     const room = body;
+
     this.log('Received request to create or join room ' + room);
 
     const clientsInRoom = client.adapter['rooms'].get(room);
@@ -76,27 +72,15 @@ export class VideoChatsGateway extends EventsGateway {
     this.log('Room ' + room + ' now has ' + numClients + ' client(s)');
 
     if (numClients === 0) {
-      console.log('First conencted');
       client.join(room);
       this.log('Client ID ' + client.id + ' created room ' + room);
-      console.log(client.id);
       client.emit('created', room, client.id);
-    } else if (numClients === 1) {
-      console.log('Second connected');
-      this.log('Client ID ' + client.id + ' joined room ' + room);
-      this.broadcast('join', room);
-      client.join(room);
-      client.emit('joined', room, client.id);
-      this.broadcast('ready', '');
     } else {
-      console.log('Third or higher client');
-      console.log('Others ' + [...clientsInRoom]);
-      client.emit('more', [...clientsInRoom]);
       this.log('Client ID ' + client.id + ' joined room ' + room);
-      this.broadcast('join', room);
+      this.server.to(room).emit('join', room, client.id);
       client.join(room);
       client.emit('joined', room, client.id);
-      this.broadcast('ready', '');
+      this.server.to(room).emit('ready');
     }
   }
 
@@ -121,15 +105,5 @@ export class VideoChatsGateway extends EventsGateway {
     @ConnectedSocket() client: any,
   ): Promise<void> {
     console.log('received bye from ' + client.id);
-  }
-
-  private getRoomID(body: any) {
-    const msg = JSON.parse(body);
-    return msg.roomId;
-  }
-
-  private getMessage(body: any) {
-    const msg = JSON.parse(body);
-    return msg.message;
   }
 }
