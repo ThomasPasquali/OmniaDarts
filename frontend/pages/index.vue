@@ -15,7 +15,7 @@
 <!--    <van-button type="primary" size="large" to="dev">Dev</van-button>-->
 <pre>{{$auth.user}}</pre>
   </div>
-  
+
 </template>
 
 <script>
@@ -28,15 +28,9 @@ export default {
     },
   },
   mounted() {
+    console.log("user logged",this.$auth)
       if (window && window.android && window.android.login) {
-        let user = {
-          name: 'palo',
-          _id: 'pollo'
-        }
-        console.log("user logged")
-        window.localStorage.setItem('user', user)
-        window.android.login('Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImYiLCJzdWIiOiI2Mjk5MWYwNzBjMmJhZGE4YzU2MDNmNzIiLCJpYXQiOjE2NTYwOTc1NTksImV4cCI6MTY1NzMzMTE1OX0.wE78qBb7BK-u_4jhTNkr3bpdd26svpz5FTE93k5FvKk',
-          '{"_id": "6299cfc0eaca8bd88c26d92b","nickname": "a","firstname": "","imageUrl": "https://www.google.com/search?q=funny+images&sxsrf=ALiCzsat-mwHjZUgMXXMezONtIumdFbYRQ:1655670937300&tbm=isch&source=iu&ictx=1&vet=1&fir=reeA1DN2wr7d-M%252Cu8TG4n0BCLIJlM%252C_%253Bl4DZwqRrmJ1ztM%252CmYp30vKTPrwjdM%252C_%253BFQOuadU2lKP7_M%252CN_OhQZbnpZGkxM%252C_%253BG8u2guoeIMRmkM%252CsYpYylrj26dpBM%252C_%253BkFeW-KTI5llFPM%252CPwwD24Ot10RpPM%252C_%253BqDBuxN6FoWK4EM%252CFvYi-YR58g5DeM%252C_%253BVkN_RAWeOJcVDM%252Cf2twI4GHHmeRqM%252C_%253B68sYEbDPiE_KWM%252Cu8TG4n0BCLIJlM%252C_%253BSYYdjnkVZhFKDM%252C4bDBGjluLdk1HM%252C_%253BTZ3zPAK-_8ZC2M%252CIYe722_ft9NDUM%252C_%253B5xJW29CzVH80BM%252CJwP_JmSIjvczWM%252C_%253BHVJSnv7Q71hfRM%252Cv4ik2aliP1qMaM%252C_%253BkPwcemRgF5H-dM%252CvzCPwpAcn4k-ZM%252C_%253BzIluHF4Bf46CGM%252CN_OhQZbnpZGkxM%252C_%253B08KZe6TeTSmiTM%252CIYe722_ft9NDUM%252C_&usg=AI4_-kTTdsO5G6TbuBjUtpML24505pM0Uw&sa=X&ved=2ahUKEwjpmtTwrrr4AhXZ8LsIHVIvBHUQ9QF6BAgZEAE#imgrc=FQOuadU2lKP7_M","club": null,"isAdmin": false}')
+        window.android.login(window.localStorage.getItem('auth._token.local'), JSON.stringify(this.$auth.user))
       }
   },
   watch: {

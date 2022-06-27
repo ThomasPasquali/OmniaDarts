@@ -19,7 +19,7 @@
         />
       </van-cell-group>
       <div style="margin: 16px">
-        <van-button round block type="primary" native-type="submit">
+        <van-button round block type="primary" @click="login">
           Submit
         </van-button>
       </div>
@@ -34,9 +34,8 @@ export default {
   methods: {
     async login() {
       try {
-        console.log("hi pie");
+        console.log({ data: { nickname: this.usr, pwd: this.pwd } })
         await this.$auth.loginWith('local', { data: { nickname: this.usr, pwd: this.pwd } })
-        console.log("hi pie");
       } catch (err) {
         console.log(err);
         this.failedLogin = true

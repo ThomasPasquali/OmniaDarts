@@ -17,30 +17,50 @@ import {User} from "../../schemas/user.schema";
 })
 export class MatchesGateway extends EventsGateway {
 
+    matchesPlayers = {};
+
     async handleConnection(client: any): Promise<void> {
         await super.handleConnection(client);
         const matchID = client.handshake.query.matchID;
         if (matchID) {
-            client.join(MatchesGateway.getRoomID(matchID))
-            this.broadcast('player_joined', client.user)
+            const room = MatchesGateway.getRoomID(matchID);
+            const userID = client.user._id;
+
+            if(!this.matchesPlayers[matchID]) this.matchesPlayers[matchID] = [];
+            this.matchesPlayers[matchID].push(userID);
+
+            for(const u of this.matchesPlayers[matchID]) {
+                client.emit('player_joined', u);
+                console.log("Emitting player_joined "+u);
+            }
+
+            client.join(room);
+            this.server.to(room).emit('player_joined', userID);
         }
     }
 
     handleDisconnect(client) {
         super.handleDisconnect(client);
-        this.broadcast('player_left', client.user)
+
+        const matchID = client.handshake.query.matchID;
+        const userID = client.user._id;
+
+        this.server.to(MatchesGateway.getRoomID(matchID)).emit('player_left', userID);
+        this.matchesPlayers[matchID].splice(this.matchesPlayers[matchID].indexOf(userID), 1);
+
+        console.log("Emitting player_left "+userID);
     }
 
     static getRoomID = id => 'lobby_' + id;
-    
-	/*@SubscribeMessage('new_throw')
-	async newNotification(@MessageBody() body: any, @ConnectedSocket() client: Socket): Promise<void> {
-		const msg = body.data;
-		console.log(body);
-	}*/
 
-    async emitNewThrow(userID: string, matchID: string, newThrow: Throw): Promise<void> {
-        this.server.to(MatchesGateway.getRoomID(matchID)).emit('new_throw', { userID, newThrow });
+    async emitNewCompleteThrow(userID: string, matchID: string, newThrow: Throw): Promise<void> {
+        console.log("Emitting complete throw", newThrow);
+        this.server.to(MatchesGateway.getRoomID(matchID)).emit('new_complete_throw', { userID, newThrow });
+    }
+
+    async emitNewPartialThrow(userID: string, matchID: string, newThrow: Throw): Promise<void> {
+        console.log("Emitting partial throw", newThrow);
+        this.server.to(MatchesGateway.getRoomID(matchID)).emit('new_partial_throw', { userID, newThrow });
     }
 
     async emitLegWon(user: User, matchID: string, leg: Number, set: Number): Promise<void> {

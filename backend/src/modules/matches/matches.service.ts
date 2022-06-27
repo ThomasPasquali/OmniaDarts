@@ -67,8 +67,12 @@ export class MatchesService implements NotificationsProvider {
             });
     }
 
-    async emitNewThrow(userID: string, matchID: string, newThrow: Throw) {
-        await this.matchesGateway.emitNewThrow(userID, matchID, newThrow);
+    async emitNewCompleteThrow(userID: string, matchID: string, newThrow: Throw) {
+        await this.matchesGateway.emitNewCompleteThrow(userID, matchID, newThrow);
+    }
+
+    async emitNewPartialThrow(userID: string, matchID: string, newThrow: Throw) {
+        await this.matchesGateway.emitNewPartialThrow(userID, matchID, newThrow);
     }
 
     async emitLegWon(user: User, matchID: string, leg: Number, set: Number) {

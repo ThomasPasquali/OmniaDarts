@@ -104,16 +104,16 @@ export class MatchesController {
     await this.lobbiesService.emitNewJoinRequest(user, match);
   }
 
-  @Post('lobby/throw/:idMatch')
+  @Post('lobby/completeThrow/:idMatch')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'Submit throw' })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Request created' })
-  async newThrow(
-    @Req() req,
-    @Param('idMatch') idMatch: string,
-    @Body() newThrow: Throw,
+  async newCompleteThrow(
+      @Req() req,
+      @Param('idMatch') idMatch: string,
+      @Body() newThrow: Throw,
   ) {
     const match = await this.matchesService.findById(idMatch);
     const user = req.user;
@@ -123,12 +123,31 @@ export class MatchesController {
 
     matchAddThrow(match, user, newThrow);
     await this.matchesService.updateMatchThrows(match);
-    await this.matchesService.emitNewThrow(
-      user._id.toString(),
-      idMatch,
-      newThrow,
+    await this.matchesService.emitNewCompleteThrow(
+        user._id.toString(),
+        idMatch,
+        newThrow,
     );
-    return "OK";
+  }
+
+  @Post('lobby/partialThrow/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Submit throw' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Request created' })
+  async newPartialThrow(
+      @Req() req,
+      @Param('idMatch') idMatch: string,
+      @Body() newThrow: Throw,
+  ) {
+    const user = req.user;
+
+    await this.matchesService.emitNewPartialThrow(
+        user._id.toString(),
+        idMatch,
+        newThrow,
+    );
   }
 
   @Post('lobby/legWon/:idMatch')
