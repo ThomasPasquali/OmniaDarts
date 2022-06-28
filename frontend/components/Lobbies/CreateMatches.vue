@@ -24,7 +24,7 @@
             <template #input>
               <van-radio-group class="radio-group" v-model="checked[i]">
                 <van-grid :column-num="f.values.length">
-                  <van-grid-item v-for="v in f.values">
+                  <van-grid-item v-for="v in f.values" :key="v">
                     {{ v === 'custom' ? '' : v }}
                     <van-stepper v-if="v === 'custom'" v-model="customStartPoint" />
                     <van-radio :name="v" />
