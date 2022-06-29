@@ -11,7 +11,7 @@
     <div v-if="!!buttons" class="buttons">
       <van-button
         v-for="b in buttons.filter(b_ => !!b_)"
-        :key="b"
+        :key="b.text"
         @click="$emit(b.emit)"
         :disabled="b.disabled"
       >

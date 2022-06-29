@@ -73,7 +73,9 @@ export class MatchesController {
     match.lobby = lobby;
     match.players = [lobby.owner];
     match.playersThrows = {};
-    match.playersThrows[lobby.owner._id] = new PlayerThrows(lobby.owner._id.toString());
+    match.playersThrows[lobby.owner._id] = new PlayerThrows(
+      lobby.owner._id.toString(),
+    );
 
     if (await this.matchesService.findUserActiveLobby(req.user))
       throw new BadRequestException(
@@ -111,9 +113,9 @@ export class MatchesController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Request created' })
   async newCompleteThrow(
-      @Req() req,
-      @Param('idMatch') idMatch: string,
-      @Body() newThrow: Throw,
+    @Req() req,
+    @Param('idMatch') idMatch: string,
+    @Body() newThrow: Throw,
   ) {
     const match = await this.matchesService.findById(idMatch);
     const user = req.user;
@@ -124,9 +126,9 @@ export class MatchesController {
     matchAddThrow(match, user, newThrow);
     await this.matchesService.updateMatchThrows(match);
     await this.matchesService.emitNewCompleteThrow(
-        user._id.toString(),
-        idMatch,
-        newThrow,
+      user._id.toString(),
+      idMatch,
+      newThrow,
     );
   }
 
@@ -137,58 +139,78 @@ export class MatchesController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Request created' })
   async newPartialThrow(
-      @Req() req,
-      @Param('idMatch') idMatch: string,
-      @Body() newThrow: Throw,
+    @Req() req,
+    @Param('idMatch') idMatch: string,
+    @Body() newThrow: Throw,
   ) {
     const user = req.user;
 
     await this.matchesService.emitNewPartialThrow(
-        user._id.toString(),
-        idMatch,
-        newThrow,
+      user._id.toString(),
+      idMatch,
+      newThrow,
+    );
+  }
+
+  @Post('lobby/partialThrowUndo/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Undo last partial throw' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Undone' })
+  async partialThrowUndo(@Req() req, @Param('idMatch') idMatch: string) {
+    const user = req.user;
+
+    await this.matchesService.emitPartialThrowUndo(
+      user._id.toString(),
+      idMatch,
+    );
+  }
+
+  @Post('lobby/completeThrowUndo/:idMatch')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ description: 'Undo last partial throw' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Undone' })
+  async completeThrowUndo(@Req() req, @Param('idMatch') idMatch: string) {
+    const user = req.user;
+
+    await this.matchesService.emitCompleteThrowUndo(
+      user._id.toString(),
+      idMatch,
     );
   }
 
   @Post('lobby/legWon/:idMatch')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ description: 'Notify that user who sent this request has won the current match leg' })
+  @ApiOperation({
+    description:
+      'Notify that user who sent this request has won the current match leg',
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Ok' })
-  async legWon(
-      @Req() req,
-      @Param('idMatch') idMatch: string,
-      @Body() data,
-  ) {
+  async legWon(@Req() req, @Param('idMatch') idMatch: string, @Body() data) {
     //TODO db update
     //await this.matchesService.updateMatchThrows(match);
     const user = req.user;
-    await this.matchesService.emitLegWon(
-        user,
-        idMatch,
-        data.leg,
-        data.set
-    );
+    await this.matchesService.emitLegWon(user, idMatch, data.leg, data.set);
   }
 
   @Post('lobby/matchWon/:idMatch')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ description: 'Notify that user who sent this request has won match' })
+  @ApiOperation({
+    description: 'Notify that user who sent this request has won match',
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Ok' })
-  async matchWon(
-      @Req() req,
-      @Param('idMatch') idMatch: string,
-  ) {
+  async matchWon(@Req() req, @Param('idMatch') idMatch: string) {
     //TODO db update
     //await this.matchesService.updateMatchThrows(match);
     const user = req.user;
-    await this.matchesService.emitMatchWon(
-        user,
-        idMatch
-    );
+    await this.matchesService.emitMatchWon(user, idMatch);
   }
 
   @Get()
