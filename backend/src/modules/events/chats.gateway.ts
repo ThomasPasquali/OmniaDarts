@@ -49,7 +49,11 @@ export class ChatsGateway extends EventsGateway {
     const chat: Chat = await this.chatService.findById(chatID);
     const message: TextMessage = JSON.parse(body);
     console.log(message.text);
-    message.user = { _id: client['user']._id } as User;
+    message.user = {
+      _id: client['user']._id,
+      nickname: client['user'].nickname,
+      imageUrl: client['user'].imageUrl,
+    } as User;
     message.dateTime = new Date().getTime();
     //message.chatID = chat._id;
     //chat.messages.push(message);
