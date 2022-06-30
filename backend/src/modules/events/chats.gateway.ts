@@ -21,9 +21,10 @@ export class ChatsGateway extends EventsGateway {
 
   async handleConnection(client: any): Promise<void> {
     await super.handleConnection(client);
-    const chatID = client.handshake.query.chatID;
+    console.log(client.handshake.query);
+    const chatID = client.handshake.query.matchID;
     if (chatID) {
-      const chat: Chat = await this.chatService.findById(chatID);
+      //const chat: Chat = await this.chatService.findById(chatID);
 
       // TODO Remove to enable permissions
       //if (await this.checkPermissions(chats, client['user']._id)) {
@@ -31,7 +32,7 @@ export class ChatsGateway extends EventsGateway {
       client.join(roomName);
       console.log(client.user.nickname, 'is connecting to', roomName);
 
-      this.server.to(roomName).emit('text_msg_room_new', chat.messages);
+      //this.server.to(roomName).emit('text_msg_room_new', chat.messages);
     } else client.disconnect();
     //}
   }
@@ -44,19 +45,18 @@ export class ChatsGateway extends EventsGateway {
     const msg = body;
     console.log(msg);
     console.log(client.handshake.query.chatID);
-    const chat: Chat = await this.chatService.findById(
-      client.handshake.query.chatID,
-    );
+    const chatID = client.handshake.query.matchID;
+    const chat: Chat = await this.chatService.findById(chatID);
     const message: TextMessage = JSON.parse(body);
     console.log(message.text);
     message.user = { _id: client['user']._id } as User;
     message.dateTime = new Date().getTime();
-    message.chatID = chat._id;
-    chat.messages.push(message);
-    await this.chatService.update(chat._id, chat);
-    console.log('Sending message to: ' + this.PREFIX_ROOM_CHAT + chat._id);
+    //message.chatID = chat._id;
+    //chat.messages.push(message);
+    //await this.chatService.update(chat._id, chat);
+    console.log('Sending message to: ' + this.PREFIX_ROOM_CHAT + chatID);
     this.server
-      .to(this.PREFIX_ROOM_CHAT + chat._id)
+      .to(this.PREFIX_ROOM_CHAT + chatID)
       .emit('text_msg_room_new', [message]);
   }
 

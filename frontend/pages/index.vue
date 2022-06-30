@@ -32,17 +32,6 @@ export default {
       if (window && window.android && window.android.login) {
         window.android.login(window.localStorage.getItem('auth._token.local'), JSON.stringify(this.$auth.user))
       }
-  },
-  watch: {
-    user(user) {
-      console.log('Waassapp')
-      setTimeout(() => {
-        if (window && window.android && window.android.login) {
-          window.localStorage.setItem('user', user)
-          window.android.login(window.localStorage.getItem('auth._token.local'), JSON.stringify(user))
-        } else alert('NOPE')
-      }, 3000)
-    }
-  },
+  }
 }
 </script>
