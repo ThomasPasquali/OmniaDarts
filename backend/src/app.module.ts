@@ -23,8 +23,8 @@ import { StatisticsModule } from './modules/statistics/statistics.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, //ignoreEnvFile: process.env.NODE_ENV == 'production',
-      ignoreEnvFile: false,
+      isGlobal: true,
+      ignoreEnvFile: process.env.NODE_ENV == 'production',
       envFilePath: 'dev.env',
     }),
 
